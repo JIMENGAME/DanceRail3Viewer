@@ -1,0 +1,22 @@
+{
+    "scenecontrols": [
+        {
+            "type": "enwidenlanes",
+            "time": 109477,
+            "duration": 142,
+            "isOn": 1
+        },
+        {
+            "type": "enwidenlanes",
+            "time": 129666,
+            "duration": 284,
+            "isOn": 0
+        },
+        {
+            "type": "enwidenlanes",
+            "time": 158957,
+            "duration": 568,
+            "isOn": 1
+        }
+    ]
+}

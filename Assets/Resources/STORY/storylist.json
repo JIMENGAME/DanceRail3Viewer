@@ -1,0 +1,87 @@
+[
+  {
+    "name": "序章",
+    "section": [
+      {
+        "page_count": 1
+      }
+    ]
+  },
+  {
+    "name": "虚拟Arcaea",
+    "section": [
+      {
+        "page_count": 4
+      },
+      {
+        "page_count": 2,
+        "unlock": "tutorial"
+      }
+    ]
+  },
+  {
+    "name": "Memory Archive",
+    "section": [
+      {
+        "unlock": "pragmatism",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "sheriruth",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "etherstrike",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "axiumcrisis",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "ringedgenesis",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "tempestissimo",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "defection",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "infinitestrife",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "worldender",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "pentiment",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "arcanaeden",
+        "page_count": 1,
+        "ignore_last_read": true
+      },
+      {
+        "unlock": "testify",
+        "page_count": 1,
+        "ignore_last_read": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,9 @@
+Assets/
+Packages/
+ProjectSettings/
+UserSettings/
+*.csproj
+user.keystore
+DanceRail3Viewer.sln.DotSettings.user
+DanceRail3Viewer.sln
+.vsconfig
