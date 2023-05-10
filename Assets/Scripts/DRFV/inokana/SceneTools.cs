@@ -90,6 +90,12 @@ namespace DRFV.inokana
         {
             IntoScene("hadoutest");
         }
+        
+        [MenuItem("Scene Tools/Into Offset")]
+        private static void IntoOffset()
+        {
+            IntoScene("offset");
+        }
 
         private static void IntoScene(string name)
         {

@@ -35,10 +35,9 @@ public class PostProcess : MonoBehaviour
             return;
         }
 
-        for (var index1 = 0; index1 < _arguments.Length - 1; index1++)
+        for (var index1 = 0; index1 < _arguments.Length; index1++)
         {
             var testifyAnomalyArguments = _arguments[index1];
-            var nextTestifyAnomalyArguments = _arguments[index1 + 1];
             if (testifyAnomalyArguments.startTime <= _progressManager.NowTime && _progressManager.NowTime <
                 testifyAnomalyArguments.startTime + testifyAnomalyArguments.duration)
             {
@@ -51,6 +50,8 @@ public class PostProcess : MonoBehaviour
                 return;
             }
 
+            if (index1 == _arguments.Length - 1) return;
+            var nextTestifyAnomalyArguments = _arguments[index1 + 1];
             if (testifyAnomalyArguments.startTime + testifyAnomalyArguments.duration <= _progressManager.NowTime &&
                 _progressManager.NowTime < nextTestifyAnomalyArguments.startTime)
             {
@@ -59,20 +60,6 @@ public class PostProcess : MonoBehaviour
                 return;
             }
         }
-        // while (_arguments[index].startTime < _progressManager.NowTime) index++;
-        // if (_progressManager.NowTime < _arguments[0].startTime) return;
-        // if (_progressManager.NowTime >= _arguments[^1].startTime + _arguments[^1].duration)
-        // {
-        //     Material.SetFloat(Uniform.strength, _arguments[^1].startStrength + _arguments[^1].deltaStrength);
-        //     return;
-        // }
-        //
-        // float i = (_progressManager.NowTime - _arguments[index].startTime) /
-        //           _arguments[index].duration;
-        // Material.SetFloat(Uniform.strength,
-        //     _arguments[index].startStrength +
-        //     (_arguments[index].strengthType == StrengthType.SineOut ? Util.SineOutEase(i) : i) *
-        //     _arguments[index].deltaStrength);
     }
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)

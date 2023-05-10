@@ -16,16 +16,28 @@ namespace DRFV.inokana
         private float startDspTime;
         private float lastUpdateDspTime;
 
-        private TheGameManager _theGameManager;
+        public delegate void OnResolutionError();
 
-        public void Init(TheGameManager theGameManager)
+        public delegate float Pitch();
+
+        private OnResolutionError _runtimeError;
+        private Pitch _pitch;
+
+        public void Init(OnResolutionError initError, OnResolutionError runtimeError, Pitch pitch)
         {
-            _theGameManager = theGameManager;
+            _runtimeError = runtimeError;
+            _pitch = pitch;
             if (!Stopwatch.IsHighResolution)
             {
-                NotificationBarManager.Instance.Show("计时器精准度可能有问题，请与inokana取得联系");
-                if (_theGameManager) _theGameManager.QuitDirectly();;
+                initError.Invoke();
             }
+        }
+
+        public void ResetTiming()
+        {
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+            delay = pauseTime = startDspTime = lastUpdateDspTime = 0;
         }
 
         public void StartTiming()
@@ -46,7 +58,6 @@ namespace DRFV.inokana
 
         public void OnUpdate()
         {
-
             var currentDspTime = (float)AudioSettings.dspTime;
             if (Math.Abs(lastUpdateDspTime - currentDspTime) > 0.001f)
             {
@@ -55,16 +66,14 @@ namespace DRFV.inokana
                 var differenceTime = (currentDspTime - startDspTime) * 1000f - _stopwatch.ElapsedMilliseconds;
                 if (differenceTime < -500f)
                 {
-                    if (_theGameManager) _theGameManager.QuitDirectly();
-
-                    //NotificationBarManager.Instance.Show("DspBuffer数值过小，请前往设置调整。");
+                    _runtimeError.Invoke();
 
                     Debug.LogWarning($"当前时差为{differenceTime}ms,Dsp炸啦！！！");
                 }
             }
 
             var tempT = _stopwatch.ElapsedMilliseconds - delay;
-            NowTime = (tempT < pauseTime ? pauseTime : tempT) * _theGameManager.BGMManager.pitch;
+            NowTime = (tempT < pauseTime ? pauseTime : tempT) * _pitch.Invoke();
         }
 
         private float pauseTime;

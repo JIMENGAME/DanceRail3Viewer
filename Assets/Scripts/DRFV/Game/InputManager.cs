@@ -178,11 +178,14 @@ namespace DRFV.Game
             }
 #endif
 
-            debugtext.text = "";
-            for (int i = 0; i < 10; i++)
+            if (debugtext)
             {
-                debugtext.text += touchPoint[i].isTouch + " | " + triggerPoint[i].isTouch + " | " +
-                                  releasePoint[i].isTouch + " | " + oldPoint[i].isTouch + "\n";
+                debugtext.text = "";
+                for (int i = 0; i < 10; i++)
+                {
+                    debugtext.text += touchPoint[i].isTouch + " | " + triggerPoint[i].isTouch + " | " +
+                                      releasePoint[i].isTouch + " | " + oldPoint[i].isTouch + "\n";
+                }
             }
         } //update end
 

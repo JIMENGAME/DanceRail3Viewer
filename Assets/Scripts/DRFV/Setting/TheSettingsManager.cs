@@ -388,6 +388,11 @@ namespace DRFV.Setting
             }
             else DebugModeController.Instance.DebugMode = false;
         }
+
+        public void IntoOffset()
+        {
+            FadeManager.Instance.LoadScene("offset");
+        }
     }
 
     public class PlayerFile

@@ -72,7 +72,10 @@ namespace DRFV.LyricTest
 
         IEnumerator StartReading()
         {
-            progressManager.Init(null);
+            progressManager.Init(() =>
+            {
+                NotificationBarManager.Instance.Show("计时器精准度可能有问题，请与inokana取得联系");
+            }, () => NotificationBarManager.Instance.Show("dsp"), GetPitch);
             NoteOffset = PlayerPrefs.GetFloat("noteOffset", 0f);
             if (File.Exists(dataPath + "songs/" + SongKeyword + "/" + SongHard + ".ogg"))
             {
@@ -187,6 +190,11 @@ namespace DRFV.LyricTest
             progressManager.StartTiming();
             BGMManager.PlayScheduled(AudioSettings.dspTime + ReadyTime / 1000f);
             inited = true;
+        }
+
+        private float GetPitch()
+        {
+            return BGMManager.pitch;
         }
 
         public Text lyricText;

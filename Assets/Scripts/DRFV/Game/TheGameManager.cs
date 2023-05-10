@@ -55,7 +55,7 @@ namespace DRFV.Game
         [SerializeField] string SongTitle = "Blue Melody", SongArtist = "波導Lucario";
 
 
-        [SerializeField, Range(1, 30)] public int NoteSpeed = 12;
+        [SerializeField] public int NoteSpeed = 12;
         [SerializeField] float NoteOffset; //[SerializeField, Range(-200, 200)]
         [SerializeField] public bool GameAuto = true, GameMirror;
 
@@ -270,7 +270,15 @@ namespace DRFV.Game
 
             speedLabelText = "更改谱面速度：";
 
-            progressManager.Init(this);
+            progressManager.Init(() =>
+            {
+                NotificationBarManager.Instance.Show("计时器精准度可能有问题，请与inokana取得联系");
+                QuitDirectly();
+            }, () =>
+            {
+                NotificationBarManager.Instance.Show("DspBuffer数值过小");
+                QuitDirectly();
+            }, GetPitch);
             VideoPlayer.errorReceived += (_, _) =>
             {
                 background.SetActive(true);
@@ -279,6 +287,11 @@ namespace DRFV.Game
             };
             VideoPlayer.prepareCompleted += _ => videoPrepared = true;
             StartCoroutine(ApplySettings());
+        }
+
+        private float GetPitch()
+        {
+            return BGMManager.pitch;
         }
 
         private IEnumerator ApplySettings()
@@ -741,7 +754,7 @@ namespace DRFV.Game
                         {
                             if (note1.ms < note.ms)
                             {
-                                note.isNear = true;
+                                note.isJudgeTimeRangeConflicted = true;
                             }
                         }
                     }
@@ -1449,7 +1462,9 @@ namespace DRFV.Game
                                       : drbfile.notes[i].dms) -
                                   Distance) * drbfile.notes[i].nsc.value * NoteSpeed < 150.0f)
                         || (drbfile.notes[i].ms - progressManager.NowTime < 1000)
-                        || ((drbfile.notes[i].nsc.type == NoteSCType.MULTI || drbfile.notes[i].mode == NoteAppearMode.Jump) && drbfile.notes[i].ms - progressManager.NowTime < 10000.0f))
+                        || ((drbfile.notes[i].nsc.type == NoteSCType.MULTI ||
+                             drbfile.notes[i].mode == NoteAppearMode.Jump) &&
+                            drbfile.notes[i].ms - progressManager.NowTime < 10000.0f))
                     {
                         GameObject note = Instantiate(NotePrefab,
                             NoteTypeJudge.IsTap(drbfile.notes[i].kind) ? notesUp.transform : notesDown.transform);
@@ -1460,46 +1475,7 @@ namespace DRFV.Game
                             note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
                         note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
-                        if (NoteTypeJudge.IsTail(drbfile.notes[i].kind))
-                        {
-                            note.GetComponent<TheNote>().Ready(
-                                drbfile.notes[i].id,
-                                drbfile.notes[i].time,
-                                drbfile.notes[i].pos,
-                                drbfile.notes[i].pos + drbfile.notes[i].width * 0.5f,
-                                drbfile.notes[i].mode,
-                                drbfile.notes[i].nsc,
-                                drbfile.notes[i].ms,
-                                drbfile.notes[i].dms,
-                                drbfile.notes[i].width,
-                                drbfile.notes[i].kind,
-                                drbfile.notes[i].isNear,
-                                tapSize, flickSize, freeFlickSize, tapAlpha, flickAlpha, freeFlickAlpha,
-                                drbfile.notes[i].parent,
-                                drbfile.notes[i].parent_ms,
-                                drbfile.notes[i].parent_dms,
-                                drbfile.notes[i].parent_pos,
-                                drbfile.notes[i].parent_width
-                            );
-                        }
-                        else
-                        {
-                            note.GetComponent<TheNote>().Ready(
-                                drbfile.notes[i].id,
-                                drbfile.notes[i].time,
-                                drbfile.notes[i].pos,
-                                drbfile.notes[i].pos + drbfile.notes[i].width * 0.5f,
-                                drbfile.notes[i].mode,
-                                drbfile.notes[i].nsc,
-                                drbfile.notes[i].ms,
-                                drbfile.notes[i].dms,
-                                drbfile.notes[i].width,
-                                drbfile.notes[i].kind,
-                                drbfile.notes[i].isNear,
-                                tapSize, flickSize, freeFlickSize, tapAlpha, flickAlpha, freeFlickAlpha
-                            );
-                        }
-
+                        note.GetComponent<TheNote>().Ready(drbfile.notes[i], tapSize, flickSize, freeFlickSize, tapAlpha, flickAlpha, freeFlickAlpha);
                         note.GetComponent<TheNote>().StartC();
 
 

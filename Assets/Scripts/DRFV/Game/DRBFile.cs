@@ -405,7 +405,7 @@ namespace DRFV.Game
         public float ms;
         public float dms;
 
-        public bool isNear;
+        public bool isJudgeTimeRangeConflicted;
         public bool isWaitForGD;
         public bool isWaitForPF;
         public float WaitForSec;

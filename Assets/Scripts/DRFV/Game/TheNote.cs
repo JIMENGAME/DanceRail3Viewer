@@ -110,27 +110,28 @@ namespace DRFV.Game
             //_mesh.RecalculateBounds();
         }
 
-        public void Ready(int i, float ic, float p, float c, NoteAppearMode md, NoteData.NoteSC n, float m, float d, float w, NoteKind k,
-            bool near, int tapSize, int flickSize, int freeFlickSize, int tapAlpha, int flickAlpha, int freeFlickAlpha,
-            int pa = 0, float pm = 0, float pd = 0, float pp = 0, float pw = 0)
+        public void Ready(NoteData noteData, int tapSize, int flickSize, int freeFlickSize, int tapAlpha, int flickAlpha, int freeFlickAlpha)
         {
-            _noteData.id = i;
-            _noteData.time = ic;
-            _noteData.pos = p;
-            _noteData.center = c;
-            _noteData.mode = md;
-            _noteData.nsc = n;
-            _noteData.ms = m;
-            _noteData.dms = d;
-            _noteData.width = w;
-            _noteData.kind = k;
-            _noteData.parent = pa;
-            _noteData.parent_ms = pm;
-            _noteData.parent_dms = pd;
-            _noteData.parent_pos = pp;
-            _noteData.parent_width = pw;
+            _noteData.id = noteData.id;
+            _noteData.time = noteData.time;
+            _noteData.pos = noteData.pos;
+            _noteData.center = noteData.pos + noteData.width * 0.5f;
+            _noteData.mode = noteData.mode;
+            _noteData.nsc = noteData.nsc;
+            _noteData.ms = noteData.ms;
+            _noteData.dms = noteData.dms;
+            _noteData.width = noteData.width;
+            _noteData.kind = noteData.kind;
+            if (NoteTypeJudge.IsTail(_noteData.kind))
+            {
+                _noteData.parent = noteData.parent;
+                _noteData.parent_ms = noteData.parent_ms;
+                _noteData.parent_dms = noteData.parent_dms;
+                _noteData.parent_pos = noteData.parent_pos;
+                _noteData.parent_width = noteData.parent_width;
+            }
 
-            _noteData.isNear = near;
+            _noteData.isJudgeTimeRangeConflicted = noteData.isJudgeTimeRangeConflicted;
             _noteData.isWaitForGD = false;
             _noteData.isWaitForPF = false;
             _noteData.WaitForSec = 0.0f;
@@ -150,8 +151,8 @@ namespace DRFV.Game
 
             if (gameManager.DebugMode && gameManager.ShowNoteId)
             {
-                IdText.transform.localPosition = new Vector3(w / -2, tapSize * 0.6f, -0.3f);
-                IdText.text = i + "";
+                IdText.transform.localPosition = new Vector3(_noteData.width / -2, tapSize * 0.6f, -0.3f);
+                IdText.text = _noteData.id + "";
                 IdText.gameObject.SetActive(true);
             }
 
@@ -457,7 +458,7 @@ namespace DRFV.Game
                     {
                         //TAP必要
                         case NoteKind.TAP:
-                            if (_noteData.isNear)
+                            if (_noteData.isJudgeTimeRangeConflicted)
                             {
                                 if (_noteData.isWaitForGD &&
                                     gameManager.progressManager.NowTime > _noteData.ms + gameManager.PFms)
