@@ -1348,7 +1348,7 @@ namespace DRFV.Game
         {
             if (!inited || ended) return;
 
-            if (progressManager.NowTime > lastNoteTime)
+            if (progressManager.NowTime > lastNoteTime && PerfectJ + Perfect + good + miss == noteTotal)
             {
                 StartEndEvent();
                 return;
