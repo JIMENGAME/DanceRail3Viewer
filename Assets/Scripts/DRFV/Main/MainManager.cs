@@ -1,5 +1,6 @@
 using DRFV.Global;
 using DRFV.Login;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -49,6 +50,15 @@ namespace DRFV.Main
                     RuntimeSettingsManager.Instance.hadouTest = value;
                     if (value) FadeManager.Instance.LoadScene("hadoutest");
                 });
+        }
+
+        public void ExitApplication()
+        {
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }
