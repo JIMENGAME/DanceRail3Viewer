@@ -70,13 +70,11 @@ namespace DRFV.Global
                 case RuntimePlatform.LinuxPlayer:
                     return Application.dataPath + "/../cache/";
                 case RuntimePlatform.IPhonePlayer:
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
                     return Application.temporaryCachePath + "/";
                 case RuntimePlatform.Android:
                     return "/storage/emulated/0/DR3Viewer/.cache/";
-                case RuntimePlatform.OSXEditor:
-                case RuntimePlatform.OSXPlayer:
-                    Debug.Log(Application.temporaryCachePath);
-                    return Application.temporaryCachePath + "/";
                 default:
                     Application.Quit();
                     throw new ArgumentException("Unsupported System");
