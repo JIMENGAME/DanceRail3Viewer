@@ -377,6 +377,7 @@ namespace DRFV.Setting
         {
             if (value)
             {
+                if (DebugModeController.Instance.DebugMode) return;
                 InputWindow inputWindow = Instantiate(InputWindowPrefab, GameObject.FindWithTag("MainCanvas").transform).GetComponent<InputWindow>();
                 // Debug模式密码
                 inputWindow.Show(null, null, new byte[] {79, 112, 101, 110, 68, 101, 98, 117, 103, 77, 111, 100, 101, 33, 33, 33, 33},
