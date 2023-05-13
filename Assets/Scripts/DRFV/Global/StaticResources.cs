@@ -2,9 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using DRFV.inokana;
-using SimpleFileBrowser;
 using UnityEngine;
-using UnityEngine.WSA;
 using Application = UnityEngine.Application;
 
 namespace DRFV.Global
