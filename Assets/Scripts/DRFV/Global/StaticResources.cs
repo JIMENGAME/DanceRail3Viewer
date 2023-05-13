@@ -29,7 +29,7 @@ namespace DRFV.Global
             {
                 Directory.CreateDirectory(dataPath + "songs");
             }
-        
+
             if (!Directory.Exists(cachePath))
             {
                 Directory.CreateDirectory(cachePath);
@@ -48,13 +48,12 @@ namespace DRFV.Global
                 case RuntimePlatform.LinuxEditor:
                 case RuntimePlatform.LinuxPlayer:
                     return Application.dataPath + "/../";
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.IPhonePlayer:
                     return Application.persistentDataPath + "/";
                 case RuntimePlatform.Android:
                     return "/storage/emulated/0/DR3Viewer/";
-                case RuntimePlatform.OSXEditor:
-                    Debug.Log(Application.persistentDataPath);
-                    return Application.persistentDataPath + "/";
                 default:
                     Application.Quit();
                     throw new ArgumentException("Unsupported System");
@@ -74,11 +73,16 @@ namespace DRFV.Global
                     return Application.temporaryCachePath + "/";
                 case RuntimePlatform.Android:
                     return "/storage/emulated/0/DR3Viewer/.cache/";
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                    Debug.Log(Application.temporaryCachePath);
+                    return Application.temporaryCachePath + "/";
                 default:
                     Application.Quit();
                     throw new ArgumentException("Unsupported System");
             }
         }
+
         public static string BoolArrayToString(bool[] arr)
         {
             StringBuilder sb = new StringBuilder();
