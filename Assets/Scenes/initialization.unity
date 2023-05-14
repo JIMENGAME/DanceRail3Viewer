@@ -1437,6 +1437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hadouTest: 0
+  removedStory: 1
 --- !u!1 &1726918188
 GameObject:
   m_ObjectHideFlags: 0

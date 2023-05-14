@@ -24,6 +24,9 @@ public class MSDetailsDrawer : MonoBehaviour
             .GetComponent<LineRenderer>();
 #if UNITY_EDITOR
         qwq.GetComponent<LineSizeDebugger>().Init(this);
+#else
+        component.startWidth = component.endWidth = width;
+        Destroy(qwq.GetComponent<LineSizeDebugger>());
 #endif
         component.useWorldSpace = false;
         component.startColor =

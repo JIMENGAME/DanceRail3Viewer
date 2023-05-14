@@ -7,6 +7,7 @@ namespace DRFV.Login
     {
         public void LoadStory()
         {
+            if (RuntimeSettingsManager.Instance.removedStory) return;
             FadeManager.Instance.LoadScene("story");
         }
     }
