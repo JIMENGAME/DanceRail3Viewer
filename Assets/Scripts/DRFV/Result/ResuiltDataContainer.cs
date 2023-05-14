@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using DRFV.Enums;
 using UnityEngine;
 
-namespace DRFV.End
+namespace DRFV.Result
 {
     public class ResultDataContainer : MonoBehaviour
     {
@@ -19,5 +20,6 @@ namespace DRFV.End
         public float hp;
         public float Accuracy;
         public int noteTotal;
+        public List<float> msDetails;
     }
 }

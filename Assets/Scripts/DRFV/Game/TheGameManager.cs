@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using DG.Tweening;
 using DRFV.Data;
-using DRFV.End;
 using DRFV.Enums;
 using DRFV.Game.HPBars;
 using DRFV.Game.SceneControl;
 using DRFV.Game.Side;
 using DRFV.Global;
 using DRFV.inokana;
+using DRFV.Result;
 using DRFV.Select;
 using DRFV.Setting;
 using DRFV.Story;
@@ -258,6 +258,8 @@ namespace DRFV.Game
         private Color? customTierColor = null;
         private bool ratingPlus;
 
+        private List<float> msDetailsList = new List<float>();
+
         void Start()
         {
             //メモリ解放
@@ -349,16 +351,7 @@ namespace DRFV.Game
                 VideoPlayer.playbackSpeed = BGMManager.pitch = songDataContainer.songSpeed;
                 barType = songDataContainer.barType;
                 gameSide = songDataContainer.gameSide;
-                NoteJudgeRange aaa = songDataContainer.NoteJudgeRange switch
-                {
-                    0 => new NoteJudgeRange { PJ = 70, P = 200, G = 400 },
-                    1 => new NoteJudgeRange { PJ = 40, P = 80, G = 160 },
-                    3 => new NoteJudgeRange { PJ = 25, P = 50, G = 100 },
-                    4 => new NoteJudgeRange { PJ = 20, P = 40, G = 60 },
-                    5 => new NoteJudgeRange { PJ = 10, P = 20, G = 30 },
-                    6 => new NoteJudgeRange { PJ = 10, P = 10, G = 10 },
-                    _ => new NoteJudgeRange { PJ = 30, P = 60, G = 100 }
-                };
+                NoteJudgeRange aaa = Util.GetNoteJudgeRange(songDataContainer.NoteJudgeRange);
                 PJms = aaa.PJ;
                 PFms = aaa.P;
                 GDms = aaa.G;
@@ -1578,6 +1571,7 @@ namespace DRFV.Game
                 resultDataContainer.hp = hpManager.HpNow;
                 resultDataContainer.Accuracy = Accuracy;
                 resultDataContainer.noteTotal = noteTotal;
+                resultDataContainer.msDetails = msDetailsList;
                 DontDestroyOnLoad(go);
                 FadeManager.Instance.LoadScene("result", _currentSettings);
             }
@@ -2154,10 +2148,12 @@ namespace DRFV.Game
             fast = 0;
             slow = 0;
             AccMSList.Clear();
+            msDetailsList.Clear();
         }
 
         private void JudgeDirectly(NoteKind kind)
         {
+            msDetailsList.Add(0f);
             PerfectJ++;
             AddCombo();
             //if (imgHanteiBeam[0]) imgHanteiBeam[0].color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2172,6 +2168,7 @@ namespace DRFV.Game
 
             var go2 = Instantiate(HanteiPrefab, pos, Quaternion.identity);
             GameObject go;
+            msDetailsList.Add(ms);
 
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)

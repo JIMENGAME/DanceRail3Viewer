@@ -5,10 +5,10 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using DRFV.End;
 using DRFV.Enums;
 using DRFV.JsonData;
 using DRFV.Game;
+using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -290,6 +290,20 @@ namespace DRFV.Global
         public static float SineOutEase(float a)
         {
             return Mathf.Sin(a * Mathf.PI / 2f);
+        }
+
+        public static NoteJudgeRange GetNoteJudgeRange(int id)
+        {
+            return id switch
+            {
+                0 => new NoteJudgeRange { PJ = 70, P = 200, G = 400 },
+                1 => new NoteJudgeRange { PJ = 40, P = 80, G = 160 },
+                3 => new NoteJudgeRange { PJ = 25, P = 50, G = 100 },
+                4 => new NoteJudgeRange { PJ = 20, P = 40, G = 60 },
+                5 => new NoteJudgeRange { PJ = 10, P = 20, G = 30 },
+                6 => new NoteJudgeRange { PJ = 10, P = 10, G = 10 },
+                _ => new NoteJudgeRange { PJ = 30, P = 60, G = 100 }
+            };
         }
     }
 }

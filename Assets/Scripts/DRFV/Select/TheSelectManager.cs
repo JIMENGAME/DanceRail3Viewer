@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using DG.Tweening;
-using DRFV.End;
 using DRFV.Enums;
 using DRFV.Game;
 using DRFV.Global;
@@ -15,6 +14,7 @@ using DRFV.JsonData;
 using DRFV.Language;
 using DRFV.Login;
 using DRFV.Pool;
+using DRFV.Result;
 using DRFV.Select.Components;
 using DRFV.Setting;
 using Newtonsoft.Json;
@@ -581,7 +581,7 @@ namespace DRFV.Select
             int songHard = (int)selectedDiff;
             if (!songDataNow.hards.Contains(songHard)) return;
             string md5 = Util.GetMd5OfChart(songDataNow.keyword, songHard);
-            Result result = new Result
+            ResultData result = new ResultData
             {
                 score = int.Parse(debugScore.text.Trim())
             };

@@ -677,7 +677,7 @@ namespace DRFV.Game
                             {
                                 if (inputManager.GetPressed(_noteData.pos + 1, _noteData.pos + _noteData.width - 1))
                                 {
-                                    gameManager.Judge(200, _noteData.kind,
+                                    gameManager.Judge(gameManager.GDms + 1f, _noteData.kind,
                                         new Vector3(transform.position.x, 0.0f, 0.0f),
                                         _noteData.width);
                                     //血が出る警告
@@ -694,8 +694,6 @@ namespace DRFV.Game
                                 }
                             }
 
-                            break;
-                        default:
                             break;
                     }
                 }

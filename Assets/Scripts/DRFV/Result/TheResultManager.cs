@@ -14,7 +14,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DRFV.End
+namespace DRFV.Result
 {
     public class TheResultManager : MonoBehaviour
     {
@@ -54,6 +54,8 @@ namespace DRFV.End
 
         public Text JudgeInput;
 
+        public GameObject AccDetailsPanel, AccDetails;
+
         private static Color orange = new(1f, 0.5f, 0.5f),
             greyShadow = new(0.9f, 0.9f, 0.9f, 0.6f),
             greenShadow = new(0f, 0.3f, 0f, 0.6f),
@@ -88,16 +90,16 @@ namespace DRFV.End
                 string key = "SongScore_" +
                              resultDataContainer.md5;
                 bool newRecord = true;
-                Result resultOld;
+                ResultData resultDataOld;
                 if (PlayerPrefs.HasKey(key))
                 {
-                    resultOld = JsonConvert.DeserializeObject<Result>(PlayerPrefs.GetString(key));
-                    if (resultOld == null) throw new ArgumentException();
-                    newRecord = thisScore > resultOld.score;
+                    resultDataOld = JsonConvert.DeserializeObject<ResultData>(PlayerPrefs.GetString(key));
+                    if (resultDataOld == null) throw new ArgumentException();
+                    newRecord = thisScore > resultDataOld.score;
                 }
                 else
                 {
-                    resultOld = new Result();
+                    resultDataOld = new ResultData();
                 }
 
                 if (GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL)
@@ -107,15 +109,15 @@ namespace DRFV.End
                 }
                 else
                 {
-                    scoreDelta.text = Util.ParseScore(resultOld.score) + "  " +
-                                      (resultOld.score <= thisScore ? "+" : "-") +
-                                      Util.ParseScore(thisScore - resultOld.score);
+                    scoreDelta.text = Util.ParseScore(resultDataOld.score) + "  " +
+                                      (resultDataOld.score <= thisScore ? "+" : "-") +
+                                      Util.ParseScore(thisScore - resultDataOld.score);
                     tNewScore.SetActive(newRecord);
                 }
 
                 if (newRecord)
                 {
-                    Result result = new Result
+                    ResultData resultData = new ResultData
                     {
                         score = thisScore,
                         endType = resultDataContainer.endType switch
@@ -135,7 +137,7 @@ namespace DRFV.End
                         hp = MathF.Round(resultDataContainer.hp, 2, MidpointRounding.AwayFromZero),
                         acc = MathF.Round(resultDataContainer.Accuracy, 2, MidpointRounding.AwayFromZero)
                     };
-                    string resultStr = JsonConvert.SerializeObject(result, Formatting.None);
+                    string resultStr = JsonConvert.SerializeObject(resultData, Formatting.None);
                     if (songDataContainer.GetContainerType() != SongDataContainerType.HADOU_TEST)
                         UploadScore(key, resultStr);
 
@@ -223,11 +225,17 @@ namespace DRFV.End
             hardIndicator.SetActive(songDataContainer.isHard);
             easyIndicator.SetActive(songDataContainer.barType == BarType.EASY);
             hardbarIndicator.SetActive(songDataContainer.barType == BarType.HARD);
-            HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "    " + "ACC: " +
+            HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "   " + "ACC: " +
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
             SongSpeed.text = $"SPEED: {songDataContainer.songSpeed:N1}x";
             JudgeInput.text = "JUDGE: " + songDataContainer.NoteJugeRangeLabel;
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
+        }
+        
+        public void ChangeVisibilityAccDetails(bool value)
+        {
+            AccDetailsPanel.SetActive(value);
+            AccDetails.SetActive(value);
         }
 
         private IEnumerator StopOBS()
@@ -261,7 +269,7 @@ namespace DRFV.End
         }
     }
 
-    public class Result
+    public class ResultData
     {
         [JsonProperty("score")] public int score;
         [JsonProperty("type")] public string endType;
@@ -274,7 +282,7 @@ namespace DRFV.End
         [JsonProperty("hp")] public float hp;
         [JsonProperty("acc")] public float acc;
 
-        public Result()
+        public ResultData()
         {
             score = 0;
             endType = "cp";

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using DRFV.End;
 using DRFV.Global;
 using DRFV.JsonData;
 using DRFV.Language;
 using DRFV.Login;
 using DRFV.Pool;
+using DRFV.Result;
 using Newtonsoft.Json;
 using SimpleFileBrowser;
 using UnityEngine;
@@ -215,7 +215,7 @@ namespace DRFV.Setting
                             if (!File.Exists(chartPath)) continue;
                             string scoreId = "SongScore_" + Util.GetMd5OfChart(keyword, hard);
                             if (!PlayerPrefs.HasKey(scoreId)) continue;
-                            playerFile.scores.Add(new ScoreFileScore{ id = scoreId, score = JsonConvert.DeserializeObject<Result>(PlayerPrefs.GetString(scoreId))});
+                            playerFile.scores.Add(new ScoreFileScore{ id = scoreId, score = JsonConvert.DeserializeObject<ResultData>(PlayerPrefs.GetString(scoreId))});
                         }
                         catch (Exception e)
                         {
@@ -405,6 +405,6 @@ namespace DRFV.Setting
     public class ScoreFileScore
     {
         [JsonProperty("id")] public string id = "";
-        [JsonProperty("score")] public Result score = new Result();
+        [JsonProperty("score")] public ResultData score = new ResultData();
     }
 }
