@@ -29,25 +29,8 @@ public class MSDetailsDrawer : MonoBehaviour
         Destroy(qwq.GetComponent<LineSizeDebugger>());
 #endif
         component.useWorldSpace = false;
-        component.startColor =
-            Mathf.Abs(data[i]) <= noteJudgeRange.PJ
-                ? Color.green
-                : (Mathf.Abs(data[i]) <= noteJudgeRange.P
-                    ? Color.yellow
-                    : (Mathf.Abs(data[i]) <=
-                       noteJudgeRange.G
-                        ? new Color(1f, 0.5f, 0.0f)
-                        : Color.red));
-        component.endColor =
-            Mathf.Abs(data[i + 1]) <= noteJudgeRange.PJ
-                ? Color.green
-                : (Mathf.Abs(data[i + 1]) <=
-                   noteJudgeRange.P
-                    ? Color.yellow
-                    : (Mathf.Abs(data[i + 1]) <=
-                       noteJudgeRange.G
-                        ? new Color(1f, 0.5f, 0.0f)
-                        : Color.red));
+        component.startColor = GetColorFromMs(data[i]);
+        component.endColor = GetColorFromMs(data[i + 1]);
         component.positionCount = 2;
         component.SetPosition(0,
             new Vector3((float)(1.0 + 599.0 / (data.Length - 1) * i),
@@ -56,6 +39,16 @@ public class MSDetailsDrawer : MonoBehaviour
             new Vector3((float)(1.0 + 599.0 / (data.Length - 1) * (i + 1)),
                 (float)(-(double)data[i + 1] * 2.0)));
         component.sortingOrder = 1;
+    }
+
+
+    private Color GetColorFromMs(float value)
+    {
+        value = Mathf.Abs(value);
+        if (value <= noteJudgeRange.PJ) return Color.green;
+        if (value <= noteJudgeRange.P) return Color.yellow;
+        if (value <= noteJudgeRange.G) return new Color(1f, 0.5f, 0.0f);
+        return Color.red;
     }
 
 #if UNITY_EDITOR
@@ -78,7 +71,7 @@ public class MSDetailsDrawer : MonoBehaviour
         transform.localPosition = new Vector3(
             -a * BGmsSprites[noteJudgeRangeId].texture.width / 2f / BGmsSprites[noteJudgeRangeId].pixelsPerUnit,
             transform.localPosition.y,
-            Screen.height / GetPosZ()); // z = sprite.height / 60% * (Camera.main.fov * 2)
+            GetPosZ()); // z = Screen.height / (Camera.main.fov * 2)
         List<float> msDetails = GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>().msDetails;
         while (msDetails.Count < 2)
         {

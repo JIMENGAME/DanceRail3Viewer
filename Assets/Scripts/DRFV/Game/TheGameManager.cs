@@ -260,6 +260,8 @@ namespace DRFV.Game
 
         private List<float> msDetailsList = new List<float>();
 
+        public bool enableTestifyAnomaly;
+
         void Start()
         {
             //メモリ解放
@@ -636,12 +638,6 @@ namespace DRFV.Game
                 RegisterAegleseekerAnomaly();
             }
 
-            if (storyMode && SongKeyword == "testify")
-            {
-                var (min, max, strength, count, arguments) = GenerateTestifyAnomalyCurve();
-                if (postProcess) postProcess.Init(progressManager, min, max, strength, count, arguments);
-            }
-
 
             if (sceneControlManager && !hadouTest)
             {
@@ -656,6 +652,12 @@ namespace DRFV.Game
             if (etherStrike && !hadouTest)
             {
                 etherStrike.Init(this);
+            }
+            
+            if (storyMode && SongKeyword == "testify" || enableTestifyAnomaly)
+            {
+                var (min, max, strength, count, arguments) = GenerateTestifyAnomaly();
+                if (postProcess) postProcess.Init(progressManager, min, max, strength, count, arguments);
             }
 
             _acGameover = Resources.Load<AudioClip>("SE/gameover");
@@ -2635,7 +2637,7 @@ namespace DRFV.Game
             endTime = Math.Max(lastNoteTime + GDms, BGMManager.clip.length * 1000f - 1);
         }
 
-        private (float, float, float, int, TestifyAnomalyArguments[]) GenerateTestifyAnomalyCurve()
+        private (float, float, float, int, TestifyAnomalyArguments[]) GenerateTestifyAnomaly()
         {
             TestifyAnomaly testifyAnomaly =
                 JsonConvert.DeserializeObject<TestifyAnomaly>(

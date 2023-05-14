@@ -246,8 +246,7 @@ namespace DRFV.Game
                             });
                             break;
                         case "testfy_postprocess":
-                            PostProcess postProcess = Camera.main.gameObject.GetComponent<PostProcess>();
-                            postProcess.enablePostProcess = true;
+                            theGameManager.enableTestifyAnomaly = true;
                             break;
                         default:
                             throw new ArgumentException("Invalid scenecontrol type: " + type);
@@ -281,6 +280,8 @@ namespace DRFV.Game
                 //     throw new ArgumentException("Check out at least two scenecontrol with the same time and the same type");
 
                 this.SCs = SCs.ToArray();
+                
+                if (this.SCs.Length == 0) DestroySelf();
 
                 //Gc();
             }
