@@ -110,7 +110,8 @@ namespace DRFV.Game
             //_mesh.RecalculateBounds();
         }
 
-        public void Ready(NoteData noteData, int tapSize, int flickSize, int freeFlickSize, int tapAlpha, int flickAlpha, int freeFlickAlpha)
+        public void Ready(NoteData noteData, int tapSize, int flickSize, int freeFlickSize, int tapAlpha,
+            int flickAlpha, int freeFlickAlpha)
         {
             _noteData.id = noteData.id;
             _noteData.time = noteData.time;
@@ -246,7 +247,9 @@ namespace DRFV.Game
 
             if (_noteData.mode == NoteAppearMode.Jump)
             {
-                _noteData.nsc = NoteData.NoteSC.Parse("1:0;0.9:0.31;0.8:0.59;0.7:0.81;0.6:0.95;0.5:1;0.4:0.95;0.3:0.81;0.2:0.59;0.1:0.31;0:0");
+                _noteData.nsc =
+                    NoteData.NoteSC.Parse(
+                        "1:0;0.9:0.31;0.8:0.59;0.7:0.81;0.6:0.95;0.5:1;0.4:0.95;0.3:0.81;0.2:0.59;0.1:0.31;0:0");
             }
 
             //nsc処理
@@ -723,11 +726,16 @@ namespace DRFV.Game
                 yield return null;
             }
 
+#if !UNITY_EDITOR
             float randomms = Random.Range(-gameManager.PJms * 0.9f, gameManager.PJms * 0.9f);
-            // randomms = 0;
             if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f - Mathf.Abs(randomms));
             gameManager.Judge(_noteData.kind != NoteKind.TAP ? 0 : randomms, _noteData.kind,
                 new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
+#else
+            if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f);
+            gameManager.Judge(0, _noteData.kind,
+                new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
+#endif
             if (_noteData.kind == NoteKind.TAP || _noteData.kind == NoteKind.ExTAP)
             {
                 inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width, PJColor);

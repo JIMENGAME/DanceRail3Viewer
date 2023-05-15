@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DRFV.Global;
 using DRFV.Result;
 using DRFV.Select;
@@ -85,6 +86,9 @@ public class MSDetailsDrawer : MonoBehaviour
         }
 
         data = msDetails.ToArray();
+        
+        Debug.Log("平均数：" + data.Average());
+        Debug.Log("方差：" + data.Variance());
     }
 
     // Update is called once per frame

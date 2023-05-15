@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -304,6 +305,12 @@ namespace DRFV.Global
                 6 => new NoteJudgeRange { PJ = 10, P = 10, G = 10 },
                 _ => new NoteJudgeRange { PJ = 30, P = 60, G = 100 }
             };
+        }
+
+        public static float Variance(this float[] data)
+        {
+            float average = data.Average();
+            return (float) data.Sum(x => Math.Pow(x - average, 2))/data.Length;
         }
     }
 }
