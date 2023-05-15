@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.23286882, g: 0.23664352, b: 0.27205473, a: 1}
+  m_IndirectSpecularColor: {r: 0.23254618, g: 0.23574454, b: 0.27293423, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2424,7 +2424,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1807869336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3, y: 0, z: 5.555556}
+  m_LocalPosition: {x: -3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2675,7 +2675,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.5882353}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4372,13 +4372,14 @@ MonoBehaviour:
   width: 0.02
   progress: 0
   BGmsSprites:
-  - {fileID: 21300000, guid: 51b6d8ebcec68604d83ba73dffe59daf, type: 3}
-  - {fileID: 21300000, guid: 51b6d8ebcec68604d83ba73dffe59daf, type: 3}
+  - {fileID: 21300000, guid: 334dc046ef279d9498a7e7826d86b5d1, type: 3}
+  - {fileID: 21300000, guid: 79f31d48b9769d24299c8576159e1d60, type: 3}
   - {fileID: 21300000, guid: a70a71379f73e0a4d96fb2732b5deebd, type: 3}
   - {fileID: 21300000, guid: 3736b850176dd9b44a47b64c9a0fdcc2, type: 3}
   - {fileID: 21300000, guid: ec1978b020983d143b19ba90adc5fffb, type: 3}
   - {fileID: 21300000, guid: 472906558bbd5374f94bdf3bdde29011, type: 3}
   - {fileID: 21300000, guid: aef9ef454333a4244a284c3abaa6ffc2, type: 3}
+  k: 0.6
 --- !u!212 &1807869338
 SpriteRenderer:
   m_ObjectHideFlags: 0

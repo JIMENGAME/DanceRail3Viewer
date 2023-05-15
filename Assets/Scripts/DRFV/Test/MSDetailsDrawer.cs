@@ -16,28 +16,24 @@ public class MSDetailsDrawer : MonoBehaviour
     private NoteJudgeRange noteJudgeRange;
     private Transform linesParent;
     public Sprite[] BGmsSprites;
+    private float yScale = 1f;
+    public float k = 0.6f;
 
     public void Draw(int i)
     {
         GameObject qwq = Instantiate(linePrefab, linesParent);
         LineRenderer component = qwq
             .GetComponent<LineRenderer>();
-#if UNITY_EDITOR
-        qwq.GetComponent<LineSizeDebugger>().Init(this);
-#else
         component.startWidth = component.endWidth = width;
-        Destroy(qwq.GetComponent<LineSizeDebugger>());
-#endif
-        component.useWorldSpace = false;
         component.startColor = GetColorFromMs(data[i]);
         component.endColor = GetColorFromMs(data[i + 1]);
         component.positionCount = 2;
         component.SetPosition(0,
-            new Vector3((float)(1.0 + 599.0 / (data.Length - 1) * i),
-                (float)(-(double)data[i] * 2.0)));
+            new Vector3(1.0f + 599.0f / (data.Length - 1) * i,
+                -data[i] * 2.0f * yScale));
         component.SetPosition(1,
-            new Vector3((float)(1.0 + 599.0 / (data.Length - 1) * (i + 1)),
-                (float)(-(double)data[i + 1] * 2.0)));
+            new Vector3(1.0f + 599.0f / (data.Length - 1) * (i + 1),
+                -data[i + 1] * 2.0f * yScale));
         component.sortingOrder = 1;
     }
 
@@ -64,12 +60,22 @@ public class MSDetailsDrawer : MonoBehaviour
 #endif
         noteJudgeRange = Util.GetNoteJudgeRange(noteJudgeRangeId);
         linesParent = transform.GetChild(0);
-        gameObject.GetComponent<SpriteRenderer>().sprite = BGmsSprites[noteJudgeRangeId];
-        float a = Mathf.Min(Screen.width * 0.6f / BGmsSprites[noteJudgeRangeId].texture.width,
-            Screen.height * 0.6f / BGmsSprites[noteJudgeRangeId].texture.height);
+        Sprite bGmsSprite = BGmsSprites[noteJudgeRangeId];
+        gameObject.GetComponent<SpriteRenderer>().sprite = bGmsSprite;
+        if (noteJudgeRange.G > 100)
+        {
+            yScale = 100f / noteJudgeRange.G;
+        }
+        else
+        {
+            yScale = 1;
+        }
+
+        float a = Mathf.Min(Screen.width * k * bGmsSprite.pixelsPerUnit / bGmsSprite.texture.width / 100f,
+            Screen.height * k * bGmsSprite.pixelsPerUnit / bGmsSprite.texture.height / 100f);
         transform.localScale = new Vector3(a, a, 1f);
         transform.localPosition = new Vector3(
-            -a * BGmsSprites[noteJudgeRangeId].texture.width / 2f / BGmsSprites[noteJudgeRangeId].pixelsPerUnit,
+            -a * bGmsSprite.texture.width / 2f / bGmsSprite.pixelsPerUnit,
             transform.localPosition.y,
             GetPosZ()); // z = Screen.height / (Camera.main.fov * 2)
         List<float> msDetails = GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>().msDetails;
@@ -85,21 +91,24 @@ public class MSDetailsDrawer : MonoBehaviour
     void Update()
     {
 #if UNITY_EDITOR
-        float a = Mathf.Min(Screen.width * 0.6f / BGmsSprites[noteJudgeRangeId].texture.width,
-            Screen.height * 0.6f / BGmsSprites[noteJudgeRangeId].texture.height);
+        Sprite bGmsSprite = BGmsSprites[noteJudgeRangeId];
+        float a = Mathf.Min(Screen.width * k * bGmsSprite.pixelsPerUnit / bGmsSprite.texture.width / 100f,
+            Screen.height * k * bGmsSprite.pixelsPerUnit / bGmsSprite.texture.height / 100f);
         transform.localScale = new Vector3(a, a, 1f);
         transform.localPosition = new Vector3(
-            -a * BGmsSprites[noteJudgeRangeId].texture.width / 2f / BGmsSprites[noteJudgeRangeId].pixelsPerUnit,
+            -a * bGmsSprite.texture.width / 2f / bGmsSprite.pixelsPerUnit,
             transform.localPosition.y,
             GetPosZ()); // z = Screen.height / (Camera.main.fov * 2)
 #endif
         int index = Mathf.Min(data.Length - 1,
-            (int)(progress * (double)(data.Length - 1)));
+            (int)(progress * (data.Length - 1)));
         while (Counter < index)
         {
             Draw(Counter);
             Counter++;
         }
+
+        if (Counter >= data.Length - 1) return;
 
         progress += 0.01f;
     }
