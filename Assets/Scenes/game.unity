@@ -9792,6 +9792,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: df48694d16bab0644b251c623f82bf3c, type: 3}
   - {fileID: 21300000, guid: df48694d16bab0644b251c623f82bf3c, type: 3}
   SpriteArrorLight:
+  - {fileID: 0}
   - {fileID: 21300000, guid: a6c1436c920081a4082cc9099d42d29c, type: 3}
   - {fileID: 21300000, guid: 3f79bc6cde266b44eab299db196aee9e, type: 3}
   - {fileID: 21300000, guid: 1a343e01b6e567f44bf01551534ba1cd, type: 3}
@@ -9800,6 +9801,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4a8296ebb13c9654089808433e700fa9, type: 3}
   - {fileID: 21300000, guid: 3e92ebc570e45c7448152b56e0717760, type: 3}
   SpriteArrorDark:
+  - {fileID: 0}
   - {fileID: 21300000, guid: a6c1436c920081a4082cc9099d42d29c, type: 3}
   - {fileID: 21300000, guid: 3f79bc6cde266b44eab299db196aee9e, type: 3}
   - {fileID: 21300000, guid: 1a343e01b6e567f44bf01551534ba1cd, type: 3}
@@ -10015,6 +10017,7 @@ MonoBehaviour:
   hasCustomHeight: 0
   hadouTest: 0
   lyricText: {fileID: 2025678487}
+  enableTestifyAnomaly: 0
   skillcheck: 0
   md5: 
   questionPrefab: {fileID: 6479053380049343696, guid: 30ed889ee755c0b4b8ee69b82eed420e,

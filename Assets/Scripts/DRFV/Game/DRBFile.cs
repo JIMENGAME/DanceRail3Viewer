@@ -225,7 +225,7 @@ namespace DRFV.Game
                     note.width = float.Parse(sss[4].Trim());
 
                     note.nsc = NoteData.NoteSC.Parse(sss[5].Trim());
-                    if (!NoteTypeJudge.IsTail(note.kind) && note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
+                    if (!note.IsTail() && note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
 
                     note.parent = int.Parse(sss[6].Trim());
                     note.mode = sss.Length > 7 ? ParseNoteAppearMode.ParseToMode(sss[7].Trim()) : NoteAppearMode.None;
@@ -276,7 +276,7 @@ namespace DRFV.Game
             for (var i = 0; i < notes.Count; i++)
             {
                 var note = notes[i];
-                if (NoteTypeJudge.IsTail(note.kind))
+                if (note.IsTail())
                 {
                     note.parent_time = notes[note.parent].time;
                     note.parent_ms = notes[note.parent].ms;
@@ -416,7 +416,7 @@ namespace DRFV.Game
             {
                 content = GetMd5String(),
                 id = id,
-                parent = NoteTypeJudge.IsTail(kind) ? parent : null
+                parent = this.IsTail() ? parent : null
             };
         }
 

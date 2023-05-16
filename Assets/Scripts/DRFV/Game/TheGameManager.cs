@@ -739,7 +739,7 @@ namespace DRFV.Game
             }
 
             //仅保护TAP的判定范围
-            foreach (var note in drbfile.notes.Where(note => NoteTypeJudge.IsTap(note.kind)))
+            foreach (var note in drbfile.notes.Where(note => note.IsTap()))
             {
                 foreach (var note1 in drbfile.notes)
                 {
@@ -1101,7 +1101,7 @@ namespace DRFV.Game
             {
                 for (int i = 0; i < drbfile.notes.Count; i++)
                 {
-                    if (NoteTypeJudge.IsBitCrash(drbfile.notes[i].kind))
+                    if (drbfile.notes[i].IsBitCrash())
                     {
                         int end = (int)(bgmSamples *
                                         (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
@@ -1124,7 +1124,7 @@ namespace DRFV.Game
                 for (int i = 0; i < drbfile.notes.Count; i++)
                 {
                     //写入tap音
-                    if (NoteTypeJudge.IsTapSound(drbfile.notes[i].kind))
+                    if (drbfile.notes[i].IsTapSound())
                     {
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
@@ -1140,7 +1140,7 @@ namespace DRFV.Game
                         }
                     }
 
-                    if (NoteTypeJudge.IsSlideSound(drbfile.notes[i].kind))
+                    if (drbfile.notes[i].IsSlideSound())
                     {
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
@@ -1157,7 +1157,7 @@ namespace DRFV.Game
                     }
 
                     //写入flick音
-                    if (NoteTypeJudge.IsFlick(drbfile.notes[i].kind))
+                    if (drbfile.notes[i].IsFlick())
                     {
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
@@ -1452,7 +1452,7 @@ namespace DRFV.Game
             {
                 if (!isCreated[i])
                 {
-                    if ((0.01f * ((NoteTypeJudge.IsTail(drbfile.notes[i].kind)
+                    if ((0.01f * ((drbfile.notes[i].IsTail()
                                       ? drbfile.notes[i].parent_dms
                                       : drbfile.notes[i].dms) -
                                   Distance) * drbfile.notes[i].nsc.value * NoteSpeed < 150.0f)
@@ -1462,11 +1462,11 @@ namespace DRFV.Game
                             drbfile.notes[i].ms - progressManager.NowTime < 10000.0f))
                     {
                         GameObject note = Instantiate(NotePrefab,
-                            NoteTypeJudge.IsTap(drbfile.notes[i].kind) ? notesUp.transform : notesDown.transform);
+                            drbfile.notes[i].IsTap() ? notesUp.transform : notesDown.transform);
                         note.GetComponent<SpriteRenderer>().sprite = SpriteNotes[(int)drbfile.notes[i].kind];
-                        if (NoteTypeJudge.IsTap(drbfile.notes[i].kind))
+                        if (drbfile.notes[i].IsTap())
                             note.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                        else if (NoteTypeJudge.IsFlick(drbfile.notes[i].kind))
+                        else if (drbfile.notes[i].IsFlick())
                             note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
                         note.GetComponent<TheNote>().SetGMIMG(this, inputManager);

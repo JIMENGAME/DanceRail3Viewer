@@ -113,26 +113,16 @@ namespace DRFV.Game
         public void Ready(NoteData noteData, int tapSize, int flickSize, int freeFlickSize, int tapAlpha,
             int flickAlpha, int freeFlickAlpha)
         {
-            _noteData.id = noteData.id;
-            _noteData.time = noteData.time;
-            _noteData.pos = noteData.pos;
-            _noteData.center = noteData.pos + noteData.width * 0.5f;
-            _noteData.mode = noteData.mode;
-            _noteData.nsc = noteData.nsc;
-            _noteData.ms = noteData.ms;
-            _noteData.dms = noteData.dms;
-            _noteData.width = noteData.width;
-            _noteData.kind = noteData.kind;
-            if (NoteTypeJudge.IsTail(_noteData.kind))
+            _noteData = noteData;
+            if (!_noteData.IsTail())
             {
-                _noteData.parent = noteData.parent;
-                _noteData.parent_ms = noteData.parent_ms;
-                _noteData.parent_dms = noteData.parent_dms;
-                _noteData.parent_pos = noteData.parent_pos;
-                _noteData.parent_width = noteData.parent_width;
+                _noteData.parent = 0;
+                _noteData.parent_ms = 0;
+                _noteData.parent_dms = 0;
+                _noteData.parent_pos = 0;
+                _noteData.parent_width = 0;
             }
 
-            _noteData.isJudgeTimeRangeConflicted = noteData.isJudgeTimeRangeConflicted;
             _noteData.isWaitForGD = false;
             _noteData.isWaitForPF = false;
             _noteData.WaitForSec = 0.0f;
@@ -142,10 +132,7 @@ namespace DRFV.Game
             TextMesh IdText = transform.Find("Text").GetComponent<TextMesh>();
 
             spriteRenderer.size = new Vector2(_noteData.width, 1.0f);
-            if (_noteData.kind == NoteKind.SLIDE_CENTER || _noteData.kind == NoteKind.HOLD_CENTER ||
-                _noteData.kind == NoteKind.FAKE_CENTER || _noteData.kind == NoteKind.HPass_CENTER ||
-                _noteData.kind == NoteKind.LPass_CENTER || _noteData.kind == NoteKind.MOVER_CENTER ||
-                _noteData.kind == NoteKind.STEREO_CENTER)
+            if (_noteData.IsCenter())
             {
                 spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.01f);
             }
@@ -182,55 +169,42 @@ namespace DRFV.Game
                     throw new ArgumentOutOfRangeException();
             }
 
-            switch (_noteData.kind)
+            arrorRenderer.sprite = gameManager.GetSpriteArror(_noteData.kind switch
             {
-                case NoteKind.TAP:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(0);
-                    break;
-                case NoteKind.ExTAP:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(1);
-                    break;
-                case NoteKind.FLICK_LEFT:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(2);
-                    break;
-                case NoteKind.FLICK_RIGHT:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(3);
-                    break;
-                case NoteKind.FLICK_UP:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(4);
-                    break;
-                case NoteKind.FLICK_DOWN:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(5);
-                    break;
-                case NoteKind.FLICK:
-                    arrorRenderer.sprite = gameManager.GetSpriteArror(6);
-                    break;
-            }
+                NoteKind.TAP => 1,
+                NoteKind.ExTAP => 2,
+                NoteKind.FLICK_LEFT => 3,
+                NoteKind.FLICK_RIGHT => 4,
+                NoteKind.FLICK_UP => 5,
+                NoteKind.FLICK_DOWN => 6,
+                NoteKind.FLICK => 7,
+                _ => 0
+            });
 
-            switch (_noteData.kind)
+            if (_noteData.IsTap())
             {
-                case NoteKind.TAP:
-                case NoteKind.ExTAP:
-                    arrorRenderer.transform.position += new Vector3(0, tapSize * 0.6f, 0f);
-                    arrorRenderer.transform.localScale += new Vector3(tapSize * 2, tapSize * 2, 0);
-                    arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, tapAlpha / 3f);
-                    break;
-                case NoteKind.FLICK_LEFT:
-                case NoteKind.FLICK_RIGHT:
-                case NoteKind.FLICK_UP:
-                case NoteKind.FLICK_DOWN:
-                    arrorRenderer.transform.position += new Vector3(0, flickSize * 0.6f, 0);
-                    arrorRenderer.transform.localScale += new Vector3(flickSize * 2, flickSize * 2, 0);
-                    arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, flickAlpha / 3f);
-                    break;
-                case NoteKind.FLICK:
+                arrorRenderer.transform.position += new Vector3(0, tapSize * 0.6f, 0f);
+                arrorRenderer.transform.localScale += new Vector3(tapSize * 2, tapSize * 2, 0);
+                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, tapAlpha / 3f);
+            }
+            else if (_noteData.IsFlick())
+            {
+                if (_noteData.kind == NoteKind.FLICK)
+                {
                     arrorRenderer.transform.position += new Vector3(0, freeFlickSize * 0.6f, 0);
                     arrorRenderer.transform.localScale += new Vector3(freeFlickSize * 2, freeFlickSize * 2, 0);
                     arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, freeFlickAlpha / 3f);
-                    break;
-                default:
-                    arrorRenderer.enabled = false;
-                    break;
+                }
+                else
+                {
+                    arrorRenderer.transform.position += new Vector3(0, flickSize * 0.6f, 0);
+                    arrorRenderer.transform.localScale += new Vector3(flickSize * 2, flickSize * 2, 0);
+                    arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, flickAlpha / 3f);
+                }
+            }
+            else
+            {
+                arrorRenderer.enabled = false;
             }
 
             effect_center_start = (_noteData.parent_pos + _noteData.parent_width * 0.5f) / 16.0f;
@@ -240,7 +214,7 @@ namespace DRFV.Game
             stereo_center_start = (_noteData.parent_pos + _noteData.parent_width * 0.5f - 8.0f) / 6.0f;
             stereo_center_end = (_noteData.pos + _noteData.width * 0.5f - 8.0f) / 6.0f;
 
-            if (NoteTypeJudge.IsTail(_noteData.kind))
+            if (_noteData.IsTail())
             {
                 _noteData.nsc = NoteData.NoteSC.GetCommonNSC();
             }
@@ -335,7 +309,7 @@ namespace DRFV.Game
             }
 
             //斜め処理
-            if (NoteTypeJudge.IsTail(_noteData.kind))
+            if (_noteData.IsTail())
             {
                 if (gameManager.progressManager.NowTime >= _noteData.parent_ms &&
                     gameManager.progressManager.NowTime < _noteData.ms)
@@ -382,17 +356,17 @@ namespace DRFV.Game
             };
             if (_noteData.mode == NoteAppearMode.High)
             {
-                y = NoteTypeJudge.IsTail(_noteData.kind) ? 0.0f : 0.1f + z * 0.1f;
+                y = _noteData.IsTail() ? 0.0f : 0.1f + z * 0.1f;
             }
             else
             {
-                y = NoteTypeJudge.IsTail(_noteData.kind) ? 0.0f : 0.1f;
+                y = _noteData.IsTail() ? 0.0f : 0.1f;
             }
 
             transform.position = new Vector3(x, y, z);
             spriteRenderer.size = new Vector2(_noteData.width, 1.0f + (z / 80.0f));
 
-            if (NoteTypeJudge.IsTail(_noteData.kind))
+            if (_noteData.IsTail())
             {
                 _positions = new Vector3[]
                 {
