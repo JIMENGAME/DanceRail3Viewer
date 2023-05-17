@@ -33,13 +33,6 @@ namespace DRFV.inokana
             }
         }
 
-        public void ResetTiming()
-        {
-            _stopwatch.Stop();
-            _stopwatch.Reset();
-            delay = pauseTime = startDspTime = lastUpdateDspTime = 0;
-        }
-
         public void StartTiming()
         {
             _stopwatch.Start();
@@ -63,8 +56,8 @@ namespace DRFV.inokana
             {
                 lastUpdateDspTime = currentDspTime;
                 //仅在真正dsp时间更新的时候比对
-                var differenceTime = (currentDspTime - startDspTime) * 1000f - _stopwatch.ElapsedMilliseconds;
-                if (differenceTime < -500f)
+                var differenceTime = currentDspTime - startDspTime - _stopwatch.ElapsedMilliseconds / 1000f;
+                if (differenceTime < -0.5f)
                 {
                     _runtimeError.Invoke();
 
@@ -72,21 +65,21 @@ namespace DRFV.inokana
                 }
             }
 
-            var tempT = _stopwatch.ElapsedMilliseconds - delay;
-            NowTime = (tempT < pauseTime ? pauseTime : tempT) * _pitch.Invoke();
+            var tempT = _stopwatch.ElapsedMilliseconds / 1000f - delay;
+            NowTime = (tempT < pauseTime ? pauseTime : tempT) * _pitch.Invoke() * 1000f;
         }
 
         private float pauseTime;
         private float delay;
-        public void AddStartDelay(float msdelay)
+        public void AddStartDelay(float second)
         {
-            delay += msdelay;
+            delay += second;
             pauseTime = NowTime;
         }
 
-        public void AddDelay(float msdelay)
+        public void AddDelay(float second)
         {
-            delay += msdelay;
+            delay += second;
         }
     }
 }

@@ -105,7 +105,7 @@ public class TheOffsetManager : MonoBehaviour
     {
         timingStarted = true;
         StartCoroutine(GenerateNote());
-        progressManager.AddStartDelay(100f);
+        progressManager.AddStartDelay(0.1f);
         progressManager.StartTiming();
         StartCoroutine(ListenMusic());
     }

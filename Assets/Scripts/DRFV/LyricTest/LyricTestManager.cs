@@ -185,8 +185,8 @@ namespace DRFV.LyricTest
             }
 
             start:
-            progressManager.AddDelay(NoteOffset);
-            progressManager.AddStartDelay(ReadyTime);
+            progressManager.AddDelay(NoteOffset / 1000f);
+            progressManager.AddStartDelay(ReadyTime / 1000f);
             progressManager.StartTiming();
             BGMManager.PlayScheduled(AudioSettings.dspTime + ReadyTime / 1000f);
             inited = true;
@@ -260,7 +260,7 @@ namespace DRFV.LyricTest
                 return;
             }
 
-            progressManager.AddDelay(from - time);
+            progressManager.AddDelay((from - time) / 1000f);
             BGMManager.time = time / 1000;
             bool hasLyric = false;
             for (int i = 0; i < _times.Length - 1; i++)

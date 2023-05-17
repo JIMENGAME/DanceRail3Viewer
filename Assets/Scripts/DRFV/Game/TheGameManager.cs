@@ -818,9 +818,9 @@ namespace DRFV.Game
             inited = true;
 
             OBSManager.Instance.StartRecording();
-            progressManager.AddDelay(NoteOffset);
-            progressManager.AddDelay(100f);
-            progressManager.AddStartDelay(ReadyTime);
+            progressManager.AddDelay(NoteOffset / 1000f);
+            progressManager.AddDelay(0.1f);
+            progressManager.AddStartDelay(ReadyTime / 1000f);
             yield return BeforeGameAnimation();
             if (hasTextBeforeStart) yield return ShowTextBeforeStart();
             progressManager.StartTiming();
@@ -1935,7 +1935,7 @@ namespace DRFV.Game
                 }
             }
 
-            progressManager.AddDelay(from - time);
+            progressManager.AddDelay((from - time) / 1000f);
             Distance = SCCurve.Evaluate(time);
             BGMManager.time = time / 1000;
             if (hasVideo) VideoPlayer.time = time / 1000;
@@ -2063,13 +2063,13 @@ namespace DRFV.Game
                 delta = BGMManager.time * 1000f / BGMManager.pitch;
                 BGMManager.time = 0;
                 if (hasVideo) VideoPlayer.time = 0;
-                progressManager.AddDelay(delta);
+                progressManager.AddDelay(delta / 1000f);
             }
             else
             {
                 if (BGMManager.clip.length > to / 1000f) BGMManager.time = to / 1000f;
                 if (hasVideo && VideoPlayer.length > to / 1000f) VideoPlayer.time = to / 1000f;
-                progressManager.AddDelay(delta);
+                progressManager.AddDelay(delta / 1000f);
             }
 
             for (int i = 0; i < isCreated.Count; i++)
