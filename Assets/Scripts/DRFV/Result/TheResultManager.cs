@@ -56,6 +56,12 @@ namespace DRFV.Result
 
         public GameObject AccDetailsPanel, AccDetails;
 
+        public TextMeshProUGUI TMPRank;
+
+        public TMP_ColorGradient[] TCGRank;
+
+        // [Range(0, 17)] public int RankDebug;
+
         private static Color orange = new(1f, 0.5f, 0.5f),
             greyShadow = new(0.9f, 0.9f, 0.9f, 0.6f),
             greenShadow = new(0f, 0.3f, 0f, 0.6f),
@@ -65,9 +71,15 @@ namespace DRFV.Result
         // Start is called before the first frame update
         void Start()
         {
-        AccountInfo.Instance.UpdateAccountPanel();
+// #if UNITY_EDITOR
+//             TMPRank.colorGradientPreset = TCGRank[RankDebug];
+//             TMPRank.text = RankToRankText(RankDebug);
+//             return;
+// #endif
+            AccountInfo.Instance.UpdateAccountPanel();
             SongDataContainer songDataContainer = GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>();
-            ResultDataContainer resultDataContainer = GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>();
+            ResultDataContainer resultDataContainer =
+                GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>();
             float realScore = GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL
                 ? 3000000.0f *
                 (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
@@ -75,7 +87,8 @@ namespace DRFV.Result
                 : resultDataContainer.SCORE;
             int thisScore = Mathf.RoundToInt(realScore);
             bool isValid =
-                resultDataContainer.PERFECT_J + resultDataContainer.PERFECT + resultDataContainer.GOOD + resultDataContainer.MISS ==
+                resultDataContainer.PERFECT_J + resultDataContainer.PERFECT + resultDataContainer.GOOD +
+                resultDataContainer.MISS ==
                 resultDataContainer.noteTotal;
             if (!isValid)
             {
@@ -231,7 +244,15 @@ namespace DRFV.Result
             JudgeInput.text = "JUDGE: " + songDataContainer.NoteJugeRangeLabel;
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
         }
-        
+
+// #if UNITY_EDITOR
+//         private void Update()
+//         {
+//             TMPRank.colorGradientPreset = TCGRank[RankDebug];
+//             TMPRank.text = RankToRankText(RankDebug);
+//         }
+// #endif
+
         public void ChangeVisibilityAccDetails(bool value)
         {
             AccDetailsPanel.SetActive(value);
@@ -266,6 +287,32 @@ namespace DRFV.Result
         {
             CheckDataContainers.CleanResultDataContainer();
             FadeManager.Instance.LoadScene("game");
+        }
+
+        private string RankToRankText(int rank)
+        {
+            return rank switch
+            {
+                0 => "F",
+                1 => "D",
+                2 => "C",
+                3 => "B",
+                4 => "B\n +",
+                5 => "A",
+                6 => "A\n +",
+                7 => "A\n A",
+                8 => "A\n A\n  +",
+                9 => "A\n A\n  A",
+                10 => "A\n A\n  A\n   +",
+                11 => "S",
+                12 => "S\n +",
+                13 => "S\n S",
+                14 => "S\n S\n  +",
+                15 => "S\n S\n  S",
+                16 => "S\n S\n  S\n   +",
+                17 => "A\n P\n  J",
+                _ => "Error: Unknown Rank"
+            };
         }
     }
 
