@@ -4647,8 +4647,8 @@ GameObject:
   - component: {fileID: 1613078097}
   - component: {fileID: 1613078098}
   m_Layer: 0
-  m_Name: GameObject
-  m_TagString: ResultData
+  m_Name: FakeResultDataContainer
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5759,8 +5759,8 @@ GameObject:
   - component: {fileID: 2079067151}
   - component: {fileID: 2079067150}
   m_Layer: 0
-  m_Name: GameObject (1)
-  m_TagString: SongData
+  m_Name: FakeSongDataContainer
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
