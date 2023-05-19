@@ -59,8 +59,7 @@ namespace DRFV.Result
         public TextMeshProUGUI TMPRank;
 
         public TMP_ColorGradient[] TCGRank;
-
-        // [Range(0, 17)] public int RankDebug;
+        public TMP_ColorGradient TCGError;
 
         private static Color orange = new(1f, 0.5f, 0.5f),
             greyShadow = new(0.9f, 0.9f, 0.9f, 0.6f),
@@ -71,15 +70,16 @@ namespace DRFV.Result
         // Start is called before the first frame update
         void Start()
         {
-// #if UNITY_EDITOR
-//             TMPRank.colorGradientPreset = TCGRank[RankDebug];
-//             TMPRank.text = RankToRankText(RankDebug);
-//             return;
-// #endif
             AccountInfo.Instance.UpdateAccountPanel();
             SongDataContainer songDataContainer = GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>();
             ResultDataContainer resultDataContainer =
                 GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>();
+            // songDataContainer.songData ??= new TheSelectManager.SongData
+            // {
+            //     songName = "5Y+q5Zug5L2g5aSq576O",
+            //     songArtist = "U1dJTi1T",
+            //     cover = null
+            // };
             float realScore = GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL
                 ? 3000000.0f *
                 (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
@@ -90,9 +90,19 @@ namespace DRFV.Result
                 resultDataContainer.PERFECT_J + resultDataContainer.PERFECT + resultDataContainer.GOOD +
                 resultDataContainer.MISS ==
                 resultDataContainer.noteTotal;
-            if (!isValid)
+            int rank = Util.ScoreToRank(thisScore);
+            bool scoreError = rank < 0;
+            TMPRank.colorGradientPreset = rank > 0 ? TCGRank[rank] : TCGError;
+            TMPRank.text = RankToRankText(rank);
+            if (!isValid || scoreError)
             {
-                NotificationBarManager.Instance.Show("警告：游玩成绩Note数量之和不等于谱面物量，成绩作废");
+                if (!isValid)
+                {
+                    NotificationBarManager.Instance.Show("警告：游玩成绩Note数量之和不等于谱面物量，成绩作废");
+                } else if (scoreError)
+                {
+                    NotificationBarManager.Instance.Show("警告：分数异常，成绩作废");
+                }
                 scoreDelta.text = "成绩出错";
                 tNewScore.SetActive(false);
             }
@@ -197,7 +207,12 @@ namespace DRFV.Result
             Fast.text = "FAST" + resultDataContainer.FAST + "";
             Slow.text = "SLOW" + resultDataContainer.SLOW + "";
             MaxCombo.text = resultDataContainer.MAXCOMBO + "/" + resultDataContainer.noteTotal;
-            switch (resultDataContainer.endType)
+            if (scoreError)
+            {
+                endType.text = "UNKNOWN";
+                endType.color = Color.grey;
+                endTypeShadow.Color = greyShadow;
+            } else switch (resultDataContainer.endType)
             {
                 case EndType.GAME_OVER:
                     endType.text = "GAMEOVER";
@@ -244,14 +259,6 @@ namespace DRFV.Result
             JudgeInput.text = "JUDGE: " + songDataContainer.NoteJugeRangeLabel;
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
         }
-
-// #if UNITY_EDITOR
-//         private void Update()
-//         {
-//             TMPRank.colorGradientPreset = TCGRank[RankDebug];
-//             TMPRank.text = RankToRankText(RankDebug);
-//         }
-// #endif
 
         public void ChangeVisibilityAccDetails(bool value)
         {
@@ -311,7 +318,7 @@ namespace DRFV.Result
                 15 => "S\n S\n  S",
                 16 => "S\n S\n  S\n   +",
                 17 => "A\n P\n  J",
-                _ => "Error: Unknown Rank"
+                _ => "E\n R\n  O"
             };
         }
     }
@@ -337,4 +344,26 @@ namespace DRFV.Result
             hp = 114.514f;
         }
     }
+    //
+    // public enum Grade
+    // {
+    //     F = 0,
+    //     D = 1,
+    //     C = 2,
+    //     B = 3,
+    //     B_Plus = 4,
+    //     A = 5,
+    //     A_Plus = 6,
+    //     AA = 7,
+    //     AA_Plus = 8,
+    //     AAA = 9,
+    //     AAA_Plus = 10,
+    //     S = 11,
+    //     S_Plus = 12,
+    //     SS = 13,
+    //     SS_Plus = 14,
+    //     SSS = 15,
+    //     SSS_Plus = 16,
+    //     APJ = 17
+    // }
 }

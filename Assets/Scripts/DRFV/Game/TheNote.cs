@@ -114,6 +114,7 @@ namespace DRFV.Game
             int flickAlpha, int freeFlickAlpha)
         {
             _noteData = noteData;
+            _noteData.center = _noteData.pos + _noteData.width * 0.5f;
             if (!_noteData.IsTail())
             {
                 _noteData.parent = 0;
@@ -450,7 +451,7 @@ namespace DRFV.Game
 
                                     judge_flag = true;
                                     DistroyThis();
-                                    goto caseEnd;
+                                    break;
                                 }
 
                                 if (_noteData.isWaitForPF &&
@@ -463,7 +464,7 @@ namespace DRFV.Game
                                         new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
                                     judge_flag = true;
                                     DistroyThis();
-                                    goto caseEnd;
+                                    break;
                                 }
 
                                 if (inputManager.GetTrigger(_noteData.pos, _noteData.pos + _noteData.width))
@@ -529,8 +530,6 @@ namespace DRFV.Game
                                     DistroyThis();
                                 }
                             }
-
-                            caseEnd:
                             break;
                         case NoteKind.ExTAP:
                             if (inputManager.GetTrigger(_noteData.pos, _noteData.pos + _noteData.width))

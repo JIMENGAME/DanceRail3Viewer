@@ -220,8 +220,7 @@ namespace DRFV.Global
         }
         private static string ParseScore(int score, int maxDigit, bool usePadding)
         {
-            if (score < 0) score *= -1;
-            string input = score + "";
+            string input = Mathf.Abs(score) + "";
             string output = "";
             while (usePadding && input.Length < maxDigit)
             {
@@ -240,7 +239,7 @@ namespace DRFV.Global
                 l++;
             }
 
-            return output;
+            return (score < 0 ? "-" : "") + output;
         }
 
         public static Color HexToColor(string hex)
@@ -311,6 +310,52 @@ namespace DRFV.Global
         {
             float average = data.Average();
             return (float) data.Sum(x => Math.Pow(x - average, 2))/data.Length;
+        }
+
+        public static int ScoreToRank(int score)
+        {
+            switch (score)
+            {
+                case < 0:
+                case > 3000000:
+                    return -1;
+                case < 2000000:
+                    return 0; // F
+                case < 2100000:
+                    return 1; // D
+                case < 2200000:
+                    return 2; // C
+                case < 2300000:
+                    return 3; // B
+                case < 2400000:
+                    return 4; // B+
+                case < 2450000:
+                    return 5; // A
+                case < 2500000:
+                    return 6; // A+
+                case < 2550000:
+                    return 7; // AA
+                case < 2600000:
+                    return 8; // AA+
+                case < 2650000:
+                    return 9; // AAA
+                case < 2700000:
+                    return 10; // AAA+
+                case < 2750000:
+                    return 11; // S
+                case < 2800000:
+                    return 12; // S+
+                case < 2850000:
+                    return 13; // SS
+                case < 2900000:
+                    return 14; // SS+
+                case < 2950000:
+                    return 15; // SSS
+                case < 3000000:
+                    return 16; // SSS+
+                default:
+                    return 17; // APJ
+            }
         }
     }
 }
