@@ -572,7 +572,6 @@ namespace DRFV.Game
             try
             {
                 drbfile = DRBFile.Parse(s);
-                drbfile.GenerateAttributesOnPlay();
             }
             catch (Exception e)
             {
@@ -616,10 +615,7 @@ namespace DRFV.Game
                     }
                 }
             }
-
-            BPMCurve = drbfile.BPMCurve;
-            //SC
-            SCCurve = drbfile.SCCurve;
+            
             // 特判
             if (SongKeyword.Equals("hello") && SongHard == 13 && !hadouTest)
             {
@@ -627,7 +623,12 @@ namespace DRFV.Game
                 drbfile.noteWeightCount = 0;
                 GenerateHelloWinnerNotes();
             }
+            
+            drbfile.GenerateAttributesOnPlay();
 
+            BPMCurve = drbfile.BPMCurve;
+            //SC
+            SCCurve = drbfile.SCCurve;
             noteTotal = drbfile.notes.Count;
 
             //SCORE初期化
