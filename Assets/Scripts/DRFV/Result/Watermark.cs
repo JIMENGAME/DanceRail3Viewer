@@ -1,3 +1,4 @@
+using DRFV.Select;
 using TMPro;
 using UnityEngine;
 
@@ -5,8 +6,13 @@ using UnityEngine;
 public class Watermark : MonoBehaviour
 {
     [SerializeField] private string normal, aprilFool;
+
     void Start()
     {
-        gameObject.GetComponent<TextMeshProUGUI>().text = RuntimeSettingsManager.Instance.isAprilFool ? aprilFool : normal;
+        gameObject.GetComponent<TextMeshProUGUI>().text =
+            RuntimeSettingsManager.Instance.isAprilFool || GameObject.FindWithTag("SongData")
+                .GetComponent<SongDataContainer>().songData.songArtist.Contains("ぺぽよ")
+                ? aprilFool
+                : normal;
     }
 }
