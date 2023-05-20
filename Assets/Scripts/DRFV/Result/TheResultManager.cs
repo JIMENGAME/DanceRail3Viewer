@@ -28,8 +28,8 @@ namespace DRFV.Result
         public TextMeshProUGUI Miss;
         public TextMeshProUGUI Fast;
         public TextMeshProUGUI Slow;
-        public Text MaxCombo;
-        public Text scoreDelta;
+        public TextMeshProUGUI MaxCombo;
+        public TextMeshProUGUI scoreDelta;
         public GameObject tNewScore;
         public GameObject skillCheckIndicator;
         public GameObject mirrorIndicator;
