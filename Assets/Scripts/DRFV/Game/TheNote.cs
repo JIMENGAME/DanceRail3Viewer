@@ -699,7 +699,7 @@ namespace DRFV.Game
                 yield return null;
             }
 
-#if !UNITY_EDITOR
+#if true
             float randomms = Random.Range(-gameManager.PJms * 0.9f, gameManager.PJms * 0.9f);
             if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f - Mathf.Abs(randomms));
             gameManager.Judge(_noteData.kind != NoteKind.TAP ? 0 : randomms, _noteData.kind,

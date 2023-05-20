@@ -10,8 +10,6 @@ public class SizeFitter : MonoBehaviour
 
     public float originalSizeXParent, originalSizeYParent;
 
-    public float k;
-    
     private RectTransform rectTransform;
     // Start is called before the first frame update
     void Start()
@@ -24,8 +22,8 @@ public class SizeFitter : MonoBehaviour
         originalPosX = anchoredPosition.x;
         originalPosY = anchoredPosition.y;
         Vector2 vector2 = ((RectTransform) transform.parent).sizeDelta;
-        rectTransform.sizeDelta = new Vector2(vector2.x * originalSizeX / originalSizeXParent, vector2.y * originalSizeY / originalSizeYParent);
-        rectTransform.anchoredPosition = new Vector2(vector2.x * originalPosX / originalSizeXParent, vector2.y * originalPosY / originalSizeYParent);
+        rectTransform.sizeDelta = new Vector2(originalSizeX == 0 ? 0 : vector2.x * originalSizeX / originalSizeXParent, originalSizeY == 0 ? 0 : vector2.y * originalSizeY / originalSizeYParent);
+        rectTransform.anchoredPosition = new Vector2(originalPosX == 0 ? 0 : vector2.x * originalPosX / originalSizeXParent, originalPosY == 0 ? 0 : vector2.y * originalPosY / originalSizeYParent);
     }
 
 #if UNITY_EDITOR
@@ -33,8 +31,8 @@ public class SizeFitter : MonoBehaviour
     void Update()
     {
         Vector2 vector2 = ((RectTransform) transform.parent).sizeDelta;
-        rectTransform.sizeDelta = new Vector2(vector2.x * originalSizeX / originalSizeXParent, vector2.y * originalSizeY / originalSizeYParent);
-        rectTransform.anchoredPosition = new Vector2(vector2.x * originalPosX / originalSizeXParent, vector2.y * originalPosY / originalSizeYParent);
+        rectTransform.sizeDelta = new Vector2(originalSizeX == 0 ? 0 : vector2.x * originalSizeX / originalSizeXParent, originalSizeY == 0 ? 0 : vector2.y * originalSizeY / originalSizeYParent);
+        rectTransform.anchoredPosition = new Vector2(originalPosX == 0 ? 0 : vector2.x * originalPosX / originalSizeXParent, originalPosY == 0 ? 0 : vector2.y * originalPosY / originalSizeYParent);
     }
 #endif
 }

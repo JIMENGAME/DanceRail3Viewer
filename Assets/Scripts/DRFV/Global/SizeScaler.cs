@@ -7,20 +7,20 @@ public class SizeScaler : MonoBehaviour
 
     private RectTransform rectTransform;
 
+    public float scaleX, scaleY;
+
 
     // Start is called before the first frame update
     void Awake()
     {
         rectTransform = gameObject.GetComponent<RectTransform>();
-        var localScale = rectTransform.localScale;
-        rectTransform.sizeDelta = new Vector2(Screen.width / localScale.x * k, Screen.height / localScale.y * k);
+        rectTransform.sizeDelta = new Vector2(scaleX == 0 ? 0 : Screen.width / scaleY * k, scaleY == 0 ? 0 : Screen.height / scaleY * k);
     }
 
 #if UNITY_EDITOR
     private void Update()
     {
-        var localScale = rectTransform.localScale;
-        rectTransform.sizeDelta = new Vector2(Screen.width / localScale.x * k, Screen.height / localScale.y * k);
+        rectTransform.sizeDelta = new Vector2(scaleX == 0 ? 0 : Screen.width / scaleY * k, scaleY == 0 ? 0 : Screen.height / scaleY * k);
     }
 #endif
 }

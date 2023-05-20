@@ -612,8 +612,8 @@ MonoBehaviour:
   HPAcc: {fileID: 1255885410}
   SongSpeed: {fileID: 1939257144}
   JudgeInput: {fileID: 1984953262}
-  AccDetailsPanel: {fileID: 1065220250}
-  AccDetails: {fileID: 1807869336}
+  AccDetailsPanel: {fileID: 432967058}
+  MSDetailsDrawer: {fileID: 1807869337}
   TMPRank: {fileID: 2081027823}
   TCGRank:
   - {fileID: 11400000, guid: a87ba2b45190b484d9a064d0a58552fb, type: 2}
@@ -635,6 +635,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 668014086cd14504d82615e046142377, type: 2}
   - {fileID: 11400000, guid: bb4951c69a40ed04a9621805d9e2f710, type: 2}
   TCGError: {fileID: 11400000, guid: b38e3557f3520d54794c881db9170a1f, type: 2}
+  accAnimTimeStart: 0.2
+  accAnimTimeEnd: 0.1
+  accAnimEase: 3
 --- !u!114 &168959023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1446,7 +1449,7 @@ RectTransform:
   m_GameObject: {fileID: 432967058}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 2, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 756843881}
@@ -1509,6 +1512,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   k: 0.8
+  scaleX: 2
+  scaleY: 2
 --- !u!1 &462719786
 GameObject:
   m_ObjectHideFlags: 0
@@ -3274,7 +3279,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalSizeXParent: 768
   originalSizeYParent: 432
-  k: 0.4
 --- !u!1 &758334084
 GameObject:
   m_ObjectHideFlags: 0
@@ -3774,7 +3778,7 @@ Transform:
   m_GameObject: {fileID: 1807869336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -3, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 312028031}
@@ -5622,13 +5626,14 @@ GameObject:
   - component: {fileID: 1613078094}
   - component: {fileID: 1613078097}
   - component: {fileID: 1613078098}
+  - component: {fileID: 1613078099}
   m_Layer: 0
   m_Name: FakeResultDataContainer
-  m_TagString: Untagged
+  m_TagString: ResultData
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1613078090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5789,6 +5794,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDone: 0
+--- !u!114 &1613078099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613078088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25ca04cf66b9af24cb80523cd3855d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  img: {fileID: 2800000, guid: 0e939e3eecf062341836ee2ab79c8e1c, type: 3}
+  width: 16
+  height: 9
+  mask: {fileID: 0}
 --- !u!1 &1666724675
 GameObject:
   m_ObjectHideFlags: 0
@@ -6793,11 +6814,11 @@ GameObject:
   - component: {fileID: 2079067150}
   m_Layer: 0
   m_Name: FakeSongDataContainer
-  m_TagString: Untagged
+  m_TagString: SongData
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2079067150
 MonoBehaviour:
   m_ObjectHideFlags: 0

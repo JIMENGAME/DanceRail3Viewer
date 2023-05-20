@@ -198,20 +198,20 @@ namespace DRFV.Global
             }
         }
 
-        public static string ParseScore(int score)
+        public static string ParseScore(int score, int? maxDigit = null, bool? usePadding = null)
         {
-            return ParseScore(score, GlobalSettings.CurrentSettings.ScoreType);
+            return ParseScore(score, GlobalSettings.CurrentSettings.ScoreType, maxDigit, usePadding);
         }
 
-        public static string ParseScore(int score, SCORE_TYPE type)
+        public static string ParseScore(int score, SCORE_TYPE type, int? maxDigit = null, bool? usePadding = null)
         {
-            return ParseScore(score, type switch
+            return ParseScore(score, maxDigit ?? type switch
             {
                 SCORE_TYPE.ORIGINAL => 7,
                 SCORE_TYPE.ARCAEA => 8,
                 SCORE_TYPE.PHIGROS => 7,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            }, type switch {
+            }, usePadding ?? type switch {
                 SCORE_TYPE.ORIGINAL => false,
                 SCORE_TYPE.ARCAEA => false,
                 SCORE_TYPE.PHIGROS => true,

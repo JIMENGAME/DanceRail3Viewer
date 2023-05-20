@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using DG.Tweening;
 using DRFV.Enums;
 using DRFV.Global;
 using DRFV.inokana;
@@ -55,12 +56,16 @@ namespace DRFV.Result
 
         public Text JudgeInput;
 
-        public GameObject AccDetailsPanel, AccDetails;
+        public GameObject AccDetailsPanel;
+        public MSDetailsDrawer MSDetailsDrawer;
 
         public TextMeshProUGUI TMPRank;
 
         public TMP_ColorGradient[] TCGRank;
         public TMP_ColorGradient TCGError;
+        
+        public float accAnimTimeStart, accAnimTimeEnd;
+        public Ease accAnimEase;
 
         private static Color orange = new(1f, 0.5f, 0.5f),
             greyShadow = new(0.9f, 0.9f, 0.9f, 0.6f),
@@ -137,9 +142,9 @@ namespace DRFV.Result
                 }
                 else
                 {
-                    scoreDelta.text = Util.ParseScore(resultDataOld.score) + "  " +
+                    scoreDelta.text = Util.ParseScore(resultDataOld.score, null, true) + "  " +
                                       (resultDataOld.score <= thisScore ? "+" : "-") +
-                                      Util.ParseScore(thisScore - resultDataOld.score);
+                                      Util.ParseScore(thisScore - resultDataOld.score, null, true);
                     tNewScore.SetActive(newRecord);
                 }
 
@@ -209,8 +214,8 @@ namespace DRFV.Result
             Perfect.text = resultDataContainer.PERFECT + "";
             Good.text = resultDataContainer.GOOD + "";
             Miss.text = resultDataContainer.MISS + "";
-            Fast.text = "FAST" + resultDataContainer.FAST + "";
-            Slow.text = "SLOW" + resultDataContainer.SLOW + "";
+            Fast.text = "FAST" + resultDataContainer.FAST.ToString("0000") + "";
+            Slow.text = "SLOW" + resultDataContainer.SLOW.ToString("0000") + "";
             MaxCombo.text = resultDataContainer.MAXCOMBO + "/" + resultDataContainer.noteTotal;
             if (scoreError)
             {
@@ -271,13 +276,36 @@ namespace DRFV.Result
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
             SongSpeed.text = $"SPEED: {songDataContainer.songSpeed:N1}x";
             JudgeInput.text = "JUDGE: " + songDataContainer.NoteJugeRangeLabel;
+            MSDetailsDrawer.Init();
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
         }
 
+        private bool accIsAnimating = false;
+
         public void ChangeVisibilityAccDetails(bool value)
         {
-            AccDetailsPanel.SetActive(value);
-            AccDetails.SetActive(value);
+            if (accIsAnimating) return;
+            accIsAnimating = true;
+            StartCoroutine(ChangeVisibilityAccDetailsC(value));
+        }
+
+        private IEnumerator ChangeVisibilityAccDetailsC(bool value)
+        {
+            if (value)
+            {
+                AccDetailsPanel.transform.parent.gameObject.SetActive(true);
+                MSDetailsDrawer.gameObject.SetActive(true);
+                AccDetailsPanel.transform.DOScaleY(2, accAnimTimeStart).SetEase(accAnimEase);
+                yield return MSDetailsDrawer.ChangeState(true, accAnimTimeStart, accAnimEase);
+            }
+            else
+            {
+                AccDetailsPanel.transform.DOScaleY(0, accAnimTimeEnd).SetEase(accAnimEase);
+                yield return MSDetailsDrawer.ChangeState(false, accAnimTimeEnd, accAnimEase);
+                AccDetailsPanel.transform.parent.gameObject.SetActive(false);
+                MSDetailsDrawer.gameObject.SetActive(false);
+            }
+            accIsAnimating = false;
         }
 
         private IEnumerator StopOBS()
