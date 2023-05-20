@@ -1465,9 +1465,10 @@ namespace DRFV.Game
                             drbfile.notes[i].IsTap() ? notesUp.transform : notesDown.transform);
                         note.GetComponent<SpriteRenderer>().sprite = SpriteNotes[(int)drbfile.notes[i].kind];
                         if (drbfile.notes[i].IsTap())
-                            note.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                            note.GetComponent<SpriteRenderer>().sortingOrder = 3;
                         else if (drbfile.notes[i].IsFlick())
-                            note.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                            note.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                        else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
                         note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
                         note.GetComponent<TheNote>().Ready(drbfile.notes[i], tapSize, flickSize, freeFlickSize, tapAlpha, flickAlpha, freeFlickAlpha);

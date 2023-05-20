@@ -20,7 +20,7 @@ namespace DRFV.Game
             {
                 foreach(DRAWMESH dm in Que)
                 {
-                    Graphics.DrawMesh(dm.mesh, Vector3.zero, Quaternion.identity, dm.material, 10);
+                    Graphics.DrawMesh(dm.mesh, Vector3.zero, Quaternion.identity, dm.material, 9);
                 }
                 Que.Clear();
             }

@@ -18,16 +18,16 @@ namespace DRFV.Result
 {
     public class TheResultManager : MonoBehaviour
     {
-        public Text score;
-        public TMP_Text Tier;
+        public TextMeshProUGUI score;
+        public TextMeshProUGUI Tier;
         public Image TierBackground;
 
-        public Text PerfectJ;
-        public Text Perfect;
-        public Text Good;
-        public Text Miss;
-        public Text Fast;
-        public Text Slow;
+        public TextMeshProUGUI PerfectJ;
+        public TextMeshProUGUI Perfect;
+        public TextMeshProUGUI Good;
+        public TextMeshProUGUI Miss;
+        public TextMeshProUGUI Fast;
+        public TextMeshProUGUI Slow;
         public Text MaxCombo;
         public Text scoreDelta;
         public GameObject tNewScore;
@@ -36,6 +36,7 @@ namespace DRFV.Result
         public GameObject hardIndicator;
         public GameObject easyIndicator;
         public GameObject hardbarIndicator;
+        public GameObject noModImage;
 
         public Text endType;
         public TrueShadow endTypeShadow;
@@ -74,12 +75,14 @@ namespace DRFV.Result
             SongDataContainer songDataContainer = GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>();
             ResultDataContainer resultDataContainer =
                 GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>();
-            // songDataContainer.songData ??= new TheSelectManager.SongData
-            // {
-            //     songName = "5Y+q5Zug5L2g5aSq576O",
-            //     songArtist = "U1dJTi1T",
-            //     cover = null
-            // };
+#if UNITY_EDITOR
+            songDataContainer.songData ??= new TheSelectManager.SongData
+            {
+                songName = "5Y+q5Zug5L2g5aSq576O",
+                songArtist = "U1dJTi1T",
+                cover = null
+            };
+#endif
             float realScore = GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL
                 ? 3000000.0f *
                 (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
@@ -99,10 +102,12 @@ namespace DRFV.Result
                 if (!isValid)
                 {
                     NotificationBarManager.Instance.Show("警告：游玩成绩Note数量之和不等于谱面物量，成绩作废");
-                } else if (scoreError)
+                }
+                else if (scoreError)
                 {
                     NotificationBarManager.Instance.Show("警告：分数异常，成绩作废");
                 }
+
                 scoreDelta.text = "成绩出错";
                 tNewScore.SetActive(false);
             }
@@ -212,42 +217,51 @@ namespace DRFV.Result
                 endType.text = "UNKNOWN";
                 endType.color = Color.grey;
                 endTypeShadow.Color = greyShadow;
-            } else switch (resultDataContainer.endType)
-            {
-                case EndType.GAME_OVER:
-                    endType.text = "GAMEOVER";
-                    endType.color = Color.grey;
-                    endTypeShadow.Color = greyShadow;
-                    break;
-                case EndType.FAILED:
-                    endType.text = "FAILED";
-                    endType.color = Color.grey;
-                    endTypeShadow.Color = greyShadow;
-                    break;
-                case EndType.COMPLETED:
-                    endType.text = "COMPLETED";
-                    endType.color = Color.green;
-                    endTypeShadow.Color = greenShadow;
-                    break;
-                case EndType.FULL_COMBO:
-                    endType.text = "FULL COMBO";
-                    endType.color = orange;
-                    endTypeShadow.Color = orangeShadow;
-                    break;
-                case EndType.ALL_PERFECT:
-                    endType.text = "ALL PERFECT";
-                    endType.color = Color.yellow;
-                    endTypeShadow.Color = yellowShadow;
-                    break;
-                case EndType.AUTO_PLAY:
-                    endType.text = "AUTO PLAY";
-                    endType.color = Color.yellow;
-                    endTypeShadow.Color = yellowShadow;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
+            else
+                switch (resultDataContainer.endType)
+                {
+                    case EndType.GAME_OVER:
+                        endType.text = "GAMEOVER";
+                        endType.color = Color.grey;
+                        endTypeShadow.Color = greyShadow;
+                        break;
+                    case EndType.FAILED:
+                        endType.text = "FAILED";
+                        endType.color = Color.grey;
+                        endTypeShadow.Color = greyShadow;
+                        break;
+                    case EndType.COMPLETED:
+                        endType.text = "COMPLETED";
+                        endType.color = Color.green;
+                        endTypeShadow.Color = greenShadow;
+                        break;
+                    case EndType.FULL_COMBO:
+                        endType.text = "FULL COMBO";
+                        endType.color = orange;
+                        endTypeShadow.Color = orangeShadow;
+                        break;
+                    case EndType.ALL_PERFECT:
+                        endType.text = "ALL PERFECT";
+                        endType.color = Color.yellow;
+                        endTypeShadow.Color = yellowShadow;
+                        break;
+                    case EndType.AUTO_PLAY:
+                        endType.text = "AUTO PLAY";
+                        endType.color = Color.yellow;
+                        endTypeShadow.Color = yellowShadow;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
+            bool isNoMod = true;
+            isNoMod = isNoMod && !songDataContainer.useSkillCheck;
+            isNoMod = isNoMod && !songDataContainer.isMirror;
+            isNoMod = isNoMod && !songDataContainer.isHard;
+            isNoMod = isNoMod && songDataContainer.barType != BarType.EASY;
+            isNoMod = isNoMod && songDataContainer.barType != BarType.HARD;
+            noModImage.SetActive(isNoMod);
             skillCheckIndicator.SetActive(songDataContainer.useSkillCheck);
             mirrorIndicator.SetActive(songDataContainer.isMirror);
             hardIndicator.SetActive(songDataContainer.isHard);
