@@ -31,13 +31,13 @@ namespace DRFV.Init
         {
             Util.Init();
             DateTime now = DateTime.Now;
-            bool isAprilFool = now.Month == 4 && now.Day == 1;
+            RuntimeSettingsManager.Instance.isAprilFool = now.Month == 4 && now.Day == 1;
 #if UNITY_EDITOR
-            isAprilFool = aprilFoolTest || isAprilFool;
+            RuntimeSettingsManager.Instance.isAprilFool = aprilFoolTest || RuntimeSettingsManager.Instance.isAprilFool;
 #endif
-            entryMask.color = isAprilFool ? CameraColor : MaskColor;
-            Camera.main.backgroundColor = isAprilFool ? MaskColor : CameraColor;
-            if (isAprilFool) music.clip = aprilFoolClip;
+            entryMask.color = RuntimeSettingsManager.Instance.isAprilFool ? CameraColor : MaskColor;
+            Camera.main.backgroundColor = RuntimeSettingsManager.Instance.isAprilFool ? MaskColor : CameraColor;
+            if (RuntimeSettingsManager.Instance.isAprilFool) music.clip = aprilFoolClip;
             StartCoroutine(LoadEntry());
         }
 
