@@ -143,7 +143,7 @@ namespace DRFV.Result
                 else
                 {
                     scoreDelta.text = Util.ParseScore(resultDataOld.score, null, true) + "  " +
-                                      (resultDataOld.score <= thisScore ? "+" : "-") +
+                                      (resultDataOld.score <= thisScore ? "+" : "") +
                                       Util.ParseScore(thisScore - resultDataOld.score, null, true);
                     tNewScore.SetActive(newRecord);
                 }
