@@ -1,9 +1,12 @@
 using DRFV.Select;
 
-public class HadouTestDataContainer : SongDataContainer
+namespace DRFV.HadouTestPreload
 {
-    public override int GetContainerType()
+    public class HadouTestDataContainer : SongDataContainer
     {
-        return SongDataContainerType.HADOU_TEST;
+        public override int GetContainerType()
+        {
+            return SongDataContainerType.HADOU_TEST;
+        }
     }
 }

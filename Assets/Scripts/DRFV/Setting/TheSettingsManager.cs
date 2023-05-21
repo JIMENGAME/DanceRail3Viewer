@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using DRFV.Global;
+using DRFV.Global.Components;
+using DRFV.Global.Managers;
 using DRFV.JsonData;
 using DRFV.Language;
 using DRFV.Login;

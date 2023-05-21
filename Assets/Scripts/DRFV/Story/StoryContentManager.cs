@@ -3,6 +3,7 @@ using DG.Tweening;
 using DRFV.Enums;
 using DRFV.Game;
 using DRFV.Global;
+using DRFV.Global.Managers;
 using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json.Linq;

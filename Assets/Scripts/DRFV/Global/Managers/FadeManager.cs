@@ -4,7 +4,7 @@ using DRFV.Setting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DRFV.Global
+namespace DRFV.Global.Managers
 {
     public class FadeManager : MonoSingleton<FadeManager>
     {

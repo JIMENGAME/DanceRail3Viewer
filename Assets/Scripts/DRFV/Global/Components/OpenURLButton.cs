@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DRFV.Global
+namespace DRFV.Global.Components
 {
     public class OpenURLButton : MonoBehaviour
     {

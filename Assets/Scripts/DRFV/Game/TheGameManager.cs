@@ -12,6 +12,7 @@ using DRFV.Game.HPBars;
 using DRFV.Game.SceneControl;
 using DRFV.Game.Side;
 using DRFV.Global;
+using DRFV.Global.Managers;
 using DRFV.inokana;
 using DRFV.Result;
 using DRFV.Select;
@@ -2698,16 +2699,16 @@ namespace DRFV.Game
             item = temp;
         }
     }
-}
-
-class CurveAndBool
-{
-    public AnimationCurve curve;
-    public bool b;
-
-    public CurveAndBool(AnimationCurve curve, bool b)
+    
+    class CurveAndBool
     {
-        this.curve = curve;
-        this.b = b;
+        public AnimationCurve curve;
+        public bool b;
+
+        public CurveAndBool(AnimationCurve curve, bool b)
+        {
+            this.curve = curve;
+            this.b = b;
+        }
     }
 }

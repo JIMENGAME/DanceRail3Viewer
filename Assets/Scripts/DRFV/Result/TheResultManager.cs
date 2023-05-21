@@ -4,6 +4,7 @@ using System.Text;
 using DG.Tweening;
 using DRFV.Enums;
 using DRFV.Global;
+using DRFV.Global.Managers;
 using DRFV.inokana;
 using DRFV.Login;
 using DRFV.Select;

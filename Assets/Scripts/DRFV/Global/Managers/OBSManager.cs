@@ -3,7 +3,7 @@ using DRFV.inokana;
 using DRFV.Setting;
 using OBSWebsocketDotNet;
 
-namespace DRFV.Global
+namespace DRFV.Global.Managers
 {
     public class OBSManager : MonoSingleton<OBSManager>
     {

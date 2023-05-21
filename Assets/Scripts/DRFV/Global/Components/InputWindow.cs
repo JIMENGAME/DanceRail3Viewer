@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DRFV.Global
+namespace DRFV.Global.Components
 {
     public class InputWindow : MonoBehaviour
     {

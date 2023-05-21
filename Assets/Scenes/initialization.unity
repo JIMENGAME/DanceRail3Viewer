@@ -1436,6 +1436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 645d0cb06037cf740a3093355be7b609, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAprilFool: 0
   hadouTest: 0
   removedStory: 1
 --- !u!1 &1726918188

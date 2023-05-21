@@ -9,6 +9,7 @@ using DG.Tweening;
 using DRFV.Enums;
 using DRFV.Game;
 using DRFV.Global;
+using DRFV.Global.Managers;
 using DRFV.inokana;
 using DRFV.JsonData;
 using DRFV.Language;
@@ -763,12 +764,12 @@ namespace DRFV.Select
             currentSettings.NoteJudgeRange = value;
         }
     }
-}
-
-public enum SELECT_ORDER
-{
-    SONGLIST = 0,
-    KEYWORD = 1,
-    NAME = 2,
-    ARTIST = 3
+        
+    public enum SELECT_ORDER
+    {
+        SONGLIST = 0,
+        KEYWORD = 1,
+        NAME = 2,
+        ARTIST = 3
+    }
 }

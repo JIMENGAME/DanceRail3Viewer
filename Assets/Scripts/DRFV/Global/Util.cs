@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +9,7 @@ using System.Text.RegularExpressions;
 using DRFV.Enums;
 using DRFV.JsonData;
 using DRFV.Game;
+using DRFV.inokana;
 using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json;
@@ -20,19 +20,24 @@ namespace DRFV.Global
 {
     public static class Util
     {
-        public static Dictionary<string, EndType> endTypeFromShort = new();
-        public static Regex keywordRegex = new("[^a-z0-9-_]");
+        public static readonly Dictionary<string, EndType> endTypeFromShort = new();
         private static NoteJudgeRange[] noteJudgeRanges;
+        public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
 
         public static void Init()
         {
-            endTypeFromShort = DeserializeObject<Dictionary<string, EndType>>("end_type_short");
-            noteJudgeRanges = DeserializeObject<NoteJudgeRange[]>("note_judge_range");
-        }
-
-        private static T? DeserializeObject<T>(string path)
-        {
-            return JsonConvert.DeserializeObject<T>(Resources.Load<TextAsset>(path).text);
+            var endTypeShortJObject = JObject.Parse(Resources.Load<TextAsset>("end_type_short").text);
+            foreach (KeyValuePair<string,JToken?> valuePair in endTypeShortJObject)
+            {
+                endTypeFromShort.Add(valuePair.Key, valuePair.Value.ToObject<EndType>());
+            }
+            JArray noteJudgeRangesJArray = JArray.Parse(Resources.Load<TextAsset>("note_judge_range").text);
+            noteJudgeRanges = new NoteJudgeRange[noteJudgeRangesJArray.Count];
+            for (var i = 0; i < noteJudgeRangesJArray.Count; i++)
+            {
+                var token = noteJudgeRangesJArray[i];
+                noteJudgeRanges[i] = token.ToObject<NoteJudgeRange>();
+            }
         }
 
         public static bool[] GenerateNewBoolArray(int length)
@@ -301,27 +306,25 @@ namespace DRFV.Global
 
         public static NoteJudgeRange GetNoteJudgeRange(int id)
         {
-            return id switch
+            if (id == -1) return new NoteJudgeRange { displayName = "HADOU TEST", PJ = 30, P = 60, G = 100 };
+
+            if (id < -1 || id > noteJudgeRanges.Length)
             {
-                0 => new NoteJudgeRange { displayName = "Cytus2", PJ = 70, P = 200, G = 400 },
-                1 => new NoteJudgeRange { displayName = "Phigros", PJ = 40, P = 80, G = 160 },
-                2 => new NoteJudgeRange { displayName = "DR3 NORMAL", PJ = 30, P = 60, G = 100 },
-                3 => new NoteJudgeRange { displayName = "Arcaea", PJ = 25, P = 50, G = 100 },
-                4 => new NoteJudgeRange { displayName = "DR3 HARD", PJ = 20, P = 40, G = 60 },
-                5 => new NoteJudgeRange { displayName = "DR3 EXTREME", PJ = 10, P = 20, G = 30 },
-                6 => new NoteJudgeRange { displayName = "DR3 EXTREME+", PJ = 10, P = 10, G = 10 },
-                _ => new NoteJudgeRange { displayName = "", PJ = 30, P = 60, G = 100 }
-            };
+                NotificationBarManager.Instance.Show("出了奇怪的错");
+                throw new ArgumentOutOfRangeException("NoteRange");
+            }
+
+            return noteJudgeRanges[id];
         }
 
         public static int GetNoteJudgeRangeLimit()
         {
-            return 2;
+            return 3;
         }
 
         public static int GetNoteJudgeRangeCount()
         {
-            return 7;
+            return noteJudgeRanges.Length;
         }
 
         public static float Variance(this float[] data)

@@ -1,5 +1,6 @@
 using System;
 using DRFV.Global;
+using DRFV.Global.Managers;
 using DRFV.Login;
 using Newtonsoft.Json.Linq;
 using UnityEngine;

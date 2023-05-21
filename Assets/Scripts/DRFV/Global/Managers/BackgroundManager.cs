@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DRFV.Global
+namespace DRFV.Global.Managers
 {
     public class BackgroundManager : MonoBehaviour
     {
