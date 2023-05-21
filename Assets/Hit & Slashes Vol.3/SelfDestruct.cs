@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 
-
-public class SelfDestruct : MonoBehaviour
+namespace Hit_Slashes_Vol._3
 {
-    public float selfdestruct_in = 4; // Setting this to 0 means no selfdestruct.
-
-    void Start()
+    public class SelfDestruct : MonoBehaviour
     {
-        if (selfdestruct_in != 0)
+        public float selfdestruct_in = 4; // Setting this to 0 means no selfdestruct.
+
+        void Start()
         {
-            Destroy(gameObject, selfdestruct_in);
+            if (selfdestruct_in != 0)
+            {
+                Destroy(gameObject, selfdestruct_in);
+            }
         }
     }
 }

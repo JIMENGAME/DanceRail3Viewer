@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   music: {fileID: 0}
-  selectedDiff: -1
+  selectedDiff: 9
   isAuto: 0
   isMirror: 0
   useSkillCheck: 0
@@ -67,5 +67,5 @@ MonoBehaviour:
   FCAPIndicator: 0
   barType: 0
   songSpeed: 0
-  NoteJudgeRange: 2
+  NoteJudgeRange: 3
   gameSide: 1

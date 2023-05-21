@@ -64,7 +64,7 @@ namespace DRFV.Result
 
         public TMP_ColorGradient[] TCGRank;
         public TMP_ColorGradient TCGError;
-        
+
         public float accAnimTimeStart, accAnimTimeEnd;
         public Ease accAnimEase;
 
@@ -74,7 +74,9 @@ namespace DRFV.Result
             orangeShadow = new(0.3f, 0.15f, 0.15f, 0.6f),
             yellowShadow = new(0.3f, 0.2764706f, 0.004705882f, 0.6f);
 
+#if UNITY_EDITOR
         private bool debugMode = false;
+#endif
 
         // Start is called before the first frame update
         void Start()
@@ -88,8 +90,8 @@ namespace DRFV.Result
             {
                 songDataContainer.songData = new TheSelectManager.SongData
                 {
-                    songName = "5Y+q5Zug5L2g5aSq576O",
-                    songArtist = "U1dJTi1T",
+                    songName = "44Gu44GE44KN",
+                    songArtist = "44G644G944KI",
                     cover = Resources.Load<Sprite>("DemoAvatar")
                 };
                 debugMode = true;
@@ -126,7 +128,8 @@ namespace DRFV.Result
             }
             else if (resultDataContainer.endType != EndType.AUTO_PLAY &&
                      !songDataContainer.useSkillCheck &&
-                     songDataContainer.barType != BarType.EASY && songDataContainer.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit())
+                     songDataContainer.barType != BarType.EASY &&
+                     songDataContainer.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit())
             {
                 string key = "SongScore_" +
                              resultDataContainer.md5;
@@ -188,7 +191,7 @@ namespace DRFV.Result
             }
             else
             {
-                scoreDelta.text = "";
+                scoreDelta.text = "unrecorded score";
                 tNewScore.SetActive(false);
             }
 
@@ -318,6 +321,7 @@ namespace DRFV.Result
                 AccDetailsPanel.transform.parent.gameObject.SetActive(false);
                 MSDetailsDrawer.gameObject.SetActive(false);
             }
+
             accIsAnimating = false;
         }
 

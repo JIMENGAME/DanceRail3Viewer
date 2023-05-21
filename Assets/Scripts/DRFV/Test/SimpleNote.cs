@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 
 namespace DRFV.Test
@@ -78,3 +79,4 @@ namespace DRFV.Test
         }
     }
 }
+#endif

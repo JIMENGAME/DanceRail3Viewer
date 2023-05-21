@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using DRFV.Game;
 using DRFV.Game.HPBars;
 using DRFV.inokana;
@@ -9,11 +10,9 @@ namespace DRFV.Test
     {
         public Transform simpleNotes;
 
-        [SerializeField]
-        private Material[] _materials;
+        [SerializeField] private Material[] _materials;
 
-        [Range(1, 30)]
-        public int noteSpeed = 12;
+        [Range(1, 30)] public int noteSpeed = 12;
 
         public HPManager HpManager;
 
@@ -36,10 +35,11 @@ namespace DRFV.Test
             {
                 if (simpleNotes.GetChild(i).TryGetComponent(out SimpleNote simpleNote))
                 {
-                    Graphics.DrawMesh(simpleNote.GetMesh(), Vector3.zero, Quaternion.identity, _materials[Mathf.Abs(simpleNote.materialId) % _materials.Length], 9);
-
+                    Graphics.DrawMesh(simpleNote.GetMesh(), Vector3.zero, Quaternion.identity,
+                        _materials[Mathf.Abs(simpleNote.materialId) % _materials.Length], 9);
                 }
             }
         }
     }
 }
+#endif
