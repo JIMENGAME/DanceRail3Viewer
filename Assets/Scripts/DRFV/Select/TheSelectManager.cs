@@ -154,7 +154,8 @@ namespace DRFV.Select
                     keyword = songlistItem.keyword,
                     songName = songlistItem.name,
                     songArtist = songlistItem.artist,
-                    bpm = songlistItem.bpm
+                    bpm = songlistItem.bpm,
+                    preview = songlistItem.preview
                 };
 
                 if (!Directory.Exists(StaticResources.Instance.dataPath + "songs/" +
@@ -533,7 +534,7 @@ namespace DRFV.Select
 
             public Sprite cover;
 
-            [JsonProperty("preview")] public float preview = -1;
+            [JsonProperty("preview")] public float preview;
 
 
             private string FromBase64(string value)

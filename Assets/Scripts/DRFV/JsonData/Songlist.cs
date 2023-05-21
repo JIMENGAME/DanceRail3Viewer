@@ -17,5 +17,7 @@ namespace DRFV.JsonData
         [JsonProperty("artist")] public string artist = "";
 
         [JsonProperty("bpm")] public string bpm = "";
+
+        [JsonProperty("preview")] public float preview = -1;
     }
 }
