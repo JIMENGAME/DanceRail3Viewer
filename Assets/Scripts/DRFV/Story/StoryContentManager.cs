@@ -283,7 +283,6 @@ namespace DRFV.Story
             storyChallengeContainer.barType = BarType.DEFAULT;
             storyChallengeContainer.songSpeed = songSpeed;
             storyChallengeContainer.NoteJudgeRange = noteJudgeRange;
-            storyChallengeContainer.NoteJugeRangeLabel = "";
             storyChallengeContainer.unlock = unlock;
             storyChallengeContainer.gameSide = gameSide;
             storyChallengeContainer.hasCustomMover = hasCustomMover;

@@ -1568,7 +1568,7 @@ namespace DRFV.Game
                 resultDataContainer.MISS = miss;
                 resultDataContainer.FAST = fast;
                 resultDataContainer.SLOW = slow;
-                resultDataContainer.SCORE = Score;
+                resultDataContainer.SCORE = Mathf.RoundToInt(Score);
                 resultDataContainer.MAXCOMBO = MaxCombo;
                 resultDataContainer.md5 = md5;
                 resultDataContainer.bgColor = EndBgColor;
@@ -1664,7 +1664,6 @@ namespace DRFV.Game
             storyChallengeContainer.barType = BarType.HARD;
             storyChallengeContainer.songSpeed = 1.0f;
             storyChallengeContainer.NoteJudgeRange = 3;
-            storyChallengeContainer.NoteJugeRangeLabel = "";
             storyChallengeContainer.unlock = unlock;
             storyChallengeContainer.gameSide = gameSide;
             storyChallengeContainer.speed = NoteSpeed;

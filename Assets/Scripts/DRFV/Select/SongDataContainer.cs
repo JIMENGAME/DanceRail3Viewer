@@ -1,7 +1,5 @@
 using DRFV.Enums;
-using DRFV.Game;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DRFV.Select
 {
@@ -43,9 +41,7 @@ namespace DRFV.Select
         public float songSpeed;
 
         public int NoteJudgeRange;
-
-        public string NoteJugeRangeLabel;
-
+        
         public GameSide gameSide;
 
         public virtual int GetContainerType()
@@ -56,6 +52,7 @@ namespace DRFV.Select
 
     public struct NoteJudgeRange
     {
+        public string displayName;
         public float PJ;
         public float P;
         public float G;

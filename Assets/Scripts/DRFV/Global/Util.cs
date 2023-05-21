@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,18 +20,21 @@ namespace DRFV.Global
 {
     public static class Util
     {
-        public static readonly Dictionary<string, EndType> endTypeFromShort = new();
+        public static Dictionary<string, EndType> endTypeFromShort = new();
         public static Regex keywordRegex = new("[^a-z0-9-_]");
-        
+        private static NoteJudgeRange[] noteJudgeRanges;
+
         public static void Init()
         {
-            endTypeFromShort.Add("fd", EndType.FAILED);
-            endTypeFromShort.Add("cp", EndType.COMPLETED);
-            endTypeFromShort.Add("fc", EndType.FULL_COMBO);
-            endTypeFromShort.Add("ap", EndType.ALL_PERFECT);
-            endTypeFromShort.Add("apj", EndType.ALL_PERFECT);
+            endTypeFromShort = DeserializeObject<Dictionary<string, EndType>>("end_type_short");
+            noteJudgeRanges = DeserializeObject<NoteJudgeRange[]>("note_judge_range");
         }
-        
+
+        private static T? DeserializeObject<T>(string path)
+        {
+            return JsonConvert.DeserializeObject<T>(Resources.Load<TextAsset>(path).text);
+        }
+
         public static bool[] GenerateNewBoolArray(int length)
         {
             bool[] bools = new bool[length];
@@ -103,7 +107,7 @@ namespace DRFV.Global
             DRBFile drbFile = DRBFile.Parse(s);
             return drbFile.GetMD5();
         }
-        
+
         public static string GetMD5(string path)
         {
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
@@ -211,16 +215,19 @@ namespace DRFV.Global
                 SCORE_TYPE.ARCAEA => 8,
                 SCORE_TYPE.PHIGROS => 7,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            }, usePadding ?? type switch {
+            }, usePadding ?? type switch
+            {
                 SCORE_TYPE.ORIGINAL => false,
                 SCORE_TYPE.ARCAEA => false,
                 SCORE_TYPE.PHIGROS => true,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             });
         }
+
         private static string ParseScore(int score, int maxDigit, bool usePadding)
         {
-            string input = Mathf.Abs(score) + "";
+            string input = score + "";
+            if (score < 0) input = input.Substring(1);
             string output = "";
             while (usePadding && input.Length < maxDigit)
             {
@@ -275,8 +282,8 @@ namespace DRFV.Global
                     throw new ArgumentException("Illegal Hex Color: " + hex);
             }
         }
-        
-                        
+
+
         public static Color ModifyAlpha(this Color color, float alpha)
         {
             return new Color(color.r, color.g, color.b, alpha);
@@ -296,20 +303,31 @@ namespace DRFV.Global
         {
             return id switch
             {
-                0 => new NoteJudgeRange { PJ = 70, P = 200, G = 400 },
-                1 => new NoteJudgeRange { PJ = 40, P = 80, G = 160 },
-                3 => new NoteJudgeRange { PJ = 25, P = 50, G = 100 },
-                4 => new NoteJudgeRange { PJ = 20, P = 40, G = 60 },
-                5 => new NoteJudgeRange { PJ = 10, P = 20, G = 30 },
-                6 => new NoteJudgeRange { PJ = 10, P = 10, G = 10 },
-                _ => new NoteJudgeRange { PJ = 30, P = 60, G = 100 }
+                0 => new NoteJudgeRange { displayName = "Cytus2", PJ = 70, P = 200, G = 400 },
+                1 => new NoteJudgeRange { displayName = "Phigros", PJ = 40, P = 80, G = 160 },
+                2 => new NoteJudgeRange { displayName = "DR3 NORMAL", PJ = 30, P = 60, G = 100 },
+                3 => new NoteJudgeRange { displayName = "Arcaea", PJ = 25, P = 50, G = 100 },
+                4 => new NoteJudgeRange { displayName = "DR3 HARD", PJ = 20, P = 40, G = 60 },
+                5 => new NoteJudgeRange { displayName = "DR3 EXTREME", PJ = 10, P = 20, G = 30 },
+                6 => new NoteJudgeRange { displayName = "DR3 EXTREME+", PJ = 10, P = 10, G = 10 },
+                _ => new NoteJudgeRange { displayName = "", PJ = 30, P = 60, G = 100 }
             };
+        }
+
+        public static int GetNoteJudgeRangeLimit()
+        {
+            return 2;
+        }
+
+        public static int GetNoteJudgeRangeCount()
+        {
+            return 7;
         }
 
         public static float Variance(this float[] data)
         {
             float average = data.Average();
-            return (float) data.Sum(x => Math.Pow(x - average, 2))/data.Length;
+            return (float)data.Sum(x => Math.Pow(x - average, 2)) / data.Length;
         }
 
         public static int ScoreToRank(int score)

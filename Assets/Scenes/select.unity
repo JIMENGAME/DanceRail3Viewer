@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.23267937, g: 0.23589972, b: 0.2730402, a: 1}
+  m_IndirectSpecularColor: {r: 0.2331076, g: 0.23627803, b: 0.27289605, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -10961,7 +10961,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: DR3 NORMAL
+  m_Text: 
 --- !u!222 &1293997726
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12873,6 +12873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -15434,21 +15435,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 2
   m_Options:
-    m_Options:
-    - m_Text: Cytus2
-      m_Image: {fileID: 0}
-    - m_Text: Phigros
-      m_Image: {fileID: 0}
-    - m_Text: DR3 NORMAL
-      m_Image: {fileID: 0}
-    - m_Text: Arcaea
-      m_Image: {fileID: 0}
-    - m_Text: DR3 HARD
-      m_Image: {fileID: 0}
-    - m_Text: DR3 EXTREME
-      m_Image: {fileID: 0}
-    - m_Text: DR3 EXTREME+
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

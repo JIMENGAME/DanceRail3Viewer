@@ -79,6 +79,15 @@ namespace DRFV.Select
 #endif
             HPBarTypeDropdown.value = currentSettings.HPBarType;
             SongSpeedDropdown.value = currentSettings.SongSpeed;
+            int noteJudgeRangeCount = Util.GetNoteJudgeRangeCount();
+            while (JudgeTimeDropdown.options.Count < noteJudgeRangeCount)
+            {
+                JudgeTimeDropdown.options.Add(new Dropdown.OptionData());
+            }
+            for (int i = 0; i < noteJudgeRangeCount; i++)
+            {
+                JudgeTimeDropdown.options[i].text = Util.GetNoteJudgeRange(i).displayName;
+            }
             JudgeTimeDropdown.value = currentSettings.NoteJudgeRange;
             atSelect = true;
             mainObject.anchoredPosition = selectPos;
@@ -712,7 +721,6 @@ namespace DRFV.Select
                 _ => 1.0f
             };
             songDataContainer.NoteJudgeRange = JudgeTimeDropdown.value;
-            songDataContainer.NoteJugeRangeLabel = JudgeTimeDropdown.options[songDataContainer.NoteJudgeRange].text;
             songDataContainer.gameSide = (GameSide)currentSettings.GameSide;
             InputManager.TOUCH_MAX = 20;
             DontDestroyOnLoad(go);

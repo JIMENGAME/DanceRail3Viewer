@@ -73,6 +73,8 @@ namespace DRFV.Result
             orangeShadow = new(0.3f, 0.15f, 0.15f, 0.6f),
             yellowShadow = new(0.3f, 0.2764706f, 0.004705882f, 0.6f);
 
+        private bool debugMode = false;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -81,17 +83,22 @@ namespace DRFV.Result
             ResultDataContainer resultDataContainer =
                 GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>();
 #if UNITY_EDITOR
-            songDataContainer.songData ??= new TheSelectManager.SongData
+            if (songDataContainer.songData == null)
             {
-                songName = "5Y+q5Zug5L2g5aSq576O",
-                songArtist = "U1dJTi1T",
-                cover = null
-            };
+                songDataContainer.songData = new TheSelectManager.SongData
+                {
+                    songName = "5Y+q5Zug5L2g5aSq576O",
+                    songArtist = "U1dJTi1T",
+                    cover = Resources.Load<Sprite>("DemoAvatar")
+                };
+                debugMode = true;
+                Util.Init();
+            }
 #endif
-            float realScore = GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL
-                ? 3000000.0f *
-                (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
-                 resultDataContainer.GOOD / 3f) / resultDataContainer.noteTotal
+            int realScore = GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL
+                ? Mathf.RoundToInt((3000000.0f *
+                    (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
+                     resultDataContainer.GOOD / 3f) / resultDataContainer.noteTotal))
                 : resultDataContainer.SCORE;
             int thisScore = Mathf.RoundToInt(realScore);
             bool isValid =
@@ -113,12 +120,12 @@ namespace DRFV.Result
                     NotificationBarManager.Instance.Show("警告：分数异常，成绩作废");
                 }
 
-                scoreDelta.text = "成绩出错";
+                scoreDelta.text = "Score Error";
                 tNewScore.SetActive(false);
             }
             else if (resultDataContainer.endType != EndType.AUTO_PLAY &&
                      !songDataContainer.useSkillCheck &&
-                     songDataContainer.barType != BarType.EASY && songDataContainer.NoteJudgeRange > 1)
+                     songDataContainer.barType != BarType.EASY && songDataContainer.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit())
             {
                 string key = "SongScore_" +
                              resultDataContainer.md5;
@@ -137,7 +144,7 @@ namespace DRFV.Result
 
                 if (GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL)
                 {
-                    scoreDelta.text = "非原版计分方式";
+                    scoreDelta.text = "Non-origin score";
                     tNewScore.SetActive(false);
                 }
                 else
@@ -209,7 +216,7 @@ namespace DRFV.Result
 
             Title.text = songDataContainer.songData.songName;
             Artist.text = songDataContainer.songData.songArtist;
-            score.text = Util.ParseScore(Mathf.RoundToInt(resultDataContainer.SCORE));
+            score.text = Util.ParseScore(resultDataContainer.SCORE);
             PerfectJ.text = resultDataContainer.PERFECT_J + "";
             Perfect.text = resultDataContainer.PERFECT + "";
             Good.text = resultDataContainer.GOOD + "";
@@ -256,6 +263,11 @@ namespace DRFV.Result
                         endType.color = Color.yellow;
                         endTypeShadow.Color = yellowShadow;
                         break;
+                    case EndType.AXIUM_CRISIS:
+                        endType.text = "AXIUM SCRISIS";
+                        endType.color = Color.yellow;
+                        endTypeShadow.Color = yellowShadow;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -275,7 +287,7 @@ namespace DRFV.Result
             HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "   " + "ACC: " +
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
             SongSpeed.text = $"SPEED: {songDataContainer.songSpeed:N1}x";
-            JudgeInput.text = "JUDGE: " + songDataContainer.NoteJugeRangeLabel;
+            JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(songDataContainer.NoteJudgeRange).displayName;
             MSDetailsDrawer.Init();
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
         }
@@ -363,6 +375,14 @@ namespace DRFV.Result
                 _ => "E\n R\n  O"
             };
         }
+
+#if UNITY_EDITOR
+        private void Update()
+        {
+            if (!debugMode) return;
+            if (Input.GetKeyDown(KeyCode.R)) Start();
+        }
+#endif
     }
 
     public class ResultData

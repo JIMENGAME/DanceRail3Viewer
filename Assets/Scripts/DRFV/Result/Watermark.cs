@@ -15,4 +15,10 @@ public class Watermark : MonoBehaviour
                 ? aprilFool
                 : normal;
     }
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R)) Start();
+    }
+#endif
 }

@@ -93,7 +93,6 @@ public class HadouTestPreloadManager : MonoBehaviour
             _ => 1.0f
         };
         songDataContainer.NoteJudgeRange = 2;
-        songDataContainer.NoteJugeRangeLabel = "HADOU TEST";
         songDataContainer.gameSide = (GameSide)currentSettings.GameSide;
         DontDestroyOnLoad(go);
 
