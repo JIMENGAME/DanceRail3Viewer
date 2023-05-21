@@ -8,7 +8,7 @@ namespace Hit_Slashes_Vol._3
 
         void Start()
         {
-            if (selfdestruct_in != 0)
+            if (selfdestruct_in > 0)
             {
                 Destroy(gameObject, selfdestruct_in);
             }
