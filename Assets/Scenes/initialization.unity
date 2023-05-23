@@ -1438,7 +1438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAprilFool: 0
   hadouTest: 0
-  removedStory: 1
+  removedStory: 0
 --- !u!1 &1726918188
 GameObject:
   m_ObjectHideFlags: 0

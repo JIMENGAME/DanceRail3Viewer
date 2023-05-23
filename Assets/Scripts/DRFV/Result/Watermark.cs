@@ -1,4 +1,7 @@
 using DRFV.Global.Managers;
+#if !UNITY_EDITOR
+using DRFV.Select;
+#endif
 using TMPro;
 using UnityEngine;
 
