@@ -335,48 +335,53 @@ namespace DRFV.Global
 
         public static int ScoreToRank(int score)
         {
-            switch (score)
+            return score switch
             {
-                case < 0:
-                case > 3000000:
-                    return -1;
-                case < 2000000:
-                    return 0; // F
-                case < 2100000:
-                    return 1; // D
-                case < 2200000:
-                    return 2; // C
-                case < 2300000:
-                    return 3; // B
-                case < 2400000:
-                    return 4; // B+
-                case < 2450000:
-                    return 5; // A
-                case < 2500000:
-                    return 6; // A+
-                case < 2550000:
-                    return 7; // AA
-                case < 2600000:
-                    return 8; // AA+
-                case < 2650000:
-                    return 9; // AAA
-                case < 2700000:
-                    return 10; // AAA+
-                case < 2750000:
-                    return 11; // S
-                case < 2800000:
-                    return 12; // S+
-                case < 2850000:
-                    return 13; // SS
-                case < 2900000:
-                    return 14; // SS+
-                case < 2950000:
-                    return 15; // SSS
-                case < 3000000:
-                    return 16; // SSS+
-                default:
-                    return 17; // APJ
+                < 0 => -1,
+                > 3000000 => -1,
+                < 2000000 => 0, // F
+                < 2100000 => 1, // D
+                < 2200000 => 2, // C
+                < 2300000 => 3, // B
+                < 2400000 => 4, // B+
+                < 2450000 => 5, // A
+                < 2500000 => 6, // A+
+                < 2550000 => 7, // AA
+                < 2600000 => 8, // AA+
+                < 2650000 => 9, // AAA
+                < 2700000 => 10, // AAA+
+                < 2750000 => 11, // S
+                < 2800000 => 12, // S+
+                < 2850000 => 13, // SS
+                < 2900000 => 14, // SS+
+                < 2950000 => 15, // SSS
+                < 3000000 => 16, // SSS+
+                _ => 17
+            };
+        }
+        
+        public static string BoolArrayToString(bool[] arr)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (bool b in arr)
+            {
+                sb.Append(b ? "T" : "F");
             }
+
+            return sb.ToString();
+        }
+
+        public static bool[] StringToBoolArray(string str)
+        {
+            bool[] result = new bool[str.Length];
+            for (int i = 0; i < result.Length; i++)
+            {
+                string q = str.Substring(i, 1);
+                result[i] = q == "T";
+                if (!result[i] && q != "F") Debug.LogWarning("警告：不合法的参数");
+            }
+
+            return result;
         }
     }
 }

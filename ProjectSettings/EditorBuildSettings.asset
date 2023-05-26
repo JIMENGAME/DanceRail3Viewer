@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/offset.unity
     guid: 4247eacea1677424db08d3be10c3bb88
+  - enabled: 1
+    path: Assets/Scenes/coinshop.unity
+    guid: 83ff72d4ae845814aaefcf0c5b4184b8
   m_configObjects: {}

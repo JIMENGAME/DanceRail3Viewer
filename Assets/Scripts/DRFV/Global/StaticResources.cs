@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using DRFV.CoinShop.Data;
 using DRFV.inokana;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using Application = UnityEngine.Application;
 
@@ -11,6 +14,8 @@ namespace DRFV.Global
     {
         public string dataPath;
         public string cachePath;
+        private static string localizationId = "zh-cn";
+        public ShopItem[] shopItems;
 
         // Start is called before the first frame update
         protected override void OnAwake()
@@ -34,6 +39,47 @@ namespace DRFV.Global
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_WIN
             File.SetAttributes(cachePath, FileAttributes.Hidden);
 #endif
+                JArray shopItemsJArray= JArray.Parse(Resources.Load<TextAsset>("SHOP/shop_items_list").text);
+                List<ShopItem> shopItemList = new List<ShopItem>();
+                for (var i = 0; i < shopItemsJArray.Count; i++)
+                {
+                    ShopItem _data = shopItemsJArray[i].ToObject<ShopItem>();
+                    _data.id = i;
+                    var a = _data.type switch
+                    {
+                        ShopItem.ShopItemType.ITEM => "ITEMS",
+                        ShopItem.ShopItemType.SONG => "SONGS",
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                    _data.icon = Resources.Load<Sprite>($"SHOP/{a}/{_data.spritePath}");
+                    _data.enabled = true;
+                    if (_data.type == ShopItem.ShopItemType.SONG)
+                    {
+                        _data.enabled &= (PlayerPrefs.GetInt("unlock_" + _data.keyword, 0) == 0);
+                    }
+
+                    if (_data.condition.HasFlag(ShopItem.ShopItemConditions.PRIME_REQUIRED))
+                    {
+                        _data.enabled &= true;
+                        // TODO: 会员系统
+                    }
+
+                    if (_data.condition.HasFlag(ShopItem.ShopItemConditions.TIER_REQUIRED) && _data.tier != null)
+                    {
+                        _data.enabled &= _data.tier <= int.MaxValue;
+                        // TODO: 等级系统
+                    }
+
+                    if (_data.condition.HasFlag(ShopItem.ShopItemConditions.EVENT_REQUIRED) &&
+                        !string.IsNullOrEmpty(_data.eventKey))
+                    {
+                        _data.enabled &= true;
+                        // TODO: 活动系统
+                    }
+                    shopItemList.Add(_data);
+                }
+
+                shopItems = shopItemList.ToArray();
             }
         }
 
@@ -77,30 +123,6 @@ namespace DRFV.Global
                     Application.Quit();
                     throw new ArgumentException("Unsupported System");
             }
-        }
-
-        public static string BoolArrayToString(bool[] arr)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (bool b in arr)
-            {
-                sb.Append(b ? "T" : "F");
-            }
-
-            return sb.ToString();
-        }
-
-        public static bool[] StringToBoolArray(string str)
-        {
-            bool[] result = new bool[str.Length];
-            for (int i = 0; i < result.Length; i++)
-            {
-                string q = str.Substring(i, 1);
-                result[i] = q == "T";
-                if (!result[i] && q != "F") Debug.LogWarning("警告：不合法的参数");
-            }
-
-            return result;
         }
     }
 }

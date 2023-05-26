@@ -96,6 +96,12 @@ namespace DRFV.inokana
         {
             IntoScene("offset");
         }
+        
+        [MenuItem("Scene Tools/Into Coin Shop")]
+        private static void IntoCoinShop()
+        {
+            IntoScene("coinshop");
+        }
 
         private static void IntoScene(string name)
         {

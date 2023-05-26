@@ -1,7 +1,10 @@
 #if UNITY_EDITOR
+using System.IO;
+using System.Text;
 using DRFV.Game;
 using DRFV.Game.HPBars;
 using DRFV.inokana;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace DRFV.Test
@@ -19,6 +22,12 @@ namespace DRFV.Test
         // Start is called before the first frame update
         protected override void OnAwake()
         {
+            using (FileStream fileStream = new FileStream("E:\\Users\\Administrator\\WebstormProjects\\DanceRail3Viewer\\Temp\\1.json", FileMode.Open, FileAccess.Read))
+            {
+                byte[] qwq = new byte[fileStream.Length];
+                fileStream.Read(qwq);
+                JArray jArray = JArray.Parse(Encoding.UTF8.GetString(qwq));
+            }
             HpManager.Init(new HPBarDefault());
             DrawMesh();
         }

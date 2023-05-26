@@ -1,0 +1,107 @@
+[
+    {
+        "type": 0,
+        "name": "迫真会员卡（1天）",
+        "info": "会员制DR3FV",
+        "price": 180,
+        "spritePath": "prime_card",
+        "keyword": "prime_card_1d",
+        "condition": 0
+    },
+    {
+        "type": 0,
+        "name": "迫真会员卡（7天）",
+        "info": "会员制DR3FV",
+        "price": 1180,
+        "spritePath": "prime_card",
+        "keyword": "prime_card_7d",
+        "condition": 0
+    },
+    {
+        "type": 0,
+        "name": "迫真会员卡（30天）",
+        "info": "会员制DR3FV",
+        "price": 3880,
+        "spritePath": "prime_card",
+        "keyword": "prime_card_30d",
+        "condition": 0
+    },
+    {
+        "type": 0,
+        "name": "迫真会员卡（90天）",
+        "info": "会员制DR3FV",
+        "price": 9880,
+        "spritePath": "prime_card",
+        "keyword": "prime_card_90d",
+        "condition": 0
+    },
+    {
+        "type": 0,
+        "name": "迫真会员卡（365天）",
+        "info": "会员制DR3FV",
+        "price": 32880,
+        "spritePath": "prime_card",
+        "keyword": "prime_card_365d",
+        "condition": 0
+    },
+    {
+        "type": 0,
+        "name": "Yande片（1片）",
+        "info": "可以体验隐藏谱面的门票",
+        "price": 1080,
+        "spritePath": "purple_card",
+        "keyword": "purple_card_1p",
+        "condition": 3,
+        "tier": 12
+    },
+    {
+        "type": 0,
+        "name": "Yande片（10片）",
+        "info": "可以体验隐藏谱面的门票",
+        "price": 9080,
+        "spritePath": "purple_card",
+        "keyword": "purple_card_10p",
+        "condition": 3,
+        "tier": 12
+    },
+    {
+        "type": 0,
+        "name": "经验卡",
+        "info": "消耗此卡一张，即可获得2000点经验值",
+        "price": 100,
+        "spritePath": "exp_card",
+        "keyword": "exp_card",
+        "condition": 2,
+        "tier": 20
+    },
+    {
+        "type": 0,
+        "name": "经验卡Ex",
+        "info": "消耗此卡一张，即可获得225000点经验值",
+        "price": 1000,
+        "spritePath": "exp_card",
+        "keyword": "exp_card_ex",
+        "condition": 2,
+        "tier": 40
+    },
+    {
+        "type": 0,
+        "name": "经验卡Ex+",
+        "info": "消耗此卡一张，即可获得250000点经验值",
+        "price": 10000,
+        "spritePath": "exp_card",
+        "keyword": "exp_card_explus",
+        "condition": 2,
+        "tier": 60
+    },
+    {
+        "type": 1,
+        "name": "某活动曲",
+        "info": "假装是首活动曲目\n换行测试",
+        "price": 2147483647,
+        "spritePath": "dfjkdfjkdfjkdfjk",
+        "keyword": "dfjkdfjkdfjkdfjk",
+        "condition": 4,
+        "eventKey": "Event19190810"
+    }
+]
