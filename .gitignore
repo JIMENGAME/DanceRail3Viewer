@@ -13,9 +13,6 @@
 /Android/
 /Builds/
 /oldSONGS/
-/songs/
-/cache/
-Songlist.json
 /Logs/
 /output/
 /Private/
@@ -70,5 +67,5 @@ Thumbs.db
 总教程.docx
 /教程相关/
 /gitignore/
-/cache/
 DanceRail3Viewer.zip
+Debug_DataPath.txt

@@ -135,7 +135,7 @@ namespace DRFV.Game
             spriteRenderer.size = new Vector2(_noteData.width, 1.0f);
             if (_noteData.IsCenter())
             {
-                spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.01f);
+                if (_noteData.kind != NoteKind.BOOM_CENTER) spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 0.01f);
             }
 
             if (gameManager.DebugMode && gameManager.ShowNoteId)
@@ -190,18 +190,15 @@ namespace DRFV.Game
             }
             else if (_noteData.IsFlick())
             {
-                if (_noteData.kind == NoteKind.FLICK)
-                {
-                    arrorRenderer.transform.position += new Vector3(0, freeFlickSize * 0.6f, 0);
-                    arrorRenderer.transform.localScale += new Vector3(freeFlickSize * 2, freeFlickSize * 2, 0);
-                    arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, freeFlickAlpha / 3f);
-                }
-                else
-                {
-                    arrorRenderer.transform.position += new Vector3(0, flickSize * 0.6f, 0);
-                    arrorRenderer.transform.localScale += new Vector3(flickSize * 2, flickSize * 2, 0);
-                    arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, flickAlpha / 3f);
-                }
+                arrorRenderer.transform.position += new Vector3(0, flickSize * 0.6f, 0);
+                arrorRenderer.transform.localScale += new Vector3(flickSize * 2, flickSize * 2, 0);
+                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, flickAlpha / 3f);
+            }
+            else if (_noteData.kind == NoteKind.FLICK)
+            {
+                arrorRenderer.transform.position += new Vector3(0, freeFlickSize * 0.6f, 0);
+                arrorRenderer.transform.localScale += new Vector3(freeFlickSize * 2, freeFlickSize * 2, 0);
+                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, freeFlickAlpha / 3f);
             }
             else
             {

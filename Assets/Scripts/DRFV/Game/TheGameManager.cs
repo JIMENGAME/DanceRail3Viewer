@@ -616,7 +616,7 @@ namespace DRFV.Game
                     }
                 }
             }
-            
+
             // 特判
             if (SongKeyword.Equals("hello") && SongHard == 13 && !hadouTest)
             {
@@ -624,7 +624,7 @@ namespace DRFV.Game
                 drbfile.noteWeightCount = 0;
                 GenerateHelloWinnerNotes();
             }
-            
+
             drbfile.GenerateAttributesOnPlay();
 
             BPMCurve = drbfile.BPMCurve;
@@ -655,7 +655,7 @@ namespace DRFV.Game
             {
                 etherStrike.Init(this);
             }
-            
+
             if (storyMode && SongKeyword == "testify" || enableTestifyAnomaly)
             {
                 var (min, max, strength, count, arguments) = GenerateTestifyAnomaly();
@@ -999,7 +999,7 @@ namespace DRFV.Game
 
         private IEnumerator ProcessMusic()
         {
-            AudioClip _acHit = null, _acSlide = null, _acFlick = null;
+            AudioClip _acHit = null, _acSlide = null, _acFlick = null, _acFreeFlick = null;
             //获取效果音
             if (!DebugMode && !storyMode)
             {
@@ -1059,6 +1059,27 @@ namespace DRFV.Game
                         ? DownloadHandlerAudioClip.GetContent(uwr)
                         : null;
                 }
+
+                if (File.Exists(songFolder + "free_flick.ogg"))
+                {
+                    using var uwr =
+                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "free_flick.ogg",
+                            AudioType.OGGVORBIS);
+                    yield return uwr.SendWebRequest();
+                    _acFreeFlick = uwr.isDone
+                        ? DownloadHandlerAudioClip.GetContent(uwr)
+                        : null;
+                }
+                else if (File.Exists(songFolder + "free_flick.wav"))
+                {
+                    using var uwr =
+                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "free_flick.wav",
+                            AudioType.WAV);
+                    yield return uwr.SendWebRequest();
+                    _acFreeFlick = uwr.isDone
+                        ? DownloadHandlerAudioClip.GetContent(uwr)
+                        : null;
+                }
             }
 
             if (_acHit == null)
@@ -1078,17 +1099,24 @@ namespace DRFV.Game
                 // _acFlick = Resources.Load<AudioClip>("SE/flick");
             }
 
+            if (_acFreeFlick == null)
+            {
+                _acFreeFlick = _acFlick;
+            }
+
             //写入效果音A
             int bgmSamples = originalBGM.samples * originalBGM.channels;
             float[] f_hit = new float[_acHit.samples * _acHit.channels],
                 f_slide = new float[_acSlide.samples * _acSlide.channels],
                 f_flick = new float[_acFlick.samples * _acFlick.channels],
+                f_freeFlick = new float[_acFreeFlick.samples * _acFreeFlick.channels],
                 f_song = new float[bgmSamples];
             originalBGM.GetData(f_song, 0);
 
             _acHit.GetData(f_hit, 0);
             _acSlide.GetData(f_slide, 0);
             _acFlick.GetData(f_flick, 0);
+            _acFreeFlick.GetData(f_freeFlick, 0);
 
             //音量减半
             for (int i = 0; i < f_song.Length; i++)
@@ -1096,7 +1124,7 @@ namespace DRFV.Game
                 f_song[i] *= volumeScale;
             }
 
-            List<int> list_hit = new(), list_slide = new(), list_flick = new();
+            List<int> list_hit = new(), list_slide = new(), list_flick = new(), list_freeFlick = new();
 
             //写入gater音
             if (GameEffectGaterLevel >= 1)
@@ -1169,8 +1197,22 @@ namespace DRFV.Game
                             list_flick.Add(start);
                             for (int c = 0; c < f_flick.Length; c++)
                             {
-                                if (start + c < f_song.Length)
-                                    f_song[start + c] += f_flick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                                if (start + c < f_song.Length) f_song[start + c] += f_flick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                            }
+                        }
+                    }
+
+                    if (drbfile.notes[i].kind == NoteKind.FLICK)
+                    {
+                        int start = (int)(bgmSamples *
+                                          (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
+
+                        if (!list_freeFlick.Contains(start))
+                        {
+                            list_freeFlick.Add(start);
+                            for (int c = 0; c < f_freeFlick.Length; c++)
+                            {
+                                if (start + c < f_song.Length) f_song[start + c] += f_freeFlick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
                             }
                         }
                     }
@@ -1473,7 +1515,8 @@ namespace DRFV.Game
                         else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
                         note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
-                        note.GetComponent<TheNote>().Ready(drbfile.notes[i], tapSize, flickSize, freeFlickSize, tapAlpha, flickAlpha, freeFlickAlpha);
+                        note.GetComponent<TheNote>().Ready(drbfile.notes[i], tapSize, flickSize, freeFlickSize,
+                            tapAlpha, flickAlpha, freeFlickAlpha);
                         note.GetComponent<TheNote>().StartC();
 
 
@@ -2699,7 +2742,7 @@ namespace DRFV.Game
             item = temp;
         }
     }
-    
+
     class CurveAndBool
     {
         public AnimationCurve curve;

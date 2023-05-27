@@ -77,13 +77,17 @@ namespace DRFV.Game
         public static bool IsFlick(this NoteData noteData)
         {
             NoteKind k = noteData.kind;
-            if (k == NoteKind.FLICK) return true;
             if (k == NoteKind.FLICK_LEFT) return true;
             if (k == NoteKind.FLICK_RIGHT) return true;
             if (k == NoteKind.FLICK_UP) return true;
             if (k == NoteKind.FLICK_DOWN) return true;
 
             return false;
+        }
+
+        public static bool IsAnyFlick(this NoteData noteData)
+        {
+            return noteData.kind == NoteKind.FLICK || noteData.IsFlick();
         }
 
         public static bool IsBitCrash(this NoteData noteData)
