@@ -14,7 +14,6 @@ namespace DRFV.Global
     {
         public string dataPath;
         public string cachePath;
-        private static string localizationId = "zh-cn";
         public ShopItem[] shopItems;
 
         // Start is called before the first frame update
@@ -39,48 +38,25 @@ namespace DRFV.Global
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_WIN
             File.SetAttributes(cachePath, FileAttributes.Hidden);
 #endif
-                JArray shopItemsJArray= JArray.Parse(Resources.Load<TextAsset>("SHOP/shop_items_list").text);
-                List<ShopItem> shopItemList = new List<ShopItem>();
-                for (var i = 0; i < shopItemsJArray.Count; i++)
-                {
-                    ShopItem _data = shopItemsJArray[i].ToObject<ShopItem>();
-                    _data.id = i;
-                    var a = _data.type switch
-                    {
-                        ShopItem.ShopItemType.ITEM => "ITEMS",
-                        ShopItem.ShopItemType.SONG => "SONGS",
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
-                    _data.icon = Resources.Load<Sprite>($"SHOP/{a}/{_data.spritePath}");
-                    _data.enabled = true;
-                    if (_data.type == ShopItem.ShopItemType.SONG)
-                    {
-                        _data.enabled &= (PlayerPrefs.GetInt("unlock_" + _data.keyword, 0) == 0);
-                    }
-
-                    if (_data.condition.HasFlag(ShopItem.ShopItemConditions.PRIME_REQUIRED))
-                    {
-                        _data.enabled &= true;
-                        // TODO: 会员系统
-                    }
-
-                    if (_data.condition.HasFlag(ShopItem.ShopItemConditions.TIER_REQUIRED) && _data.tier != null)
-                    {
-                        _data.enabled &= _data.tier <= int.MaxValue;
-                        // TODO: 等级系统
-                    }
-
-                    if (_data.condition.HasFlag(ShopItem.ShopItemConditions.EVENT_REQUIRED) &&
-                        !string.IsNullOrEmpty(_data.eventKey))
-                    {
-                        _data.enabled &= true;
-                        // TODO: 活动系统
-                    }
-                    shopItemList.Add(_data);
-                }
-
-                shopItems = shopItemList.ToArray();
             }
+            JArray shopItemsJArray= JArray.Parse(Resources.Load<TextAsset>("SHOP/shop_items_list").text);
+            List<ShopItem> shopItemList = new List<ShopItem>();
+            for (var i = 0; i < shopItemsJArray.Count; i++)
+            {
+                ShopItem _data = shopItemsJArray[i].ToObject<ShopItem>();
+                _data.id = i;
+                var a = _data.type switch
+                {
+                    ShopItem.ShopItemType.ITEM => "ITEMS",
+                    ShopItem.ShopItemType.SONG => "SONGS",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                _data.icon = Resources.Load<Sprite>($"SHOP/{a}/{_data.spritePath}"); 
+                shopItemList.Add(_data);
+            }
+
+            shopItems = shopItemList.ToArray();
+
         }
 
         private static string GetDataPath()

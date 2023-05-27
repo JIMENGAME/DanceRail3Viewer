@@ -1,107 +1,175 @@
 [
     {
         "type": 0,
-        "name": "迫真会员卡（1天）",
-        "info": "会员制DR3FV",
+        "name": {
+            "zh-cn": "迫真会员卡（1天）"
+        },
+        "info": {
+            "zh-cn": "会员制DR3FV"
+        },
         "price": 180,
-        "spritePath": "prime_card",
-        "keyword": "prime_card_1d",
+        "sprite_path": "prime_card",
+        "keyword": "prime_card",
+        "item_value": 1,
         "condition": 0
     },
     {
         "type": 0,
-        "name": "迫真会员卡（7天）",
-        "info": "会员制DR3FV",
+        "name": {
+            "zh-cn": "迫真会员卡（7天）"
+        },
+        "info": {
+            "zh-cn": "会员制DR3FV"
+        },
         "price": 1180,
-        "spritePath": "prime_card",
-        "keyword": "prime_card_7d",
+        "sprite_path": "prime_card",
+        "keyword": "prime_card",
+        "item_value": 7,
         "condition": 0
     },
     {
         "type": 0,
-        "name": "迫真会员卡（30天）",
-        "info": "会员制DR3FV",
+        "name": {
+            "zh-cn": "迫真会员卡（30天）"
+        },
+        "info": {
+            "zh-cn": "会员制DR3FV"
+        },
         "price": 3880,
-        "spritePath": "prime_card",
-        "keyword": "prime_card_30d",
+        "sprite_path": "prime_card",
+        "keyword": "prime_card",
+        "item_value": 30,
         "condition": 0
     },
     {
         "type": 0,
-        "name": "迫真会员卡（90天）",
-        "info": "会员制DR3FV",
+        "name": {
+            "zh-cn": "迫真会员卡（90天）"
+        },
+        "info": {
+            "zh-cn": "会员制DR3FV"
+        },
         "price": 9880,
-        "spritePath": "prime_card",
-        "keyword": "prime_card_90d",
+        "sprite_path": "prime_card",
+        "keyword": "prime_card",
+        "item_value": 90,
         "condition": 0
     },
     {
         "type": 0,
-        "name": "迫真会员卡（365天）",
-        "info": "会员制DR3FV",
+        "name": {
+            "zh-cn": "迫真会员卡（365天）"
+        },
+        "info": {
+            "zh-cn": "会员制DR3FV"
+        },
         "price": 32880,
-        "spritePath": "prime_card",
-        "keyword": "prime_card_365d",
+        "sprite_path": "prime_card",
+        "keyword": "prime_card",
+        "item_value": 365,
         "condition": 0
     },
     {
         "type": 0,
-        "name": "Yande片（1片）",
-        "info": "可以体验隐藏谱面的门票",
+        "name": {
+            "zh-cn": "Yande片（1片）"
+        },
+        "info": {
+            "zh-cn": "可以体验隐藏谱面的门票"
+        },
         "price": 1080,
-        "spritePath": "purple_card",
-        "keyword": "purple_card_1p",
-        "condition": 3,
-        "tier": 12
+        "sprite_path": "purple_card",
+        "keyword": "purple_card",
+        "item_value": 1,
+        "condition": 5,
+        "skill_tier": 12
     },
     {
         "type": 0,
-        "name": "Yande片（10片）",
-        "info": "可以体验隐藏谱面的门票",
+        "name": {
+            "zh-cn": "Yande片（10片）"
+        },
+        "info": {
+            "zh-cn": "可以体验隐藏谱面的门票"
+        },
         "price": 9080,
-        "spritePath": "purple_card",
-        "keyword": "purple_card_10p",
-        "condition": 3,
-        "tier": 12
+        "sprite_path": "purple_card",
+        "keyword": "purple_card",
+        "item_value": 10,
+        "condition": 5,
+        "skill_tier": 12
     },
     {
         "type": 0,
-        "name": "经验卡",
-        "info": "消耗此卡一张，即可获得2000点经验值",
+        "name": {
+            "zh-cn": "昵称变更卡"
+        },
+        "info": {
+            "zh-cn": "改名次数（y）与消耗此卡的数量（y）关系：y=x"
+        },
+        "price": 2600,
+        "sprite_path": "change_nickname_card",
+        "keyword": "change_nickname_card",
+        "item_value": 1,
+        "condition": 0
+    },
+    {
+        "type": 0,
+        "name": {
+            "zh-cn": "经验卡"
+        },
+        "info": {
+            "zh-cn": "消耗此卡一张，即可获得2000点经验值"
+        },
         "price": 100,
-        "spritePath": "exp_card",
+        "sprite_path": "exp_card",
         "keyword": "exp_card",
+        "item_value": 2000,
         "condition": 2,
-        "tier": 20
+        "level": 20
     },
     {
         "type": 0,
-        "name": "经验卡Ex",
-        "info": "消耗此卡一张，即可获得225000点经验值",
+        "name": {
+            "zh-cn": "经验卡Ex"
+        },
+        "info": {
+            "zh-cn": "消耗此卡一张，即可获得225000点经验值"
+        },
         "price": 1000,
-        "spritePath": "exp_card",
-        "keyword": "exp_card_ex",
+        "sprite_path": "exp_card_ex",
+        "keyword": "exp_card",
+        "item_value": 225000,
         "condition": 2,
-        "tier": 40
+        "level": 40
     },
     {
         "type": 0,
-        "name": "经验卡Ex+",
-        "info": "消耗此卡一张，即可获得250000点经验值",
+        "name": {
+            "zh-cn": "经验卡Ex+"
+        },
+        "info": {
+            "zh-cn": "消耗此卡一张，即可获得250000点经验值"
+        },
         "price": 10000,
-        "spritePath": "exp_card",
-        "keyword": "exp_card_explus",
+        "sprite_path": "exp_card_ex",
+        "keyword": "exp_card",
+        "item_value": 250000,
         "condition": 2,
-        "tier": 60
+        "level": 60
     },
     {
         "type": 1,
-        "name": "某活动曲",
-        "info": "假装是首活动曲目\n换行测试",
-        "price": 2147483647,
-        "spritePath": "dfjkdfjkdfjkdfjk",
+        "name": {
+            "zh-cn": "某活动曲"
+        },
+        "info": {
+            "zh-cn": "假装是首活动曲目\n换行测试"
+        },
+        "price": 114514,
+        "sprite_path": "dfjkdfjkdfjkdfjk",
         "keyword": "dfjkdfjkdfjkdfjk",
-        "condition": 4,
-        "eventKey": "Event19190810"
+        "condition": 8,
+        "event_key": "Event19190810"
     }
 ]

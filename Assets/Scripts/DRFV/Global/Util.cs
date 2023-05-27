@@ -23,6 +23,8 @@ namespace DRFV.Global
         public static readonly Dictionary<string, EndType> endTypeFromShort = new();
         private static NoteJudgeRange[] noteJudgeRanges;
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
+        public static string localizationId = "zh-cn";
+        private static readonly DateTime timeStampStart = new(1970, 1, 1);
 
         public static void Init()
         {
@@ -382,6 +384,20 @@ namespace DRFV.Global
             }
 
             return result;
+        }
+
+        public static long DateTimeToTimeStamp(DateTime? dateTime)
+        {
+            if (dateTime == null) return 0;
+            
+            TimeSpan ts = Convert.ToDateTime(dateTime).ToUniversalTime() - timeStampStart;//ToUniversalTime()转换为标准时区的时间,去掉的话直接就用北京时间
+            return Convert.ToInt64(ts.TotalSeconds);
+        }
+        
+        public static DateTime TimeStampToDateTime(long seconds)
+        {
+            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(timeStampStart);//当地时区
+            return startTime.AddSeconds(seconds);
         }
     }
 }
