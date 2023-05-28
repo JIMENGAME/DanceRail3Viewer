@@ -61,7 +61,7 @@ namespace DRFV.Enums
     }
     public enum NoteSCType
     {
-        DECIMAL = 0,
+        SINGLE = 0,
         MULTI = 1
     }
 

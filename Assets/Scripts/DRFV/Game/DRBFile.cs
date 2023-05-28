@@ -84,11 +84,11 @@ namespace DRFV.Game
                 {
                     if (a.nsc.type == b.nsc.type)
                     {
-                        if (a.nsc.type == NoteSCType.DECIMAL) return a.nsc.value - b.nsc.value < 0 ? -1 : 1;
+                        if (a.nsc.type == NoteSCType.SINGLE) return a.nsc.value - b.nsc.value < 0 ? -1 : 1;
                         return a.nsc.data[0].realValue - b.nsc.data[0].realValue < 0 ? -1 : 1;
                     }
 
-                    return a.nsc.type == NoteSCType.DECIMAL ? -1 : 1;
+                    return a.nsc.type == NoteSCType.SINGLE ? -1 : 1;
                 }
 
                 return 0;
@@ -225,7 +225,7 @@ namespace DRFV.Game
                     note.width = float.Parse(sss[4].Trim());
 
                     note.nsc = NoteData.NoteSC.Parse(sss[5].Trim());
-                    if (!note.IsTail() && note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
+                    if (note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
 
                     note.parent = int.Parse(sss[6].Trim());
                     note.mode = sss.Length > 7 ? ParseNoteAppearMode.ParseToMode(sss[7].Trim()) : NoteAppearMode.None;
@@ -406,9 +406,6 @@ namespace DRFV.Game
         public float dms;
 
         public bool isJudgeTimeRangeConflicted;
-        public bool isWaitForGD;
-        public bool isWaitForPF;
-        public float WaitForSec;
 
         public MD5Data GetMd5Data()
         {
@@ -435,7 +432,7 @@ namespace DRFV.Game
         public class NoteSC
         {
             public NoteSCType type;
-            public float value = 0.0f;
+            public float value = 1.0f;
             public List<MultiData> data = new();
 
             private NoteSC()
@@ -446,7 +443,7 @@ namespace DRFV.Game
             {
                 return new NoteSC
                 {
-                    type = NoteSCType.DECIMAL,
+                    type = NoteSCType.SINGLE,
                     value = 1
                 };
             }
@@ -454,10 +451,10 @@ namespace DRFV.Game
             public static NoteSC Parse(string str)
             {
                 NoteSC noteSc = new NoteSC();
-                noteSc.type = str.Contains(":") ? NoteSCType.MULTI : NoteSCType.DECIMAL;
+                noteSc.type = str.Contains(":") ? NoteSCType.MULTI : NoteSCType.SINGLE;
                 switch (noteSc.type)
                 {
-                    case NoteSCType.DECIMAL:
+                    case NoteSCType.SINGLE:
                         noteSc.value = float.Parse(str);
                         break;
                     case NoteSCType.MULTI:
@@ -478,7 +475,7 @@ namespace DRFV.Game
             {
                 return type switch
                 {
-                    NoteSCType.DECIMAL => Util.FloatToDRBDecimal(value),
+                    NoteSCType.SINGLE => Util.FloatToDRBDecimal(value),
                     NoteSCType.MULTI => String.Join(";", data),
                     _ => throw new ArgumentOutOfRangeException()
                 };

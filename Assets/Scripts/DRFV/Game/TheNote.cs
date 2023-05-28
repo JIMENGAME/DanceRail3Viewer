@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using DRFV.Enums;
 using DRFV.Global;
 using UnityEngine;
@@ -10,9 +9,13 @@ namespace DRFV.Game
 {
     public class TheNote : MonoBehaviour
     {
-        TheGameManager gameManager;
-        InputManager inputManager;
-        SpriteRenderer spriteRenderer;
+        private bool isWaitForGD;
+        private bool isWaitForPF;
+        private float WaitForSec;
+        
+        private TheGameManager gameManager;
+        private InputManager inputManager;
+        private SpriteRenderer spriteRenderer;
 
         [SerializeField] private Material _material1Light,
             _material2Light,
@@ -124,9 +127,9 @@ namespace DRFV.Game
                 _noteData.parent_width = 0;
             }
 
-            _noteData.isWaitForGD = false;
-            _noteData.isWaitForPF = false;
-            _noteData.WaitForSec = 0.0f;
+            isWaitForGD = false;
+            isWaitForPF = false;
+            WaitForSec = 0.0f;
 
             spriteRenderer = GetComponent<SpriteRenderer>();
             SpriteRenderer arrorRenderer = transform.Find("Arror").GetComponent<SpriteRenderer>();
@@ -251,8 +254,8 @@ namespace DRFV.Game
             judge_flag = false;
             flag = false;
             // _noteData.isNear = false;
-            _noteData.isWaitForGD = false;
-            _noteData.isWaitForPF = false;
+            isWaitForGD = false;
+            isWaitForPF = false;
             _judgeEnumerator = gameManager.GameAuto ? AutoJudge() : Judge();
             StartCoroutine(_judgeEnumerator);
         }
@@ -435,13 +438,13 @@ namespace DRFV.Game
                         case NoteKind.TAP:
                             if (_noteData.isJudgeTimeRangeConflicted)
                             {
-                                if (_noteData.isWaitForGD &&
+                                if (isWaitForGD &&
                                     gameManager.progressManager.NowTime > _noteData.ms + gameManager.PFms)
                                 {
-                                    gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(_noteData.WaitForSec) > 10.0
-                                        ? Mathf.Abs(_noteData.WaitForSec) - 10.0
+                                    gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(WaitForSec) > 10.0
+                                        ? Mathf.Abs(WaitForSec) - 10.0
                                         : 0.0)));
-                                    gameManager.Judge(_noteData.WaitForSec, _noteData.kind,
+                                    gameManager.Judge(WaitForSec, _noteData.kind,
                                         new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 
                                     inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width, GDColor);
@@ -451,13 +454,13 @@ namespace DRFV.Game
                                     break;
                                 }
 
-                                if (_noteData.isWaitForPF &&
+                                if (isWaitForPF &&
                                     gameManager.progressManager.NowTime > _noteData.ms + gameManager.PJms)
                                 {
-                                    gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(_noteData.WaitForSec) > 10.0
-                                        ? Mathf.Abs(_noteData.WaitForSec) - 10.0
+                                    gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(WaitForSec) > 10.0
+                                        ? Mathf.Abs(WaitForSec) - 10.0
                                         : 0.0)));
-                                    gameManager.Judge(_noteData.WaitForSec, _noteData.kind,
+                                    gameManager.Judge(WaitForSec, _noteData.kind,
                                         new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
                                     judge_flag = true;
                                     DistroyThis();
@@ -468,15 +471,15 @@ namespace DRFV.Game
                                 {
                                     if (gameManager.progressManager.NowTime < _noteData.ms - gameManager.PFms)
                                     {
-                                        _noteData.isWaitForGD = true;
-                                        _noteData.WaitForSec = (gameManager.progressManager.NowTime - _noteData.ms);
+                                        isWaitForGD = true;
+                                        WaitForSec = (gameManager.progressManager.NowTime - _noteData.ms);
 
                                         //inputManager.SetBeamColor(pos, pos + width, GDColor);
                                     }
                                     else if (gameManager.progressManager.NowTime < _noteData.ms - gameManager.PJms)
                                     {
-                                        _noteData.isWaitForPF = true;
-                                        _noteData.WaitForSec = (gameManager.progressManager.NowTime - _noteData.ms);
+                                        isWaitForPF = true;
+                                        WaitForSec = (gameManager.progressManager.NowTime - _noteData.ms);
                                         inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width,
                                             PFColor);
                                     }
