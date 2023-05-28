@@ -335,6 +335,11 @@ namespace DRFV.Global
             return (float)data.Sum(x => Math.Pow(x - average, 2)) / data.Length;
         }
 
+        public static float StandardDeviation(this float[] data)
+        {
+            return Mathf.Pow(data.Variance(), 0.5f);
+        }
+
         public static int ScoreToRank(int score)
         {
             return score switch

@@ -32,6 +32,16 @@ namespace DRFV.Global
                 Directory.CreateDirectory(dataPath + "songs");
             }
 
+            if (!Directory.Exists(dataPath + "settings"))
+            {
+                Directory.CreateDirectory(dataPath + "settings");
+            }
+            
+            if (!Directory.Exists(dataPath + "settings/note_sfx"))
+            {
+                Directory.CreateDirectory(dataPath + "settings/note_sfx");
+            }
+
             if (!Directory.Exists(cachePath))
             {
                 Directory.CreateDirectory(cachePath);
@@ -39,6 +49,7 @@ namespace DRFV.Global
             File.SetAttributes(cachePath, FileAttributes.Hidden);
 #endif
             }
+            
             JArray shopItemsJArray= JArray.Parse(Resources.Load<TextAsset>("SHOP/shop_items_list").text);
             List<ShopItem> shopItemList = new List<ShopItem>();
             for (var i = 0; i < shopItemsJArray.Count; i++)

@@ -64,6 +64,7 @@ namespace DRFV.Setting
         public bool UseMemoryCache;
         public SCORE_TYPE ScoreType;
         public SELECT_ORDER SelectOrder;
+        public string selectedNoteSFX;
 
         public GlobalSettings()
         {
@@ -96,6 +97,7 @@ namespace DRFV.Setting
             UseMemoryCache = true;
             ScoreType = SCORE_TYPE.ORIGINAL;
             SelectOrder = SELECT_ORDER.SONGLIST;
+            selectedNoteSFX = "";
         }
     }
 

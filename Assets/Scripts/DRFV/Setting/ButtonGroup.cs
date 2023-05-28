@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DRFV.Enums;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ namespace DRFV.Setting
 {
     public class ButtonGroup : MonoBehaviour
     {
-        public Button[] Buttons;
+        protected Button[] Buttons;
     
         public Sprite imageButton, imageButtonPressed;
 
@@ -21,6 +22,15 @@ namespace DRFV.Setting
         public void Init(TheSettingsManager theSettingsManager)
         {
             TheSettingsManager = theSettingsManager;
+            List<Button> buttonList = new List<Button>();
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var component = transform.GetChild(i).gameObject.GetComponent<Button>();
+                if (!component) continue;
+                buttonList.Add(component);
+            }
+
+            Buttons = buttonList.ToArray();
             selected = type switch
             {
                 ButtonGroupType.COMBO => TheSettingsManager.currentSettings.ComboDisp,

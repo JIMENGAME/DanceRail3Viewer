@@ -1000,11 +1000,21 @@ namespace DRFV.Game
         private IEnumerator ProcessMusic()
         {
             AudioClip _acHit = null, _acSlide = null, _acFlick = null, _acFreeFlick = null;
+            bool slideEqualsHit = false, freeFlickEqualsFlick = false;
+            bool disableOverlappingCheck = false;
             //获取效果音
-            if (!DebugMode && !storyMode)
+            if (!DebugMode && !storyMode && !string.IsNullOrEmpty(_currentSettings.selectedNoteSFX))
             {
-                string songFolder = StaticResources.Instance.dataPath + "songs/" +
-                                    SongKeyword + "/";
+                string songFolder = StaticResources.Instance.dataPath + "settings/note_sfx/" +
+                                    _currentSettings.selectedNoteSFX + "/";
+                if (File.Exists(songFolder + "settings.json"))
+                {
+                    JObject jObject = Util.ReadJson(songFolder + "settings.json");
+                    if (jObject.ContainsKey("disable_overlapping_check"))
+                    {
+                        disableOverlappingCheck = jObject["disable_overlapping_check"].ToObject<bool>();
+                    }
+                }
                 if (File.Exists(songFolder + "hit.ogg"))
                 {
                     using var uwr =
@@ -1091,6 +1101,7 @@ namespace DRFV.Game
             if (_acSlide == null)
             {
                 _acSlide = _acHit;
+                slideEqualsHit = true;
             }
 
             if (_acFlick == null)
@@ -1102,6 +1113,7 @@ namespace DRFV.Game
             if (_acFreeFlick == null)
             {
                 _acFreeFlick = _acFlick;
+                freeFlickEqualsFlick = true;
             }
 
             //写入效果音A
@@ -1159,7 +1171,7 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
 
-                        if (!list_hit.Contains(start))
+                        if (disableOverlappingCheck || !list_hit.Contains(start))
                         {
                             list_hit.Add(start);
                             for (int c = 0; c < f_hit.Length; c++)
@@ -1175,9 +1187,10 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
 
-                        if (!list_slide.Contains(start))
+                        if (disableOverlappingCheck || !list_slide.Contains(start) && !(slideEqualsHit && list_hit.Contains(start)))
                         {
                             list_slide.Add(start);
+                            if (slideEqualsHit) list_hit.Add(start);
                             for (int c = 0; c < f_slide.Length; c++)
                             {
                                 if (start + c < f_song.Length)
@@ -1192,7 +1205,7 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
 
-                        if (!list_flick.Contains(start))
+                        if (disableOverlappingCheck || !list_flick.Contains(start))
                         {
                             list_flick.Add(start);
                             for (int c = 0; c < f_flick.Length; c++)
@@ -1207,9 +1220,10 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
 
-                        if (!list_freeFlick.Contains(start))
+                        if (disableOverlappingCheck || !list_freeFlick.Contains(start) && !(freeFlickEqualsFlick && list_flick.Contains(start)))
                         {
                             list_freeFlick.Add(start);
+                            if (freeFlickEqualsFlick) list_flick.Add(start);
                             for (int c = 0; c < f_freeFlick.Length; c++)
                             {
                                 if (start + c < f_song.Length) f_song[start + c] += f_freeFlick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);

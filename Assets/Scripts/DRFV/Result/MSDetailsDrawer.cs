@@ -6,6 +6,7 @@ using DRFV.Global;
 using DRFV.Select;
 using DRFV.Setting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DRFV.Result
 {
@@ -22,6 +23,8 @@ namespace DRFV.Result
         private float yScale = 1f;
         public float k = 0.6f;
         private float panelScale;
+        public float yOffset = 0.05f;
+        public Text samplesInfo;
 
         private void Draw(int i)
         {
@@ -80,7 +83,7 @@ namespace DRFV.Result
             transform.localScale = new Vector3(panelScale, 0, 1f);
             transform.localPosition = new Vector3(
                 -panelScale * bGmsSprite.texture.width / 2f / bGmsSprite.pixelsPerUnit,
-                transform.localPosition.y,
+                yOffset * Screen.height / bGmsSprite.pixelsPerUnit,
                 GetPosZ()); // z = Screen.height / (Camera.main.fov * 2)
             List<float> msDetails = GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>().msDetails;
             while (msDetails.Count < 2)
@@ -89,9 +92,7 @@ namespace DRFV.Result
             }
 
             data = msDetails.ToArray();
-        
-            Debug.Log("平均数：" + data.Average());
-            Debug.Log("方差：" + data.Variance());
+            samplesInfo.text = $"平均数：{data.Average():N3}  标准差：{data.StandardDeviation():N3}";
         }
 
         public IEnumerator ChangeState(bool value, float time, Ease ease)
@@ -103,6 +104,7 @@ namespace DRFV.Result
         }
 
         private bool enbaleAnimation = false;
+        private bool generationEnded = false;
 
         // Update is called once per frame
         void Update()
@@ -115,9 +117,10 @@ namespace DRFV.Result
             transform.localScale = new Vector3(panelScale, panelScale, 1f);
             transform.localPosition = new Vector3(
                 -panelScale * bGmsSprite.texture.width / 2f / bGmsSprite.pixelsPerUnit,
-                transform.localPosition.y,
+                yOffset * Screen.height / bGmsSprite.pixelsPerUnit,
                 GetPosZ()); // z = Screen.height / (Camera.main.fov * 2)
 #endif
+            if (generationEnded) return;
             int index = Mathf.Min(data.Length - 1,
                 (int)(progress * (data.Length - 1)));
             while (Counter < index)
@@ -126,7 +129,7 @@ namespace DRFV.Result
                 Counter++;
             }
 
-            if (Counter >= data.Length - 1) return;
+            generationEnded = Counter >= data.Length - 1;
 
             progress += 0.01f;
         }

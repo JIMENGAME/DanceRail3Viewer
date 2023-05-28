@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using DRFV.Global;
 using DRFV.Global.Components;
@@ -39,6 +40,7 @@ namespace DRFV.Setting
         public SettingSlider TapEffectSlider;
 
         public ButtonGroup[] Groups;
+        public Dropdown noteSfxDropdown;
 
         public Toggle FCAPIndicatorToggle, OBSRecordModeToggle;
 
@@ -88,6 +90,23 @@ namespace DRFV.Setting
             OBSRecordModeToggle.isOn = currentSettings.OBSRecord;
             DebugModeToggle.isOn = DebugModeController.Instance.DebugMode;
             UseMemoryCacheToggle.isOn = currentSettings.UseMemoryCache;
+            string[] directories = Directory.GetDirectories(StaticResources.Instance.dataPath + "settings/note_sfx");
+            int selectedNoteSFXId = 0;
+            noteSfxDropdown.options.Add(new Dropdown.OptionData
+            {
+                text = "无"
+            });
+            for (var i = 0; i < directories.Length; i++)
+            {
+                var str = directories[i];
+                string directoryName = new DirectoryInfo(str).Name;
+                if (directoryName == currentSettings.selectedNoteSFX) selectedNoteSFXId = i + 1;
+                noteSfxDropdown.options.Add(new Dropdown.OptionData
+                {
+                    text = directoryName
+                });
+            }
+            noteSfxDropdown.value = selectedNoteSFXId;
             PoolManager.Instance.RefreshSetting();
         }
         public void SetFPS(int fps)
@@ -174,6 +193,8 @@ namespace DRFV.Setting
             currentSettings.Offset = offset;
             currentSettings.OBSRecord = OBSRecordModeToggle.isOn;
             currentSettings.UseMemoryCache = UseMemoryCacheToggle.isOn;
+            currentSettings.selectedNoteSFX =
+                noteSfxDropdown.value == 0 ? "" : noteSfxDropdown.options[noteSfxDropdown.value].text;
             GlobalSettings.CurrentSettings = currentSettings;
         }
 
