@@ -2624,7 +2624,7 @@ namespace DRFV.Game
             for (var i = 0; i < drbfile.notes.Count; i++)
             {
                 var note = drbfile.notes[i];
-                if (note.kind == NoteKind.MOVER_CENTER || note.kind == NoteKind.MOVER_END)
+                if (note.IsMover())
                 {
                     if (!existedTime.Exists(time => time == note.parent_time))
                     {

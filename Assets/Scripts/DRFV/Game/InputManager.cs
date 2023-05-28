@@ -36,10 +36,12 @@ namespace DRFV.Game
         }
 
         int updatecd = 30;
+        private Camera camera1;
 
         // Use this for initialization
         void Start()
         {
+            camera1 = Camera.main;
             //配列初期化
             touchPoint = new List<TouchData>();
             oldPoint = new List<TouchData>();
@@ -79,9 +81,9 @@ namespace DRFV.Game
             }
 
             //座標原点規定
-            LeftPoint = Camera.main.WorldToScreenPoint(new Vector3(-8, 0, 0)).x;
-            RightPoint = Camera.main.WorldToScreenPoint(new Vector3(+8, 0, 0)).x;
-            HeightPoint = Camera.main.WorldToScreenPoint(new Vector3(+8, 0, 0)).y;
+            LeftPoint = camera1.WorldToScreenPoint(new Vector3(-8, 0, 0)).x;
+            RightPoint = camera1.WorldToScreenPoint(new Vector3(+8, 0, 0)).x;
+            HeightPoint = camera1.WorldToScreenPoint(new Vector3(+8, 0, 0)).y;
             Keyframe[] keys = new Keyframe[2];
             keys[0] = new Keyframe(LeftPoint - (RightPoint - LeftPoint), -16.0f);
             keys[1] = new Keyframe(RightPoint + (RightPoint - LeftPoint), 32.0f);

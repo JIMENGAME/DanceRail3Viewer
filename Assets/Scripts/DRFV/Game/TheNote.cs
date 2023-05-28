@@ -12,7 +12,7 @@ namespace DRFV.Game
         private bool isWaitForGD;
         private bool isWaitForPF;
         private float WaitForSec;
-        
+
         private TheGameManager gameManager;
         private InputManager inputManager;
         private SpriteRenderer spriteRenderer;
@@ -414,6 +414,10 @@ namespace DRFV.Game
                     case NoteKind.STEREO_END:
                         mDrawer.AddQue(_mesh, _material7);
                         break;
+                    case NoteKind.MOVERBOMB_CENTER:
+                    case NoteKind.MOVERBOMB_END:
+                        // TODO: Mover Bomb的材质
+                        break;
                 }
             }
         }
@@ -530,6 +534,7 @@ namespace DRFV.Game
                                     DistroyThis();
                                 }
                             }
+
                             break;
                         case NoteKind.ExTAP:
                             if (inputManager.GetTrigger(_noteData.pos, _noteData.pos + _noteData.width))
@@ -649,6 +654,8 @@ namespace DRFV.Game
                         case NoteKind.BOOM:
                         case NoteKind.BOOM_CENTER:
                         case NoteKind.BOOM_END:
+                        case NoteKind.MOVERBOMB_CENTER:
+                        case NoteKind.MOVERBOMB_END:
                             if (gameManager.progressManager.NowTime >= _noteData.ms)
                             {
                                 if (inputManager.GetPressed(_noteData.pos + 1, _noteData.pos + _noteData.width - 1))

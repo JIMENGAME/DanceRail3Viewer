@@ -57,7 +57,9 @@ namespace DRFV.Enums
         MOVER_END = 24,
         STEREO_START = 25,
         STEREO_CENTER = 26,
-        STEREO_END = 27
+        STEREO_END = 27,
+        MOVERBOMB_CENTER = 28,
+        MOVERBOMB_END = 29
     }
     public enum NoteSCType
     {

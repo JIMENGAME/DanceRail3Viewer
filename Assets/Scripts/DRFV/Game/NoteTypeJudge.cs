@@ -98,5 +98,15 @@ namespace DRFV.Game
 
             return false;
         }
+        
+        public static bool IsMover(this NoteData noteData)
+        {
+            NoteKind k = noteData.kind;
+            if (k == NoteKind.MOVER_CENTER) return true;
+            if (k == NoteKind.MOVER_END) return true;
+            if (k == NoteKind.MOVERBOMB_CENTER) return true;
+            if (k == NoteKind.MOVERBOMB_END) return true;
+            return false;
+        }
     }
 }
