@@ -414,8 +414,8 @@ namespace DRFV.Game
                     case NoteKind.STEREO_END:
                         mDrawer.AddQue(_mesh, _material7);
                         break;
-                    case NoteKind.MOVERBOMB_CENTER:
-                    case NoteKind.MOVERBOMB_END:
+                    case NoteKind.MOVERBOOM_CENTER:
+                    case NoteKind.MOVERBOOM_END:
                         // TODO: Mover Bomb的材质
                         break;
                 }
@@ -448,7 +448,7 @@ namespace DRFV.Game
                                     gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(WaitForSec) > 10.0
                                         ? Mathf.Abs(WaitForSec) - 10.0
                                         : 0.0)));
-                                    gameManager.Judge(WaitForSec, _noteData.kind,
+                                    gameManager.Judge(WaitForSec, _noteData.kind, _noteData.isFake,
                                         new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 
                                     inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width, GDColor);
@@ -464,7 +464,7 @@ namespace DRFV.Game
                                     gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(WaitForSec) > 10.0
                                         ? Mathf.Abs(WaitForSec) - 10.0
                                         : 0.0)));
-                                    gameManager.Judge(WaitForSec, _noteData.kind,
+                                    gameManager.Judge(WaitForSec, _noteData.kind, _noteData.isFake,
                                         new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
                                     judge_flag = true;
                                     DistroyThis();
@@ -497,7 +497,7 @@ namespace DRFV.Game
                                                                                       .NowTime - _noteData.ms) - 10.0
                                                                               : 0.0)));
                                         gameManager.Judge((gameManager.progressManager.NowTime - _noteData.ms),
-                                            _noteData.kind,
+                                            _noteData.kind, _noteData.isFake,
                                             new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
                                         inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width,
                                             Mathf.Abs((gameManager.progressManager.NowTime - _noteData.ms)) <=
@@ -520,7 +520,7 @@ namespace DRFV.Game
                                                               Mathf.Abs(gameManager.progressManager.NowTime -
                                                                         _noteData.ms));
                                     gameManager.Judge((gameManager.progressManager.NowTime - _noteData.ms),
-                                        _noteData.kind,
+                                        _noteData.kind, _noteData.isFake,
                                         new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
                                     inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width,
                                         Mathf.Abs(gameManager.progressManager.NowTime - _noteData.ms) <=
@@ -539,7 +539,7 @@ namespace DRFV.Game
                         case NoteKind.ExTAP:
                             if (inputManager.GetTrigger(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width, PJColor);
                                 judge_flag = true;
@@ -562,13 +562,13 @@ namespace DRFV.Game
                         case NoteKind.STEREO_END:
                             if (inputManager.GetRelease(_noteData.pos, _noteData.pos + _noteData.width) && !flag)
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 flag = true;
                             }
                             else if (inputManager.GetPressed(_noteData.pos, _noteData.pos + _noteData.width) && !flag)
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 flag = true;
                             }
@@ -586,7 +586,7 @@ namespace DRFV.Game
                         case NoteKind.STEREO_START:
                             if (inputManager.GetPressed(_noteData.pos, _noteData.pos + _noteData.width) && !flag)
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 flag = true;
                             }
@@ -602,7 +602,7 @@ namespace DRFV.Game
                         case NoteKind.FLICK:
                             if (inputManager.GetFlick(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -612,7 +612,7 @@ namespace DRFV.Game
                         case NoteKind.FLICK_LEFT:
                             if (inputManager.GetFlickLeft(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -622,7 +622,7 @@ namespace DRFV.Game
                         case NoteKind.FLICK_RIGHT:
                             if (inputManager.GetFlickRight(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -632,7 +632,7 @@ namespace DRFV.Game
                         case NoteKind.FLICK_UP:
                             if (inputManager.GetFlickUp(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -642,7 +642,7 @@ namespace DRFV.Game
                         case NoteKind.FLICK_DOWN:
                             if (inputManager.GetFlickDown(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -654,13 +654,13 @@ namespace DRFV.Game
                         case NoteKind.BOOM:
                         case NoteKind.BOOM_CENTER:
                         case NoteKind.BOOM_END:
-                        case NoteKind.MOVERBOMB_CENTER:
-                        case NoteKind.MOVERBOMB_END:
+                        case NoteKind.MOVERBOOM_CENTER:
+                        case NoteKind.MOVERBOOM_END:
                             if (gameManager.progressManager.NowTime >= _noteData.ms)
                             {
                                 if (inputManager.GetPressed(_noteData.pos + 1, _noteData.pos + _noteData.width - 1))
                                 {
-                                    gameManager.Judge(gameManager.GDms * 2f, _noteData.kind,
+                                    gameManager.Judge(gameManager.GDms * 2f, _noteData.kind, _noteData.isFake,
                                         new Vector3(transform.position.x, 0.0f, 0.0f),
                                         _noteData.width);
                                     //血が出る警告
@@ -670,7 +670,7 @@ namespace DRFV.Game
                                 }
                                 else
                                 {
-                                    gameManager.Judge(0, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                                    gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                                         _noteData.width);
                                     judge_flag = true;
                                     DistroyThis();
@@ -687,7 +687,7 @@ namespace DRFV.Game
             //BOOM NOTE 以外
             if (!judge_flag)
             {
-                gameManager.Judge(2 * gameManager.GDms, _noteData.kind, new Vector3(transform.position.x, 0.0f, 0.0f),
+                gameManager.Judge(2 * gameManager.GDms, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
                     _noteData.width);
                 if (_noteData.kind == NoteKind.TAP)
                 {
@@ -709,7 +709,7 @@ namespace DRFV.Game
 #if true
             float randomms = Random.Range(-gameManager.PJms * 0.9f, gameManager.PJms * 0.9f);
             if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f - Mathf.Abs(randomms));
-            gameManager.Judge(_noteData.kind != NoteKind.TAP ? 0 : randomms, _noteData.kind,
+            gameManager.Judge(_noteData.kind != NoteKind.TAP ? 0 : randomms, _noteData.kind, _noteData.isFake,
                 new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 #else
             if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f);

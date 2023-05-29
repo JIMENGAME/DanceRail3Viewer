@@ -104,8 +104,8 @@ namespace DRFV.Game
             NoteKind k = noteData.kind;
             if (k == NoteKind.MOVER_CENTER) return true;
             if (k == NoteKind.MOVER_END) return true;
-            if (k == NoteKind.MOVERBOMB_CENTER) return true;
-            if (k == NoteKind.MOVERBOMB_END) return true;
+            if (k == NoteKind.MOVERBOOM_CENTER) return true;
+            if (k == NoteKind.MOVERBOOM_END) return true;
             return false;
         }
     }

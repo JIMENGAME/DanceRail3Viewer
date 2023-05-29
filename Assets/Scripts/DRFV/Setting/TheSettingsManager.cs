@@ -54,7 +54,7 @@ namespace DRFV.Setting
 
         public GameObject InputWindowPrefab;
 
-        public Toggle DebugModeToggle, UseMemoryCacheToggle;
+        public Toggle DebugModeToggle, UseMemoryCacheToggle, EnableJudgeRangeFixToggle;
 
         // Start is called before the first frame update
         void Start()
@@ -90,6 +90,7 @@ namespace DRFV.Setting
             OBSRecordModeToggle.isOn = currentSettings.OBSRecord;
             DebugModeToggle.isOn = DebugModeController.Instance.DebugMode;
             UseMemoryCacheToggle.isOn = currentSettings.UseMemoryCache;
+            EnableJudgeRangeFixToggle.isOn = currentSettings.enableJudgeRangeFix;
             string[] directories = Directory.GetDirectories(StaticResources.Instance.dataPath + "settings/note_sfx");
             int selectedNoteSFXId = 0;
             noteSfxDropdown.options.Add(new Dropdown.OptionData
@@ -193,6 +194,7 @@ namespace DRFV.Setting
             currentSettings.Offset = offset;
             currentSettings.OBSRecord = OBSRecordModeToggle.isOn;
             currentSettings.UseMemoryCache = UseMemoryCacheToggle.isOn;
+            currentSettings.enableJudgeRangeFix = EnableJudgeRangeFixToggle.isOn;
             currentSettings.selectedNoteSFX =
                 noteSfxDropdown.value == 0 ? "" : noteSfxDropdown.options[noteSfxDropdown.value].text;
             GlobalSettings.CurrentSettings = currentSettings;

@@ -681,18 +681,6 @@ namespace DRFV.Select
             songDataContainer.isHard = currentSettings.HardMode;
             songDataContainer.useSkillCheck = currentSettings.SkillCheckMode;
             songDataContainer.selectedDiff = songHard;
-            songDataContainer.tapSize = currentSettings.TapSize;
-            songDataContainer.freeFlickSize = currentSettings.FreeFlickSize;
-            songDataContainer.flickSize = currentSettings.FlickSize;
-            songDataContainer.tapAlpha = currentSettings.TapAlpha;
-            songDataContainer.flickAlpha = currentSettings.FlickAlpha;
-            songDataContainer.freeFlickAlpha = currentSettings.FreeFlickAlpha;
-            songDataContainer.GameEffectParamEQLevel = currentSettings.GameEffectParamEQLevel;
-            songDataContainer.GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
-            songDataContainer.GameEffectTap = currentSettings.GameEffectTap;
-            songDataContainer.playerGameComboDisplay = (GameComboDisplay)currentSettings.ComboDisp;
-            songDataContainer.gameSubJudgeDisplay = (GameSubJudgeDisplay)currentSettings.SmallJudgeDisp;
-            songDataContainer.FCAPIndicator = currentSettings.FCAPIndicator;
             songDataContainer.saveAudio = Input.GetKey(KeyCode.LeftShift) &&
                                           Application.platform is RuntimePlatform.WindowsEditor or RuntimePlatform
                                               .WindowsPlayer or RuntimePlatform.LinuxEditor or RuntimePlatform.LinuxPlayer;

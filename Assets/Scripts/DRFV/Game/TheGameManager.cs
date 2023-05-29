@@ -263,6 +263,8 @@ namespace DRFV.Game
 
         public bool enableTestifyAnomaly;
 
+        private bool enableJudgeRangeFix;
+
         void Start()
         {
             //メモリ解放
@@ -338,26 +340,37 @@ namespace DRFV.Game
                 isHard = songDataContainer.isHard;
                 skillcheck = songDataContainer.useSkillCheck;
                 originalBGM = songDataContainer.music;
-                tapSize = songDataContainer.tapSize;
-                tapAlpha = songDataContainer.tapAlpha;
-                flickSize = songDataContainer.flickSize;
-                flickAlpha = songDataContainer.flickAlpha;
-                freeFlickSize = songDataContainer.freeFlickSize;
-                freeFlickAlpha = songDataContainer.freeFlickAlpha;
-                GameEffectParamEQLevel = songDataContainer.GameEffectParamEQLevel;
-                GameEffectGaterLevel = songDataContainer.GameEffectGaterLevel;
-                GameEffectTap = songDataContainer.GameEffectTap;
-                playerGameComboDisplay = songDataContainer.playerGameComboDisplay;
-                gameSubJudgeDisplay = songDataContainer.gameSubJudgeDisplay;
-                FCAPIndicator = songDataContainer.FCAPIndicator;
+                tapSize = _currentSettings.TapSize;
+                tapAlpha = _currentSettings.TapAlpha;
+                flickSize = _currentSettings.FlickSize;
+                flickAlpha = _currentSettings.FlickAlpha;
+                freeFlickSize = _currentSettings.FreeFlickSize;
+                freeFlickAlpha = _currentSettings.FreeFlickAlpha;
+                GameEffectParamEQLevel = _currentSettings.GameEffectParamEQLevel;
+                GameEffectGaterLevel = _currentSettings.GameEffectGaterLevel;
+                GameEffectTap = _currentSettings.GameEffectTap;
+                playerGameComboDisplay = _currentSettings.ComboDisp;
+                gameSubJudgeDisplay = _currentSettings.SmallJudgeDisp;
+                FCAPIndicator = _currentSettings.FCAPIndicator;
                 saveAudio = songDataContainer.saveAudio;
                 VideoPlayer.playbackSpeed = BGMManager.pitch = songDataContainer.songSpeed;
                 barType = songDataContainer.barType;
                 gameSide = songDataContainer.gameSide;
                 NoteJudgeRange aaa = Util.GetNoteJudgeRange(songDataContainer.NoteJudgeRange);
-                PJms = aaa.PJ;
-                PFms = aaa.P;
-                GDms = aaa.G;
+                enableJudgeRangeFix = _currentSettings.enableJudgeRangeFix &&
+                                      Math.Abs(songDataContainer.songSpeed - 1.0f) > 0.1f;
+                if (enableJudgeRangeFix)
+                {
+                    PJms = aaa.PJ * songDataContainer.songSpeed;
+                    PFms = aaa.P * songDataContainer.songSpeed;
+                    GDms = aaa.G * songDataContainer.songSpeed;
+                }
+                else
+                {
+                    PJms = aaa.PJ;
+                    PFms = aaa.P;
+                    GDms = aaa.G;
+                }
                 if (SongKeyword.Equals("hello") && SongHard == 13)
                 {
                     isHard = true;
@@ -1726,18 +1739,6 @@ namespace DRFV.Game
             storyChallengeContainer.gameSide = gameSide;
             storyChallengeContainer.speed = NoteSpeed;
             storyChallengeContainer.offset = NoteOffset;
-            storyChallengeContainer.tapSize = tapSize;
-            storyChallengeContainer.tapAlpha = tapAlpha;
-            storyChallengeContainer.flickSize = flickSize;
-            storyChallengeContainer.flickAlpha = flickAlpha;
-            storyChallengeContainer.freeFlickSize = freeFlickSize;
-            storyChallengeContainer.freeFlickAlpha = freeFlickAlpha;
-            storyChallengeContainer.GameEffectParamEQLevel = GameEffectParamEQLevel;
-            storyChallengeContainer.GameEffectGaterLevel = GameEffectGaterLevel;
-            storyChallengeContainer.GameEffectTap = GameEffectTap;
-            storyChallengeContainer.playerGameComboDisplay = playerGameComboDisplay;
-            storyChallengeContainer.gameSubJudgeDisplay = gameSubJudgeDisplay;
-            storyChallengeContainer.FCAPIndicator = FCAPIndicator;
             storyChallengeContainer.hasTextBeforeStart = false;
             storyChallengeContainer.tierIdentifier = customTierIdentifier;
             storyChallengeContainer.customTierColor = customTierColor;
@@ -1978,7 +1979,7 @@ namespace DRFV.Game
                 {
                     if (drbfile.notes[i].ms < time && drbfile.notes[i].ms >= from)
                     {
-                        JudgeDirectly(drbfile.notes[i].kind);
+                        JudgeDirectly(drbfile.notes[i].kind, drbfile.notes[i].isFake);
 
                         isCreated[i] = true;
 
@@ -2212,8 +2213,9 @@ namespace DRFV.Game
             msDetailsList.Clear();
         }
 
-        private void JudgeDirectly(NoteKind kind)
+        private void JudgeDirectly(NoteKind kind, bool isFake)
         {
+            if (isFake) return;
             msDetailsList.Add(0f);
             PerfectJ++;
             AddCombo();
@@ -2222,20 +2224,24 @@ namespace DRFV.Game
         }
 
         //判定処理
-        public void Judge(float ms, NoteKind kind, Vector3 pos, float width)
+        public void Judge(float ms, NoteKind kind, bool isFake, Vector3 pos, float width)
         {
             //LISTに登録
 
 
             var go2 = Instantiate(HanteiPrefab, pos, Quaternion.identity);
             GameObject go;
-            msDetailsList.Add(ms);
+            if (!isFake) msDetailsList.Add(enableJudgeRangeFix ? ms / BGMManager.pitch : ms);
 
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)
             {
-                PerfectJ++;
-                AddCombo();
+                if (!isFake)
+                {
+                    PerfectJ++;
+                    AddCombo();
+                    hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
+                }
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
 
                 if (gameSubJudgeDisplay == GameSubJudgeDisplay.MS && kind == NoteKind.TAP)
@@ -2244,15 +2250,17 @@ namespace DRFV.Game
                 if (imgJudgeBeam[0])
                     imgJudgeBeam[0].color = new Color(imgJudgeBeam[0].color.r, imgJudgeBeam[0].color.g,
                         imgJudgeBeam[0].color.b, 1.0f);
-                //HP処理
-                hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
             }
             //PERFECT 判定
             else if (Mathf.Abs(ms) <= PFms)
             {
-                Perfect++;
-                AddCombo();
-                FastOrSlow(ms);
+                if (!isFake)
+                {
+                    Perfect++;
+                    AddCombo();
+                    FastOrSlow(ms);
+                    hpManager.InCreaseHp(hpManager.HpBar.PerfectHP(kind, drbfile.noteWeightCount, this));
+                }
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
                 switch (gameSubJudgeDisplay)
                 {
@@ -2272,8 +2280,6 @@ namespace DRFV.Game
                 if (imgJudgeBeam[1])
                     imgJudgeBeam[1].color = new Color(imgJudgeBeam[1].color.r, imgJudgeBeam[1].color.g,
                         imgJudgeBeam[1].color.b, 1.0f);
-                //HP処理
-                hpManager.InCreaseHp(hpManager.HpBar.PerfectHP(kind, drbfile.noteWeightCount, this));
                 ////Event
                 //if (isEvent)
                 //{
@@ -2288,9 +2294,13 @@ namespace DRFV.Game
             //GOOD 判定
             else if (Mathf.Abs(ms) <= GDms)
             {
-                good++;
-                AddCombo();
-                FastOrSlow(ms);
+                if (!isFake)
+                {
+                    good++;
+                    AddCombo();
+                    FastOrSlow(ms);
+                    hpManager.DecreaseHp(hpManager.HpBar.GoodHP(kind, drbfile.noteWeightCount, this));
+                }
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
                 switch (gameSubJudgeDisplay)
                 {
@@ -2310,8 +2320,6 @@ namespace DRFV.Game
                 if (imgJudgeBeam[2])
                     imgJudgeBeam[2].color = new Color(imgJudgeBeam[2].color.r, imgJudgeBeam[2].color.g,
                         imgJudgeBeam[2].color.b, 1.0f);
-                //HP処理
-                hpManager.DecreaseHp(hpManager.HpBar.GoodHP(kind, drbfile.noteWeightCount, this));
                 //Event
                 //if (isEvent)
                 //{
@@ -2326,22 +2334,24 @@ namespace DRFV.Game
             //MISS 判定
             else
             {
-                miss++;
-                if (Combo >= 30)
+                if (isFake)
                 {
-                    //血が出る警告
-                    ShowHPMask();
-                }
+                    miss++;
+                    if (Combo >= 30)
+                    {
+                        //血が出る警告
+                        ShowHPMask();
+                    }
 
-                Combo = 0;
-                ReflashCombo();
+                    Combo = 0;
+                    ReflashCombo();
+                    hpManager.DecreaseHp(hpManager.HpBar.MissHP(kind, drbfile.noteWeightCount, this));
+                }
                 go = null;
                 go2.GetComponent<JudgeImage>().Init(1);
                 if (imgJudgeBeam[3])
                     imgJudgeBeam[3].color = new Color(imgJudgeBeam[3].color.r, imgJudgeBeam[3].color.g,
                         imgJudgeBeam[3].color.b, 1.0f);
-                //HP処理
-                hpManager.DecreaseHp(hpManager.HpBar.MissHP(kind, drbfile.noteWeightCount, this));
                 ////Event
                 //if (isEvent)
                 //{

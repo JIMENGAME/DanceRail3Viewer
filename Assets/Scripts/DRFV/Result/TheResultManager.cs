@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Math = System.Math;
 
 namespace DRFV.Result
 {
@@ -38,6 +39,7 @@ namespace DRFV.Result
         public GameObject hardIndicator;
         public GameObject easyIndicator;
         public GameObject hardbarIndicator;
+        public GameObject judgeRangeFixInficator;
         public GameObject noModImage;
 
         public Text endType;
@@ -81,6 +83,7 @@ namespace DRFV.Result
         // Start is called before the first frame update
         void Start()
         {
+            GlobalSettings currentSettings = GlobalSettings.CurrentSettings;
             AccountInfo.Instance.UpdateAccountPanel();
             SongDataContainer songDataContainer = GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>();
             ResultDataContainer resultDataContainer =
@@ -98,7 +101,9 @@ namespace DRFV.Result
                 Util.Init();
             }
 #endif
-            int realScore = GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL
+            bool enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
+                                       Math.Abs(songDataContainer.songSpeed - 1.0f) > 0.1f;
+            int realScore = currentSettings.ScoreType != SCORE_TYPE.ORIGINAL
                 ? Mathf.RoundToInt((3000000.0f *
                     (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
                      resultDataContainer.GOOD / 3f) / resultDataContainer.noteTotal))
@@ -146,7 +151,7 @@ namespace DRFV.Result
                     resultDataOld = new ResultData();
                 }
 
-                if (GlobalSettings.CurrentSettings.ScoreType != SCORE_TYPE.ORIGINAL)
+                if (currentSettings.ScoreType != SCORE_TYPE.ORIGINAL)
                 {
                     scoreDelta.text = "Non-origin score";
                     tNewScore.SetActive(false);
@@ -288,6 +293,7 @@ namespace DRFV.Result
             hardIndicator.SetActive(songDataContainer.isHard);
             easyIndicator.SetActive(songDataContainer.barType == BarType.EASY);
             hardbarIndicator.SetActive(songDataContainer.barType == BarType.HARD);
+            judgeRangeFixInficator.SetActive(enableJudgeRangeFix);
             HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "   " + "ACC: " +
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
             SongSpeed.text = $"SPEED: {songDataContainer.songSpeed:N1}x";

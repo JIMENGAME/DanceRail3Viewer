@@ -33,8 +33,8 @@ namespace DRFV.Setting
             Buttons = buttonList.ToArray();
             selected = type switch
             {
-                ButtonGroupType.COMBO => TheSettingsManager.currentSettings.ComboDisp,
-                ButtonGroupType.SMALL_JUDGE => TheSettingsManager.currentSettings.SmallJudgeDisp,
+                ButtonGroupType.COMBO => (int) TheSettingsManager.currentSettings.ComboDisp,
+                ButtonGroupType.SMALL_JUDGE =>(int) TheSettingsManager.currentSettings.SmallJudgeDisp,
                 ButtonGroupType.AUTOPLAY_HINT => TheSettingsManager.currentSettings.AutoplayHint,
                 ButtonGroupType.GAME_SIDE_GROUP => TheSettingsManager.currentSettings.GameSide,
                 ButtonGroupType.SCORE_TYPE => (int) TheSettingsManager.currentSettings.ScoreType,
@@ -77,10 +77,10 @@ namespace DRFV.Setting
             switch (type)
             {
                 case ButtonGroupType.COMBO:
-                    TheSettingsManager.currentSettings.ComboDisp = id;
+                    TheSettingsManager.currentSettings.ComboDisp = (GameComboDisplay) id;
                     break;
                 case ButtonGroupType.SMALL_JUDGE:
-                    TheSettingsManager.currentSettings.SmallJudgeDisp = id;
+                    TheSettingsManager.currentSettings.SmallJudgeDisp = (GameSubJudgeDisplay) id;
                     break;
                 case ButtonGroupType.AUTOPLAY_HINT:
                     TheSettingsManager.currentSettings.AutoplayHint = id;

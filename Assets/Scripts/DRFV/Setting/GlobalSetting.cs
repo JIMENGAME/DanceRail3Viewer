@@ -1,3 +1,4 @@
+using DRFV.Enums;
 using DRFV.Select;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -48,8 +49,8 @@ namespace DRFV.Setting
         public int GameEffectParamEQLevel;
         public int GameEffectGaterLevel;
         public int GameEffectTap;
-        public int ComboDisp;
-        public int SmallJudgeDisp;
+        public GameComboDisplay ComboDisp;
+        public GameSubJudgeDisplay SmallJudgeDisp;
         public bool FCAPIndicator;
         public int AutoplayHint;
         public int SongSpeed;
@@ -65,6 +66,7 @@ namespace DRFV.Setting
         public SCORE_TYPE ScoreType;
         public SELECT_ORDER SelectOrder;
         public string selectedNoteSFX;
+        public bool enableJudgeRangeFix;
 
         public GlobalSettings()
         {
@@ -81,8 +83,8 @@ namespace DRFV.Setting
             GameEffectParamEQLevel = 10;
             GameEffectGaterLevel = 10;
             GameEffectTap = 10;
-            ComboDisp = 1;
-            SmallJudgeDisp = 1;
+            ComboDisp = GameComboDisplay.COMBO;
+            SmallJudgeDisp = GameSubJudgeDisplay.FAST_SLOW;
             FCAPIndicator = false;
             AutoplayHint = 0;
             SongSpeed = 0;
@@ -98,6 +100,7 @@ namespace DRFV.Setting
             ScoreType = SCORE_TYPE.ORIGINAL;
             SelectOrder = SELECT_ORDER.SONGLIST;
             selectedNoteSFX = "";
+            enableJudgeRangeFix = false;
         }
     }
 

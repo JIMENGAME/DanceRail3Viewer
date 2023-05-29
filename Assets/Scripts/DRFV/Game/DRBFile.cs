@@ -229,6 +229,7 @@ namespace DRFV.Game
 
                     note.parent = int.Parse(sss[6].Trim());
                     note.mode = sss.Length > 7 ? ParseNoteAppearMode.ParseToMode(sss[7].Trim()) : NoteAppearMode.None;
+                    note.isFake = sss.Length > 8 && int.Parse(sss[7]) == 1;
 
                     drbFile.notes.Add(note);
 
@@ -406,6 +407,7 @@ namespace DRFV.Game
         public float dms;
 
         public bool isJudgeTimeRangeConflicted;
+        public bool isFake;
 
         public MD5Data GetMd5Data()
         {

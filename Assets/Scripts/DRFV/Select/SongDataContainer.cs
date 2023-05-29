@@ -25,17 +25,7 @@ namespace DRFV.Select
 
         public int speed;
         public float offset;
-
-        public GameComboDisplay playerGameComboDisplay = GameComboDisplay.COMBO;
-
-        public int tapSize, freeFlickSize, flickSize, tapAlpha, freeFlickAlpha, flickAlpha;
-
-        public int GameEffectGaterLevel, GameEffectParamEQLevel, GameEffectTap;
-
-        public GameSubJudgeDisplay gameSubJudgeDisplay;
-
-        public bool FCAPIndicator;
-
+        
         public BarType barType;
 
         public float songSpeed;
