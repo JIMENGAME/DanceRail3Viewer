@@ -6,6 +6,7 @@ using DRFV.Game.HPBars;
 using DRFV.inokana;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DRFV.Test
 {
@@ -19,17 +20,18 @@ namespace DRFV.Test
 
         public HPManager HpManager;
 
+        public Button pjskLongTest;
+        public AudioSource longSource;
+        private Text componentInChildren;
+
         // Start is called before the first frame update
         protected override void OnAwake()
         {
-            using (FileStream fileStream = new FileStream("E:\\Users\\Administrator\\WebstormProjects\\DanceRail3Viewer\\Temp\\1.json", FileMode.Open, FileAccess.Read))
-            {
-                byte[] qwq = new byte[fileStream.Length];
-                fileStream.Read(qwq);
-                JArray jArray = JArray.Parse(Encoding.UTF8.GetString(qwq));
-            }
             HpManager.Init(new HPBarDefault());
             DrawMesh();
+            
+            componentInChildren = pjskLongTest.GetComponentInChildren<Text>();
+            pjskLongTest.onClick.AddListener(UpdateLongSource);
         }
 
         // Update is called once per frame
@@ -47,6 +49,20 @@ namespace DRFV.Test
                     Graphics.DrawMesh(simpleNote.GetMesh(), Vector3.zero, Quaternion.identity,
                         _materials[Mathf.Abs(simpleNote.materialId) % _materials.Length], 9);
                 }
+            }
+        }
+
+        public void UpdateLongSource()
+        {
+            if (longSource.isPlaying)
+            {
+                longSource.Stop();
+                componentInChildren.text = "开始播放";
+
+            }
+            else {
+                longSource.Play();
+                componentInChildren.text = "停止播放";
             }
         }
     }

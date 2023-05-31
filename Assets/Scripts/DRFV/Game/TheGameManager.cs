@@ -225,6 +225,7 @@ namespace DRFV.Game
         public bool isPause = true;
         public GameObject jumpTo;
 
+        delegate void AudioClipReceiver(AudioClip result);
 
         public DRBFile drbfile;
         public int noteTotal;
@@ -371,6 +372,7 @@ namespace DRFV.Game
                     PFms = aaa.P;
                     GDms = aaa.G;
                 }
+
                 if (SongKeyword.Equals("hello") && SongHard == 13)
                 {
                     isHard = true;
@@ -1020,6 +1022,7 @@ namespace DRFV.Game
             {
                 string songFolder = StaticResources.Instance.dataPath + "settings/note_sfx/" +
                                     _currentSettings.selectedNoteSFX + "/";
+                int defaultFrequency = 44100;
                 if (File.Exists(songFolder + "settings.json"))
                 {
                     JObject jObject = Util.ReadJson(songFolder + "settings.json");
@@ -1027,81 +1030,47 @@ namespace DRFV.Game
                     {
                         disableOverlappingCheck = jObject["disable_overlapping_check"].ToObject<bool>();
                     }
+
+                    if (jObject.ContainsKey("default_frequency"))
+                    {
+                        defaultFrequency = jObject["default_frequency"].ToObject<int>();
+                    }
                 }
-                if (File.Exists(songFolder + "hit.ogg"))
+                string freq = originalBGM.frequency == defaultFrequency ? "" : "_" + originalBGM.frequency;
+
+                yield return GetAudioClip("hit", result => _acHit = result);
+                yield return GetAudioClip("slide", result => _acSlide = result);
+                yield return GetAudioClip("flick", result => _acFlick = result);
+                yield return GetAudioClip("free_flick", result => _acFreeFlick = result);
+
+                IEnumerator GetAudioClip(string id, AudioClipReceiver audioClipReceiver)
                 {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "hit.ogg", AudioType.OGGVORBIS);
-                    yield return uwr.SendWebRequest();
-                    _acHit = uwr.isDone
-                        ? DownloadHandlerAudioClip.GetContent(uwr)
-                        : null;
-                }
-                else if (File.Exists(songFolder + "hit.wav"))
-                {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "hit.wav", AudioType.WAV);
-                    yield return uwr.SendWebRequest();
-                    _acHit = uwr.isDone
-                        ? DownloadHandlerAudioClip.GetContent(uwr)
-                        : null;
+                    string tmpPath;
+                    AudioType tmpAudioType;
+
+                    (tmpPath, tmpAudioType) = GetFilePath(id);
+
+                    if (!string.IsNullOrEmpty(tmpPath))
+                    {
+                        using var uwr =
+                            UnityWebRequestMultimedia.GetAudioClip("file://" + tmpPath, tmpAudioType);
+                        yield return uwr.SendWebRequest();
+                        audioClipReceiver.Invoke(uwr.result == UnityWebRequest.Result.Success
+                            ? DownloadHandlerAudioClip.GetContent(uwr)
+                            : null);
+                    }
+                    else audioClipReceiver.Invoke(null);
                 }
 
-                if (File.Exists(songFolder + "slide.ogg"))
-                {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "slide.ogg",
-                            AudioType.OGGVORBIS);
-                    yield return uwr.SendWebRequest();
-                    _acSlide = uwr.isDone ? DownloadHandlerAudioClip.GetContent(uwr) : _acHit;
-                }
-                else if (File.Exists(songFolder + "slide.wav"))
-                {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "slide.wav", AudioType.WAV);
-                    yield return uwr.SendWebRequest();
-                    _acSlide = uwr.isDone ? DownloadHandlerAudioClip.GetContent(uwr) : null;
-                }
 
-                if (File.Exists(songFolder + "flick.ogg"))
+                (string, AudioType) GetFilePath(string id)
                 {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "flick.ogg",
-                            AudioType.OGGVORBIS);
-                    yield return uwr.SendWebRequest();
-                    _acFlick = uwr.isDone
-                        ? DownloadHandlerAudioClip.GetContent(uwr)
-                        : null;
-                }
-                else if (File.Exists(songFolder + "flick.wav"))
-                {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "flick.wav", AudioType.WAV);
-                    yield return uwr.SendWebRequest();
-                    _acFlick = uwr.isDone
-                        ? DownloadHandlerAudioClip.GetContent(uwr)
-                        : null;
-                }
-
-                if (File.Exists(songFolder + "free_flick.ogg"))
-                {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "free_flick.ogg",
-                            AudioType.OGGVORBIS);
-                    yield return uwr.SendWebRequest();
-                    _acFreeFlick = uwr.isDone
-                        ? DownloadHandlerAudioClip.GetContent(uwr)
-                        : null;
-                }
-                else if (File.Exists(songFolder + "free_flick.wav"))
-                {
-                    using var uwr =
-                        UnityWebRequestMultimedia.GetAudioClip("file://" + songFolder + "free_flick.wav",
-                            AudioType.WAV);
-                    yield return uwr.SendWebRequest();
-                    _acFreeFlick = uwr.isDone
-                        ? DownloadHandlerAudioClip.GetContent(uwr)
-                        : null;
+                    string path;
+                    if (File.Exists(path = songFolder + $"{id}{freq}.ogg")) return (path, AudioType.OGGVORBIS);
+                    if (File.Exists(path = songFolder + $"{id}.ogg")) return (path, AudioType.OGGVORBIS);
+                    if (File.Exists(path = songFolder + $"{id}{freq}.wav")) return (path, AudioType.WAV);
+                    if (File.Exists(path = songFolder + $"{id}.wav")) return (path, AudioType.WAV);
+                    return ("", AudioType.UNKNOWN);
                 }
             }
 
@@ -1200,7 +1169,8 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
 
-                        if (disableOverlappingCheck || !list_slide.Contains(start) && !(slideEqualsHit && list_hit.Contains(start)))
+                        if (disableOverlappingCheck ||
+                            !list_slide.Contains(start) && !(slideEqualsHit && list_hit.Contains(start)))
                         {
                             list_slide.Add(start);
                             if (slideEqualsHit) list_hit.Add(start);
@@ -1223,7 +1193,8 @@ namespace DRFV.Game
                             list_flick.Add(start);
                             for (int c = 0; c < f_flick.Length; c++)
                             {
-                                if (start + c < f_song.Length) f_song[start + c] += f_flick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                                if (start + c < f_song.Length)
+                                    f_song[start + c] += f_flick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
                             }
                         }
                     }
@@ -1233,13 +1204,15 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
 
-                        if (disableOverlappingCheck || !list_freeFlick.Contains(start) && !(freeFlickEqualsFlick && list_flick.Contains(start)))
+                        if (disableOverlappingCheck || !list_freeFlick.Contains(start) &&
+                            !(freeFlickEqualsFlick && list_flick.Contains(start)))
                         {
                             list_freeFlick.Add(start);
                             if (freeFlickEqualsFlick) list_flick.Add(start);
                             for (int c = 0; c < f_freeFlick.Length; c++)
                             {
-                                if (start + c < f_song.Length) f_song[start + c] += f_freeFlick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                                if (start + c < f_song.Length)
+                                    f_song[start + c] += f_freeFlick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
                             }
                         }
                     }
@@ -2242,6 +2215,7 @@ namespace DRFV.Game
                     AddCombo();
                     hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
                 }
+
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
 
                 if (gameSubJudgeDisplay == GameSubJudgeDisplay.MS && kind == NoteKind.TAP)
@@ -2261,6 +2235,7 @@ namespace DRFV.Game
                     FastOrSlow(ms);
                     hpManager.InCreaseHp(hpManager.HpBar.PerfectHP(kind, drbfile.noteWeightCount, this));
                 }
+
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
                 switch (gameSubJudgeDisplay)
                 {
@@ -2301,6 +2276,7 @@ namespace DRFV.Game
                     FastOrSlow(ms);
                     hpManager.DecreaseHp(hpManager.HpBar.GoodHP(kind, drbfile.noteWeightCount, this));
                 }
+
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
                 switch (gameSubJudgeDisplay)
                 {
@@ -2347,6 +2323,7 @@ namespace DRFV.Game
                     ReflashCombo();
                     hpManager.DecreaseHp(hpManager.HpBar.MissHP(kind, drbfile.noteWeightCount, this));
                 }
+
                 go = null;
                 go2.GetComponent<JudgeImage>().Init(1);
                 if (imgJudgeBeam[3])
