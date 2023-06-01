@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using DRFV.Global;
 using DRFV.Global.Components;
@@ -54,7 +53,7 @@ namespace DRFV.Setting
 
         public GameObject InputWindowPrefab;
 
-        public Toggle DebugModeToggle, UseMemoryCacheToggle, EnableJudgeRangeFixToggle;
+        public Toggle DebugModeToggle, UseMemoryCacheToggle, EnableJudgeRangeFixToggle, EnableSCFixToggle;
 
         // Start is called before the first frame update
         void Start()
@@ -91,11 +90,12 @@ namespace DRFV.Setting
             DebugModeToggle.isOn = DebugModeController.Instance.DebugMode;
             UseMemoryCacheToggle.isOn = currentSettings.UseMemoryCache;
             EnableJudgeRangeFixToggle.isOn = currentSettings.enableJudgeRangeFix;
+            EnableSCFixToggle.isOn = currentSettings.enableSCFix;
             string[] directories = Directory.GetDirectories(StaticResources.Instance.dataPath + "settings/note_sfx");
             int selectedNoteSFXId = 0;
             noteSfxDropdown.options.Add(new Dropdown.OptionData
             {
-                text = "无"
+                text = "原版"
             });
             for (var i = 0; i < directories.Length; i++)
             {
@@ -195,6 +195,7 @@ namespace DRFV.Setting
             currentSettings.OBSRecord = OBSRecordModeToggle.isOn;
             currentSettings.UseMemoryCache = UseMemoryCacheToggle.isOn;
             currentSettings.enableJudgeRangeFix = EnableJudgeRangeFixToggle.isOn;
+            currentSettings.enableSCFix = EnableSCFixToggle.isOn;
             currentSettings.selectedNoteSFX =
                 noteSfxDropdown.value == 0 ? "" : noteSfxDropdown.options[noteSfxDropdown.value].text;
             GlobalSettings.CurrentSettings = currentSettings;
