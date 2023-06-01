@@ -164,7 +164,6 @@ namespace DRFV.Story
 
         public void UnlockByPlaySong()
         {
-            GlobalSettings currentSettings = GlobalSettings.CurrentSettings;
             CheckDataContainers.CleanSongDataContainer();
             JObject jo = unlocks[unlock].ToObject<JObject>();
             GameObject go = new GameObject { name = "StoryChallengeContainer", tag = "SongData" };
@@ -253,8 +252,6 @@ namespace DRFV.Story
                 $"STORY/SONGS/{storyChallengeContainer.songData.keyword}{(hasOverride ? $".{storyChallengeContainer.songData.hards[0]}" : "")}");
             storyChallengeContainer.songData.cover =
                 Resources.Load<Sprite>("STORY/SONGS/" + storyChallengeContainer.songData.keyword);
-            storyChallengeContainer.speed = currentSettings.NoteSpeed;
-            storyChallengeContainer.offset = currentSettings.Offset;
             storyChallengeContainer.isComputer = Application.platform switch
             {
                 RuntimePlatform.WindowsEditor => true,
@@ -263,13 +260,8 @@ namespace DRFV.Story
                 RuntimePlatform.LinuxPlayer => true,
                 _ => false
             };
-            storyChallengeContainer.isAuto = storyChallengeContainer.isComputer;
-            storyChallengeContainer.isMirror = false;
-            storyChallengeContainer.isHard = false;
-            storyChallengeContainer.useSkillCheck = false;
             storyChallengeContainer.selectedDiff = storyChallengeContainer.songData.hards[0];
             storyChallengeContainer.saveAudio = false;
-            storyChallengeContainer.barType = BarType.DEFAULT;
             storyChallengeContainer.songSpeed = songSpeed;
             storyChallengeContainer.NoteJudgeRange = noteJudgeRange;
             storyChallengeContainer.unlock = unlock;

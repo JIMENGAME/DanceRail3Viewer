@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using DRFV.Game.HPBars;
 using DRFV.Game;
+using DRFV.Setting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +42,7 @@ namespace DRFV.Game.SceneControl
             _theGameManager.SetTimeToEnd(149231f);
             animator.SetTrigger(Play);
             pauseCanvas.SetActive(false);
-            _theGameManager.songDataContainer.isHard = _theGameManager.isHard = true;
+            _theGameManager.currentSettings.HardMode = _theGameManager.isHard = true;
             float hp = Math.Max(_theGameManager.hpManager.HpNow, 50);
             _theGameManager.hpManager.Init(new HPBarEtherStrike(_theGameManager.hpManager));
             _theGameManager.hpManager.HpNow = hp;

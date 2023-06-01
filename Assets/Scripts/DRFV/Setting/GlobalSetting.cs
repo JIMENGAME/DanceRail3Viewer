@@ -67,6 +67,7 @@ namespace DRFV.Setting
         public SELECT_ORDER SelectOrder;
         public string selectedNoteSFX;
         public bool enableJudgeRangeFix;
+        public bool enableSCFix;
 
         public GlobalSettings()
         {
@@ -101,6 +102,7 @@ namespace DRFV.Setting
             SelectOrder = SELECT_ORDER.SONGLIST;
             selectedNoteSFX = "";
             enableJudgeRangeFix = false;
+            enableSCFix = false;
         }
     }
 

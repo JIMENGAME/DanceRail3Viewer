@@ -340,13 +340,13 @@ namespace DRFV.Game
             {
                 z = _noteData.maxtime > progress
                     ? 300.0f
-                    : 0.01f * (_noteData.ms - acNSC.Evaluate(progress)) * gameManager.NoteSpeed;
+                    : 0.01f * (_noteData.ms - acNSC.Evaluate(progress)) * gameManager.RealNoteSpeed;
                 pz = 0.01f * (_noteData.parent_dms - distance);
             }
             else
             {
-                z = 0.01f * (_noteData.dms - distance) * _noteData.nsc.value * gameManager.NoteSpeed;
-                pz = 0.01f * (_noteData.parent_dms - distance) * gameManager.NoteSpeed;
+                z = 0.01f * (_noteData.dms - distance) * _noteData.nsc.value * gameManager.RealNoteSpeed;
+                pz = 0.01f * (_noteData.parent_dms - distance) * gameManager.RealNoteSpeed;
             }
 
             x = _noteData.mode switch

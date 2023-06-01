@@ -1,3 +1,4 @@
+using DRFV.Enums;
 using DRFV.Select;
 using UnityEngine;
 
@@ -16,6 +17,10 @@ namespace DRFV.Story
         public string tierIdentifier;
         public Color? customTierColor;
         public bool ratingPlus;
+
+        public float songSpeed;
+        public int NoteJudgeRange;
+        public GameSide gameSide;
 
         public override int GetContainerType()
         {

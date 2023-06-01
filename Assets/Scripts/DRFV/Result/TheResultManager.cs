@@ -101,8 +101,11 @@ namespace DRFV.Result
                 Util.Init();
             }
 #endif
+            float songSpeed = Util.TransformSongSpeed(currentSettings.SongSpeed);
+            BarType hpBarType = (BarType) currentSettings.HPBarType;
             bool enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
-                                       Math.Abs(songDataContainer.songSpeed - 1.0f) > 0.1f;
+                                       Math.Abs(songSpeed - 1.0f) > 0.1f;
+            bool isHadouTest = songDataContainer.GetContainerType() == SongDataContainerType.HADOU_TEST;
             int realScore = currentSettings.ScoreType != SCORE_TYPE.ORIGINAL
                 ? Mathf.RoundToInt((3000000.0f *
                     (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
@@ -132,9 +135,8 @@ namespace DRFV.Result
                 tNewScore.SetActive(false);
             }
             else if (resultDataContainer.endType != EndType.AUTO_PLAY &&
-                     !songDataContainer.useSkillCheck &&
-                     songDataContainer.barType != BarType.EASY &&
-                     songDataContainer.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit())
+                     !currentSettings.SkillCheckMode &&
+                     hpBarType != BarType.EASY && (isHadouTest || currentSettings.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit()))
             {
                 string key = "SongScore_" +
                              resultDataContainer.md5;
@@ -187,7 +189,7 @@ namespace DRFV.Result
                         acc = MathF.Round(resultDataContainer.Accuracy, 2, MidpointRounding.AwayFromZero)
                     };
                     string resultStr = JsonConvert.SerializeObject(resultData, Formatting.None);
-                    if (songDataContainer.GetContainerType() != SongDataContainerType.HADOU_TEST)
+                    if (!isHadouTest)
                         UploadScore(key, resultStr);
 
                     PlayerPrefs.SetString(key, resultStr);
@@ -282,22 +284,22 @@ namespace DRFV.Result
                 }
 
             bool isNoMod = true;
-            isNoMod = isNoMod && !songDataContainer.useSkillCheck;
-            isNoMod = isNoMod && !songDataContainer.isMirror;
-            isNoMod = isNoMod && !songDataContainer.isHard;
-            isNoMod = isNoMod && songDataContainer.barType != BarType.EASY;
-            isNoMod = isNoMod && songDataContainer.barType != BarType.HARD;
+            isNoMod &= !currentSettings.SkillCheckMode;
+            isNoMod &= !currentSettings.IsMirror;
+            isNoMod &= !currentSettings.HardMode;
+            isNoMod &= hpBarType != BarType.EASY;
+            isNoMod &= hpBarType != BarType.HARD;
             noModImage.SetActive(isNoMod);
-            skillCheckIndicator.SetActive(songDataContainer.useSkillCheck);
-            mirrorIndicator.SetActive(songDataContainer.isMirror);
-            hardIndicator.SetActive(songDataContainer.isHard);
-            easyIndicator.SetActive(songDataContainer.barType == BarType.EASY);
-            hardbarIndicator.SetActive(songDataContainer.barType == BarType.HARD);
+            skillCheckIndicator.SetActive(currentSettings.SkillCheckMode);
+            mirrorIndicator.SetActive(currentSettings.IsMirror);
+            hardIndicator.SetActive(currentSettings.HardMode);
+            easyIndicator.SetActive(hpBarType == BarType.EASY);
+            hardbarIndicator.SetActive(hpBarType == BarType.HARD);
             judgeRangeFixInficator.SetActive(enableJudgeRangeFix);
             HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "   " + "ACC: " +
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
-            SongSpeed.text = $"SPEED: {songDataContainer.songSpeed:N1}x";
-            JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(songDataContainer.NoteJudgeRange).displayName;
+            SongSpeed.text = $"SPEED: {songSpeed:N1}x";
+            JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(isHadouTest ? -1 : currentSettings.NoteJudgeRange).displayName;
             MSDetailsDrawer.Init();
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
         }

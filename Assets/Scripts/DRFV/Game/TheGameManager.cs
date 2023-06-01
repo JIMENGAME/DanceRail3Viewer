@@ -57,6 +57,7 @@ namespace DRFV.Game
 
 
         [SerializeField] public int NoteSpeed = 12;
+        [SerializeField] public float RealNoteSpeed = 12;
         [SerializeField] float NoteOffset; //[SerializeField, Range(-200, 200)]
         [SerializeField] public bool GameAuto = true, GameMirror;
 
@@ -328,43 +329,46 @@ namespace DRFV.Game
             }
             else if (songDataObject != null)
             {
-                _currentSettings = GlobalSettings.CurrentSettings;
+                currentSettings = GlobalSettings.CurrentSettings;
                 songDataContainer = songDataObject.GetComponent<SongDataContainer>();
                 SongKeyword = songDataContainer.songData.keyword;
                 SongHard = songDataContainer.selectedDiff;
                 SongTitle = songDataContainer.songData.songName;
                 SongArtist = songDataContainer.songData.songArtist;
-                NoteSpeed = songDataContainer.speed;
-                NoteOffset = songDataContainer.offset;
-                GameAuto = songDataContainer.isAuto;
-                GameMirror = songDataContainer.isMirror;
-                isHard = songDataContainer.isHard;
-                skillcheck = songDataContainer.useSkillCheck;
                 originalBGM = songDataContainer.music;
-                tapSize = _currentSettings.TapSize;
-                tapAlpha = _currentSettings.TapAlpha;
-                flickSize = _currentSettings.FlickSize;
-                flickAlpha = _currentSettings.FlickAlpha;
-                freeFlickSize = _currentSettings.FreeFlickSize;
-                freeFlickAlpha = _currentSettings.FreeFlickAlpha;
-                GameEffectParamEQLevel = _currentSettings.GameEffectParamEQLevel;
-                GameEffectGaterLevel = _currentSettings.GameEffectGaterLevel;
-                GameEffectTap = _currentSettings.GameEffectTap;
-                playerGameComboDisplay = _currentSettings.ComboDisp;
-                gameSubJudgeDisplay = _currentSettings.SmallJudgeDisp;
-                FCAPIndicator = _currentSettings.FCAPIndicator;
+                NoteSpeed = currentSettings.NoteSpeed;
+                NoteOffset = currentSettings.Offset;
+                GameAuto = currentSettings.IsAuto;
+                GameMirror = currentSettings.IsMirror;
+                isHard = currentSettings.HardMode;
+                skillcheck = currentSettings.SkillCheckMode;
+                tapSize = currentSettings.TapSize;
+                tapAlpha = currentSettings.TapAlpha;
+                flickSize = currentSettings.FlickSize;
+                flickAlpha = currentSettings.FlickAlpha;
+                freeFlickSize = currentSettings.FreeFlickSize;
+                freeFlickAlpha = currentSettings.FreeFlickAlpha;
+                GameEffectParamEQLevel = currentSettings.GameEffectParamEQLevel;
+                GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
+                GameEffectTap = currentSettings.GameEffectTap;
+                playerGameComboDisplay = currentSettings.ComboDisp;
+                gameSubJudgeDisplay = currentSettings.SmallJudgeDisp;
+                FCAPIndicator = currentSettings.FCAPIndicator;
                 saveAudio = songDataContainer.saveAudio;
-                VideoPlayer.playbackSpeed = BGMManager.pitch = songDataContainer.songSpeed;
-                barType = songDataContainer.barType;
-                gameSide = songDataContainer.gameSide;
-                NoteJudgeRange aaa = Util.GetNoteJudgeRange(songDataContainer.NoteJudgeRange);
-                enableJudgeRangeFix = _currentSettings.enableJudgeRangeFix &&
-                                      Math.Abs(songDataContainer.songSpeed - 1.0f) > 0.1f;
+                float songSpeed = Util.TransformSongSpeed(currentSettings.SongSpeed);
+                VideoPlayer.playbackSpeed = BGMManager.pitch = songSpeed;
+                barType = (BarType) currentSettings.HPBarType;
+                gameSide = (GameSide) currentSettings.GameSide;
+                NoteJudgeRange aaa = Util.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
+                bool songspeedDiff = Math.Abs(songSpeed - 1.0f) > 0.1f;
+                enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
+                                      songspeedDiff;
+                RealNoteSpeed = songspeedDiff && currentSettings.enableSCFix ? NoteSpeed / songSpeed : NoteSpeed;
                 if (enableJudgeRangeFix)
                 {
-                    PJms = aaa.PJ * songDataContainer.songSpeed;
-                    PFms = aaa.P * songDataContainer.songSpeed;
-                    GDms = aaa.G * songDataContainer.songSpeed;
+                    PJms = aaa.PJ * songSpeed;
+                    PFms = aaa.P * songSpeed;
+                    GDms = aaa.G * songSpeed;
                 }
                 else
                 {
@@ -382,11 +386,9 @@ namespace DRFV.Game
                     sprSongImage.sprite =
                         songDataContainer.songData.cover ? songDataContainer.songData.cover : CoverPlaceholder;
                 if (barType == BarType.HARD)
-                    GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>().isHard =
-                        songDataContainer.isHard = true;
+                    currentSettings.HardMode = true;
                 else if (barType == BarType.EASY)
-                    GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>().isHard =
-                        songDataContainer.isHard = false;
+                    currentSettings.HardMode = false;
                 if (songDataContainer.GetContainerType() == SongDataContainerType.STORY)
                 {
                     StoryChallengeContainer storyChallengeContainer = (StoryChallengeContainer)songDataContainer;
@@ -399,6 +401,29 @@ namespace DRFV.Game
                     customTierIdentifier = storyChallengeContainer.tierIdentifier;
                     customTierColor = storyChallengeContainer.customTierColor;
                     ratingPlus = storyChallengeContainer.ratingPlus;
+                    GameAuto |= isComputerInStory;
+                    RealNoteSpeed = NoteSpeed = currentSettings.NoteSpeed;
+                    VideoPlayer.playbackSpeed = BGMManager.pitch = storyChallengeContainer.songSpeed;
+                    enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
+                                          Math.Abs(storyChallengeContainer.songSpeed - 1.0f) > 0.1f;
+                    aaa = Util.GetNoteJudgeRange(storyChallengeContainer.NoteJudgeRange);
+                    if (enableJudgeRangeFix)
+                    {
+                        PJms = aaa.PJ * storyChallengeContainer.songSpeed;
+                        PFms = aaa.P * storyChallengeContainer.songSpeed;
+                        GDms = aaa.G * storyChallengeContainer.songSpeed;
+                    }
+                    else
+                    {
+                        PJms = aaa.PJ;
+                        PFms = aaa.P;
+                        GDms = aaa.G;
+                    }
+                    barType = BarType.DEFAULT;
+                    GameMirror = false;
+                    isHard = false;
+                    skillcheck = false;
+                    gameSide = storyChallengeContainer.gameSide;
                 }
 
                 if (songDataContainer.GetContainerType() == SongDataContainerType.HADOU_TEST)
@@ -419,6 +444,10 @@ namespace DRFV.Game
                     {
                         originalBGM = ((DownloadHandlerAudioClip)uwr.downloadHandler).audioClip;
                     }
+                    NoteJudgeRange aaaa = Util.GetNoteJudgeRange(-1);
+                    PJms = aaaa.PJ;
+                    PFms = aaaa.P;
+                    GDms = aaaa.G;
                 }
             }
             else
@@ -593,7 +622,7 @@ namespace DRFV.Game
             {
                 Debug.LogError(e);
                 NotificationBarManager.Instance.Show($"错误：读取谱面时出错");
-                FadeManager.Instance.LoadScene("select", _currentSettings);
+                FadeManager.Instance.LoadScene("select", currentSettings);
                 yield break;
             }
 
@@ -1018,10 +1047,10 @@ namespace DRFV.Game
             bool slideEqualsHit = false, freeFlickEqualsFlick = false;
             bool disableOverlappingCheck = false;
             //获取效果音
-            if (!DebugMode && !storyMode && !string.IsNullOrEmpty(_currentSettings.selectedNoteSFX))
+            if (!DebugMode && !storyMode && !string.IsNullOrEmpty(currentSettings.selectedNoteSFX))
             {
                 string songFolder = StaticResources.Instance.dataPath + "settings/note_sfx/" +
-                                    _currentSettings.selectedNoteSFX + "/";
+                                    currentSettings.selectedNoteSFX + "/";
                 int defaultFrequency = 44100;
                 if (File.Exists(songFolder + "settings.json"))
                 {
@@ -1499,7 +1528,7 @@ namespace DRFV.Game
                     if ((0.01f * ((drbfile.notes[i].IsTail()
                                       ? drbfile.notes[i].parent_dms
                                       : drbfile.notes[i].dms) -
-                                  Distance) * drbfile.notes[i].nsc.value * NoteSpeed < 150.0f)
+                                  Distance) * drbfile.notes[i].nsc.value * RealNoteSpeed < 150.0f)
                         || (drbfile.notes[i].ms - progressManager.NowTime < 1000)
                         || ((drbfile.notes[i].nsc.type == NoteSCType.MULTI ||
                              drbfile.notes[i].mode == NoteAppearMode.Jump) &&
@@ -1621,20 +1650,20 @@ namespace DRFV.Game
                 resultDataContainer.noteTotal = noteTotal;
                 resultDataContainer.msDetails = msDetailsList;
                 DontDestroyOnLoad(go);
-                FadeManager.Instance.LoadScene("result", _currentSettings);
+                FadeManager.Instance.LoadScene("result", currentSettings);
             }
         }
 
         void LoadSelect()
         {
             CheckDataContainers.CleanSongDataContainer();
-            FadeManager.Instance.LoadScene("select", _currentSettings);
+            FadeManager.Instance.LoadScene("select", currentSettings);
         }
 
         void LoadStory()
         {
             CheckDataContainers.CleanSongDataContainer();
-            FadeManager.Instance.LoadScene("story", _currentSettings);
+            FadeManager.Instance.LoadScene("story", currentSettings);
         }
 
         IEnumerator CleanTypeAnimation(GameObject cleanTypeObj)
@@ -1699,25 +1728,15 @@ namespace DRFV.Game
                 RuntimePlatform.LinuxPlayer => true,
                 _ => false
             };
-            storyChallengeContainer.isAuto = storyChallengeContainer.isComputer;
-            storyChallengeContainer.isMirror = false;
-            storyChallengeContainer.isHard = true;
-            storyChallengeContainer.useSkillCheck = false;
             storyChallengeContainer.selectedDiff = storyChallengeContainer.songData.hards[0];
             storyChallengeContainer.saveAudio = false;
-            storyChallengeContainer.barType = BarType.HARD;
-            storyChallengeContainer.songSpeed = 1.0f;
-            storyChallengeContainer.NoteJudgeRange = 3;
             storyChallengeContainer.unlock = unlock;
-            storyChallengeContainer.gameSide = gameSide;
-            storyChallengeContainer.speed = NoteSpeed;
-            storyChallengeContainer.offset = NoteOffset;
             storyChallengeContainer.hasTextBeforeStart = false;
             storyChallengeContainer.tierIdentifier = customTierIdentifier;
             storyChallengeContainer.customTierColor = customTierColor;
             storyChallengeContainer.ratingPlus = ratingPlus;
             DontDestroyOnLoad(storyChallengeContainer);
-            FadeManager.Instance.LoadScene("game", _currentSettings);
+            FadeManager.Instance.LoadScene("game", currentSettings);
         }
 
         private void EtherStrike()
@@ -1761,7 +1780,7 @@ namespace DRFV.Game
                 bpm = "210",
                 hards = new[] { 11 }
             }, "axiumcrisis", GameSide.DARK, 20, "Future", Util.GetTierColor(16));
-            FadeManager.Instance.LoadScene("game", _currentSettings);
+            FadeManager.Instance.LoadScene("game", currentSettings);
         }
 
         IEnumerator EndEvent(EndType grade)
@@ -2014,20 +2033,21 @@ namespace DRFV.Game
             VideoMask.DOKill();
             if (!GameAuto)
             {
-                speedLabel.text = speedLabelText + (NoteSpeed / 2f).ToString("N1") + "x";
+                speedLabel.text = speedLabelText + (RealNoteSpeed / 2f).ToString("N1") + "x";
             }
         }
 
         public void UpdateNoteSpeed()
         {
-            _currentSettings.NoteSpeed = NoteSpeed = (int)slider.value;
-            speedLabel.text = speedLabelText + (NoteSpeed / 2f).ToString("N1") + "x";
+            currentSettings.NoteSpeed = NoteSpeed = (int)slider.value;
+            RealNoteSpeed = Mathf.Abs(BGMManager.pitch - 1.0f) > 0.1f && currentSettings.enableSCFix ? NoteSpeed / BGMManager.pitch : NoteSpeed;
+            speedLabel.text = speedLabelText + (RealNoteSpeed / 2f).ToString("N1") + "x";
         }
 
         public void Retry()
         {
             if (!pauseable || BGMManager.time <= 0) return;
-            FadeManager.Instance.LoadScene("game", _currentSettings);
+            FadeManager.Instance.LoadScene("game", currentSettings);
         }
 
         public void Resume()
@@ -2204,7 +2224,9 @@ namespace DRFV.Game
 
             var go2 = Instantiate(HanteiPrefab, pos, Quaternion.identity);
             GameObject go;
-            if (!isFake) msDetailsList.Add(enableJudgeRangeFix ? ms / BGMManager.pitch : ms);
+            float realMS = enableJudgeRangeFix ? ms / BGMManager.pitch : ms;
+            if (!isFake) msDetailsList.Add(realMS);
+            int displayMS = isFake ? 0 : (int) realMS;
 
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)
@@ -2219,7 +2241,7 @@ namespace DRFV.Game
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
 
                 if (gameSubJudgeDisplay == GameSubJudgeDisplay.MS && kind == NoteKind.TAP)
-                    go2.GetComponent<JudgeImage>().Init(4, true, (int)ms);
+                    go2.GetComponent<JudgeImage>().Init(4, true, displayMS);
                 else go2.GetComponent<JudgeImage>().Init(4);
                 if (imgJudgeBeam[0])
                     imgJudgeBeam[0].color = new Color(imgJudgeBeam[0].color.r, imgJudgeBeam[0].color.g,
@@ -2246,7 +2268,7 @@ namespace DRFV.Game
                         go2.GetComponent<JudgeImage>().Init(3, false, 0, ms >= 0 ? 2 : 1);
                         break;
                     case GameSubJudgeDisplay.MS:
-                        go2.GetComponent<JudgeImage>().Init(3, true, (int)ms, ms >= 0 ? 2 : 1);
+                        go2.GetComponent<JudgeImage>().Init(3, true, displayMS, ms >= 0 ? 2 : 1);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -2287,7 +2309,7 @@ namespace DRFV.Game
                         go2.GetComponent<JudgeImage>().Init(2, false, 0, ms >= 0 ? 2 : 1);
                         break;
                     case GameSubJudgeDisplay.MS:
-                        go2.GetComponent<JudgeImage>().Init(2, true, (int)ms, ms >= 0 ? 2 : 1);
+                        go2.GetComponent<JudgeImage>().Init(2, true, displayMS, ms >= 0 ? 2 : 1);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -2561,7 +2583,7 @@ namespace DRFV.Game
         public GameObject background;
         public VideoPlayer VideoPlayer;
         public Image VideoMask;
-        private GlobalSettings _currentSettings;
+        public GlobalSettings currentSettings;
 
         public void DoSCUp()
         {

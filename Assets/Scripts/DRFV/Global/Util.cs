@@ -404,5 +404,34 @@ namespace DRFV.Global
             DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(timeStampStart);//当地时区
             return startTime.AddSeconds(seconds);
         }
+
+        public static float TransformSongSpeed(int speed)
+        {
+            return speed switch
+            {
+                0 => 1.0f,
+                1 => 1.1f,
+                2 => 1.2f,
+                3 => 1.3f,
+                4 => 1.4f,
+                5 => 1.5f,
+                6 => 1.6f,
+                7 => 1.7f,
+                8 => 1.8f,
+                9 => 1.9f,
+                10 => 2.0f,
+                11 => 2.1f,
+                12 => 2.2f,
+                13 => 2.3f,
+                14 => 2.4f,
+                15 => 2.5f,
+                16 => 2.6f,
+                17 => 2.7f,
+                18 => 2.8f,
+                19 => 2.9f,
+                20 => 3.0f,
+                _ => 1.0f
+            };
+        }
     }
 }

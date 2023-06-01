@@ -37,13 +37,10 @@ namespace DRFV.HadouTestPreload
 
         public void StartGame()
         {
-            GlobalSettings currentSettings = GlobalSettings.CurrentSettings;
             CheckDataContainers.CleanSongDataContainer();
             CheckDataContainers.CleanResultDataContainer();
             GameObject go = new GameObject("HadouTestDataContainer") { tag = "SongData" };
             HadouTestDataContainer songDataContainer = go.AddComponent<HadouTestDataContainer>();
-            songDataContainer.speed = currentSettings.NoteSpeed;
-            songDataContainer.offset = currentSettings.Offset;
             songDataContainer.songData = new TheSelectManager.SongData
             {
                 keyword = keyword,
@@ -51,40 +48,8 @@ namespace DRFV.HadouTestPreload
                 songArtist = Util.ToBase64("-"),
                 bpm = "???"
             };
-            songDataContainer.isAuto = currentSettings.IsAuto;
-            songDataContainer.isMirror = currentSettings.IsMirror;
-            songDataContainer.isHard = currentSettings.HardMode;
-            songDataContainer.useSkillCheck = currentSettings.SkillCheckMode;
             songDataContainer.selectedDiff = hard;
             songDataContainer.saveAudio = false;
-            songDataContainer.barType = (BarType)currentSettings.HPBarType;
-            songDataContainer.songSpeed = currentSettings.SongSpeed switch
-            {
-                0 => 1.0f,
-                1 => 1.1f,
-                2 => 1.2f,
-                3 => 1.3f,
-                4 => 1.4f,
-                5 => 1.5f,
-                6 => 1.6f,
-                7 => 1.7f,
-                8 => 1.8f,
-                9 => 1.9f,
-                10 => 2.0f,
-                11 => 2.1f,
-                12 => 2.2f,
-                13 => 2.3f,
-                14 => 2.4f,
-                15 => 2.5f,
-                16 => 2.6f,
-                17 => 2.7f,
-                18 => 2.8f,
-                19 => 2.9f,
-                20 => 3.0f,
-                _ => 1.0f
-            };
-            songDataContainer.NoteJudgeRange = -1;
-            songDataContainer.gameSide = (GameSide)currentSettings.GameSide;
             DontDestroyOnLoad(go);
 
             FadeManager.Instance.LoadScene("game");
