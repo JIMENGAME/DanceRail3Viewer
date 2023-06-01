@@ -708,8 +708,8 @@ namespace DRFV.Game
 
 #if true
             float randomms = Random.Range(-gameManager.PJms * 0.9f, gameManager.PJms * 0.9f);
-            if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f - Mathf.Abs(randomms));
-            gameManager.Judge(_noteData.kind != NoteKind.TAP ? 0 : randomms, _noteData.kind, _noteData.isFake,
+            if (_noteData.kind == NoteKind.TAP && !_noteData.isFake) gameManager.AccMSList.Add(100.0f - Mathf.Abs(randomms));
+            gameManager.Judge(_noteData.kind != NoteKind.TAP || _noteData.isFake ? 0 : randomms, _noteData.kind, _noteData.isFake,
                 new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 #else
             if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f);

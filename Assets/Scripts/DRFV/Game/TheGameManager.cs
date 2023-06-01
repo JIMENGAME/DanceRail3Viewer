@@ -2250,13 +2250,10 @@ namespace DRFV.Game
             //PERFECT 判定
             else if (Mathf.Abs(ms) <= PFms)
             {
-                if (!isFake)
-                {
-                    Perfect++;
-                    AddCombo();
-                    FastOrSlow(ms);
-                    hpManager.InCreaseHp(hpManager.HpBar.PerfectHP(kind, drbfile.noteWeightCount, this));
-                }
+                Perfect++;
+                AddCombo();
+                FastOrSlow(ms);
+                hpManager.InCreaseHp(hpManager.HpBar.PerfectHP(kind, drbfile.noteWeightCount, this));
 
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
                 switch (gameSubJudgeDisplay)
@@ -2291,13 +2288,10 @@ namespace DRFV.Game
             //GOOD 判定
             else if (Mathf.Abs(ms) <= GDms)
             {
-                if (!isFake)
-                {
-                    good++;
-                    AddCombo();
-                    FastOrSlow(ms);
-                    hpManager.DecreaseHp(hpManager.HpBar.GoodHP(kind, drbfile.noteWeightCount, this));
-                }
+                good++;
+                AddCombo();
+                FastOrSlow(ms);
+                hpManager.DecreaseHp(hpManager.HpBar.GoodHP(kind, drbfile.noteWeightCount, this));
 
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
                 switch (gameSubJudgeDisplay)
@@ -2332,19 +2326,16 @@ namespace DRFV.Game
             //MISS 判定
             else
             {
-                if (isFake)
+                miss++;
+                if (Combo >= 30)
                 {
-                    miss++;
-                    if (Combo >= 30)
-                    {
-                        //血が出る警告
-                        ShowHPMask();
-                    }
-
-                    Combo = 0;
-                    ReflashCombo();
-                    hpManager.DecreaseHp(hpManager.HpBar.MissHP(kind, drbfile.noteWeightCount, this));
+                    //血が出る警告
+                    ShowHPMask();
                 }
+
+                Combo = 0;
+                ReflashCombo();
+                hpManager.DecreaseHp(hpManager.HpBar.MissHP(kind, drbfile.noteWeightCount, this));
 
                 go = null;
                 go2.GetComponent<JudgeImage>().Init(1);
