@@ -113,8 +113,7 @@ namespace DRFV.Game
             //_mesh.RecalculateBounds();
         }
 
-        public void Ready(NoteData noteData, int tapSize, int flickSize, int freeFlickSize, int tapAlpha,
-            int flickAlpha, int freeFlickAlpha)
+        public void Ready(NoteData noteData)
         {
             _noteData = noteData;
             _noteData.center = _noteData.pos + _noteData.width * 0.5f;
@@ -126,6 +125,14 @@ namespace DRFV.Game
                 _noteData.parent_pos = 0;
                 _noteData.parent_width = 0;
             }
+
+            int tapSize = gameManager.currentSettings.TapSize;
+            int flickSize = gameManager.currentSettings.FlickSize;
+            int freeFlickSize = gameManager.currentSettings.FreeFlickSize;
+            int tapAlpha = gameManager.currentSettings.TapAlpha;
+            int flickAlpha = gameManager.currentSettings.FlickAlpha;
+            int freeFlickAlpha = gameManager.currentSettings.FreeFlickAlpha;
+            
 
             isWaitForGD = false;
             isWaitForPF = false;

@@ -232,7 +232,7 @@ namespace DRFV.Game
         public int noteTotal;
 
         List<bool> isCreated = new List<bool>();
-        int makenotestart;
+        int makenotestartReal, makenotestartFake;
 
         private float volumeScale = 0.5f;
         private Color? EndBgColor;
@@ -630,6 +630,7 @@ namespace DRFV.Game
 
             md5 = drbfile.GetMD5();
             drbfile.notes.Sort((a, b) => Mathf.RoundToInt(a.time * 10000.0f - b.time * 10000.0f));
+            drbfile.fakeNotes.Sort((a, b) => Mathf.RoundToInt(a.time * 10000.0f - b.time * 10000.0f));
 
             if (skillcheck)
             {
@@ -663,10 +664,32 @@ namespace DRFV.Game
                 }
             }
 
+            foreach (NoteData noteData in drbfile.fakeNotes)
+            {
+                if (skillcheck)
+                {
+                    noteData.nsc = NoteData.NoteSC.GetCommonNSC();
+                    noteData.mode = NoteAppearMode.None;
+                }
+
+                if (GameMirror)
+                {
+                    noteData.pos = 16 - noteData.pos - noteData.width;
+                    if (noteData.kind == NoteKind.FLICK_LEFT ||
+                        noteData.kind == NoteKind.FLICK_RIGHT)
+                    {
+                        noteData.kind = noteData.kind == NoteKind.FLICK_LEFT
+                            ? NoteKind.FLICK_RIGHT
+                            : NoteKind.FLICK_LEFT;
+                    }
+                }
+            }
+
             // 特判
             if (SongKeyword.Equals("hello") && SongHard == 13 && !hadouTest)
             {
                 drbfile.notes.Clear();
+                drbfile.fakeNotes.Clear();
                 drbfile.noteWeightCount = 0;
                 GenerateHelloWinnerNotes();
             }
@@ -725,6 +748,11 @@ namespace DRFV.Game
                 timeList.Add(data.ms);
             }
 
+            foreach (NoteData data in drbfile.fakeNotes)
+            {
+                timeList.Add(data.ms);
+            }
+
             SetTimeToEnd(timeList.Count > 0
                 ? timeList.OrderByDescending(time => time).ToList()[0]
                 : BGMManager.clip.length * 1000f - 1);
@@ -732,7 +760,7 @@ namespace DRFV.Game
 
             //复杂整理03：按节点计算front和back的判定范围
 
-            for (int i = 0; i < drbfile.notes.Count; i++)
+            for (int i = 0; i < drbfile.notes.Count + drbfile.fakeNotes.Count; i++)
             {
                 isCreated.Add(false);
             }
@@ -1161,14 +1189,34 @@ namespace DRFV.Game
             //写入gater音
             if (GameEffectGaterLevel >= 1)
             {
-                for (int i = 0; i < drbfile.notes.Count; i++)
+                foreach (var noteData in drbfile.notes)
                 {
-                    if (drbfile.notes[i].IsBitCrash())
+                    if (noteData.IsBitCrash())
                     {
                         int end = (int)(bgmSamples *
-                                        (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
+                                        (noteData.ms / 1000.0f / originalBGM.length));
                         int start = (int)(bgmSamples *
-                                          (drbfile.notes[drbfile.notes[i].parent].ms / 1000.0f / originalBGM.length));
+                                          (drbfile.notes[noteData.parent].ms / 1000.0f / originalBGM.length));
+
+                        if (end < bgmSamples)
+                        {
+                            for (int c = (end - start) / 2 + start; c < end; c++)
+                            {
+                                f_song[c] *= (10.0f - GameEffectGaterLevel) / 10.0f;
+                            }
+                        }
+                    }
+                }
+
+                foreach (var noteData in drbfile.fakeNotes)
+                {
+                    if (noteData.IsBitCrash())
+                    {
+                        int end = (int)(bgmSamples *
+                                        (noteData.ms / 1000.0f / originalBGM.length));
+                        int start = (int)(bgmSamples *
+                                          (drbfile.fakeNotes[noteData.parent].ms / 1000.0f /
+                                           originalBGM.length));
 
                         if (end < bgmSamples)
                         {
@@ -1183,13 +1231,22 @@ namespace DRFV.Game
 
             if (GameEffectTap >= 1)
             {
-                for (int i = 0; i < drbfile.notes.Count; i++)
+                foreach (var noteData in drbfile.notes)
                 {
-                    //写入tap音
-                    if (drbfile.notes[i].IsTapSound())
+                    ProcessTapEffect(noteData);
+                }
+
+                foreach (var noteData in drbfile.fakeNotes)
+                {
+                    ProcessTapEffect(noteData);
+                }
+
+                void ProcessTapEffect(NoteData noteData)
+                {
+                    if (noteData.IsTapSound())
                     {
                         int start = (int)(bgmSamples *
-                                          (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
+                                          (noteData.ms / 1000.0f / originalBGM.length));
 
                         if (disableOverlappingCheck || !list_hit.Contains(start))
                         {
@@ -1202,10 +1259,10 @@ namespace DRFV.Game
                         }
                     }
 
-                    if (drbfile.notes[i].IsSlideSound())
+                    if (noteData.IsSlideSound())
                     {
                         int start = (int)(bgmSamples *
-                                          (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
+                                          (noteData.ms / 1000.0f / originalBGM.length));
 
                         if (disableOverlappingCheck ||
                             !list_slide.Contains(start) && !(slideEqualsHit && list_hit.Contains(start)))
@@ -1221,10 +1278,10 @@ namespace DRFV.Game
                     }
 
                     //写入flick音
-                    if (drbfile.notes[i].IsFlick())
+                    if (noteData.IsFlick())
                     {
                         int start = (int)(bgmSamples *
-                                          (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
+                                          (noteData.ms / 1000.0f / originalBGM.length));
 
                         if (disableOverlappingCheck || !list_flick.Contains(start))
                         {
@@ -1237,10 +1294,10 @@ namespace DRFV.Game
                         }
                     }
 
-                    if (drbfile.notes[i].kind == NoteKind.FLICK)
+                    if (noteData.kind == NoteKind.FLICK)
                     {
                         int start = (int)(bgmSamples *
-                                          (drbfile.notes[i].ms / 1000.0f / originalBGM.length));
+                                          (noteData.ms / 1000.0f / originalBGM.length));
 
                         if (disableOverlappingCheck || !list_freeFlick.Contains(start) &&
                             !(freeFlickEqualsFlick && list_flick.Contains(start)))
@@ -1372,10 +1429,11 @@ namespace DRFV.Game
                             time = 19 + 4 * j + k / 32f,
                             pos = finalOrder[i] * 6,
                             width = 4f,
-                            nsc = NoteData.NoteSC.GetCommonNSC()
+                            nsc = NoteData.NoteSC.GetCommonNSC(),
+                            isFake = false,
+                            parent = 0,
+                            mode = NoteAppearMode.None
                         };
-                        note.parent = 0;
-                        note.mode = NoteAppearMode.None;
                         if (GameMirror) note.pos = 16 - note.pos - note.width;
 
                         drbfile.notes.Add(note);
@@ -1530,7 +1588,7 @@ namespace DRFV.Game
 
             //ノーツ創り出す 1 Frame Max 5 Notes
             int count = 0;
-            for (int i = makenotestart; i < drbfile.notes.Count; i++)
+            for (int i = makenotestartReal; i < drbfile.notes.Count; i++)
             {
                 if (!isCreated[i])
                 {
@@ -1553,8 +1611,7 @@ namespace DRFV.Game
                         else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
                         note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
-                        note.GetComponent<TheNote>().Ready(drbfile.notes[i], tapSize, flickSize, freeFlickSize,
-                            tapAlpha, flickAlpha, freeFlickAlpha);
+                        note.GetComponent<TheNote>().Ready(drbfile.notes[i]);
                         note.GetComponent<TheNote>().StartC();
 
 
@@ -1565,7 +1622,54 @@ namespace DRFV.Game
                         {
                             if (!isCreated[ii])
                             {
-                                makenotestart = ii;
+                                makenotestartReal = ii;
+                                break;
+                            }
+                        }
+
+                        //Max 5 notes
+                        if (count >= 5)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (int i = makenotestartFake; i < drbfile.fakeNotes.Count; i++)
+            {
+                if (!isCreated[i + drbfile.notes.Count])
+                {
+                    if ((0.01f * ((drbfile.fakeNotes[i].IsTail()
+                                      ? drbfile.fakeNotes[i].parent_dms
+                                      : drbfile.fakeNotes[i].dms) -
+                                  Distance) * drbfile.fakeNotes[i].nsc.value * RealNoteSpeed < 150.0f)
+                        || (drbfile.fakeNotes[i].ms - progressManager.NowTime < 1000)
+                        || ((drbfile.fakeNotes[i].nsc.type == NoteSCType.MULTI ||
+                             drbfile.fakeNotes[i].mode == NoteAppearMode.Jump) &&
+                            drbfile.fakeNotes[i].ms - progressManager.NowTime < 10000.0f))
+                    {
+                        GameObject note = Instantiate(NotePrefab,
+                            drbfile.fakeNotes[i].IsTap() ? notesUp.transform : notesDown.transform);
+                        note.GetComponent<SpriteRenderer>().sprite = SpriteNotes[(int)drbfile.fakeNotes[i].kind];
+                        if (drbfile.fakeNotes[i].IsTap())
+                            note.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                        else if (drbfile.fakeNotes[i].IsFlick())
+                            note.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                        else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                        note.GetComponent<TheNote>().mDrawer = meshDrawer;
+                        note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
+                        note.GetComponent<TheNote>().Ready(drbfile.fakeNotes[i]);
+                        note.GetComponent<TheNote>().StartC();
+
+                        isCreated[i + drbfile.notes.Count] = true;
+                        count++; //Max 5 notes
+
+                        for (int ii = 0; ii < drbfile.fakeNotes.Count; ii++)
+                        {
+                            if (!isCreated[ii + drbfile.notes.Count])
+                            {
+                                makenotestartFake = ii;
                                 break;
                             }
                         }
@@ -1973,7 +2077,7 @@ namespace DRFV.Game
             //         }
             //     }
             // }
-            for (int i = makenotestart; i < drbfile.notes.Count; i++)
+            for (int i = makenotestartReal; i < drbfile.notes.Count; i++)
             {
                 if (from > time) break;
                 if (!isCreated[i])
@@ -1988,7 +2092,30 @@ namespace DRFV.Game
                         {
                             if (!isCreated[ii])
                             {
-                                makenotestart = ii;
+                                makenotestartReal = ii;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            for (int i = makenotestartFake; i < drbfile.fakeNotes.Count; i++)
+            {
+                if (from > time) break;
+                if (!isCreated[i + drbfile.notes.Count])
+                {
+                    if (drbfile.fakeNotes[i].ms < time && drbfile.fakeNotes[i].ms >= from)
+                    {
+                        JudgeDirectly(drbfile.fakeNotes[i].kind, drbfile.fakeNotes[i].isFake);
+
+                        isCreated[i + drbfile.notes.Count] = true;
+
+                        for (int ii = 0; ii < drbfile.fakeNotes.Count; ii++)
+                        {
+                            if (!isCreated[ii + drbfile.notes.Count])
+                            {
+                                makenotestartFake = ii;
                                 break;
                             }
                         }
@@ -2136,11 +2263,19 @@ namespace DRFV.Game
                 progressManager.AddDelay(delta / 1000f);
             }
 
-            for (int i = 0; i < isCreated.Count; i++)
+            for (int i = 0; i < drbfile.notes.Count; i++)
             {
                 if (drbfile.notes[i].ms < from)
                 {
                     isCreated[i] = true;
+                }
+            }
+            
+            for (int i = 0; i < drbfile.fakeNotes.Count; i++)
+            {
+                if (drbfile.notes[i].ms < from)
+                {
+                    isCreated[i + drbfile.notes.Count] = true;
                 }
             }
 

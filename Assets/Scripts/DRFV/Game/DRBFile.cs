@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using DRFV.Enums;
 using DRFV.Game.HPBars;
@@ -17,6 +18,7 @@ namespace DRFV.Game
         public List<BPM> bpms = new();
         public List<SCS> scs = new();
         public List<NoteData> notes = new();
+        public List<NoteData> fakeNotes = new();
         public int noteWeightCount;
         public bool noPos;
         public AnimationCurve BPMCurve = null, SCCurve = null;
@@ -231,9 +233,13 @@ namespace DRFV.Game
                     note.mode = sss.Length > 7 ? ParseNoteAppearMode.ParseToMode(sss[7].Trim()) : NoteAppearMode.None;
                     note.isFake = sss.Length > 8 && int.Parse(sss[7]) == 1;
 
-                    drbFile.notes.Add(note);
-
-                    drbFile.noteWeightCount += HPBar.NoteWeight[(int)note.kind];
+                    if (!note.isFake)
+                        drbFile.notes.Add(note);
+                    else
+                    {
+                        drbFile.fakeNotes.Add(note);
+                        drbFile.noteWeightCount += HPBar.NoteWeight[(int)note.kind];
+                    }
                 }
                 else
                 {
@@ -253,17 +259,34 @@ namespace DRFV.Game
             GenerateBpmCurve();
             GenerateSCCurve();
 
-            for (var i = 0; i < notes.Count; i++)
+            foreach (var note in notes)
             {
-                var note = notes[i];
+                //计算每个音符的位置
+                note.ms = BPMCurve.Evaluate(note.time);
+                note.dms = SCCurve.Evaluate(note.ms);
+            }
+            
+            foreach (var note in fakeNotes)
+            {
                 //计算每个音符的位置
                 note.ms = BPMCurve.Evaluate(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
             }
 
-            for (var i = 0; i < notes.Count; i++)
+            foreach (var note in notes)
             {
-                var note = notes[i];
+                for (int j = 0; j < notes.Count; j++)
+                {
+                    if (note.parent == notes[j].id)
+                    {
+                        note.parent = j;
+                        break;
+                    }
+                }
+            }
+            
+            foreach (var note in fakeNotes)
+            {
                 for (int j = 0; j < notes.Count; j++)
                 {
                     if (note.parent == notes[j].id)
@@ -274,17 +297,22 @@ namespace DRFV.Game
                 }
             }
 
-            for (var i = 0; i < notes.Count; i++)
+            foreach (var note in notes.Where(note => note.IsTail()))
             {
-                var note = notes[i];
-                if (note.IsTail())
-                {
-                    note.parent_time = notes[note.parent].time;
-                    note.parent_ms = notes[note.parent].ms;
-                    note.parent_dms = notes[note.parent].dms;
-                    note.parent_pos = notes[note.parent].pos;
-                    note.parent_width = notes[note.parent].width;
-                }
+                note.parent_time = notes[note.parent].time;
+                note.parent_ms = notes[note.parent].ms;
+                note.parent_dms = notes[note.parent].dms;
+                note.parent_pos = notes[note.parent].pos;
+                note.parent_width = notes[note.parent].width;
+            }
+            
+            foreach (var note in fakeNotes.Where(note => note.IsTail()))
+            {
+                note.parent_time = notes[note.parent].time;
+                note.parent_ms = notes[note.parent].ms;
+                note.parent_dms = notes[note.parent].dms;
+                note.parent_pos = notes[note.parent].pos;
+                note.parent_width = notes[note.parent].width;
             }
         }
 
@@ -465,6 +493,7 @@ namespace DRFV.Game
                         {
                             noteSc.data.Add(MultiData.Parse(s));
                         }
+
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
