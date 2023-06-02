@@ -29,10 +29,11 @@ namespace DRFV.Global
         public static void Init()
         {
             var endTypeShortJObject = JObject.Parse(Resources.Load<TextAsset>("end_type_short").text);
-            foreach (KeyValuePair<string,JToken?> valuePair in endTypeShortJObject)
+            foreach (KeyValuePair<string, JToken?> valuePair in endTypeShortJObject)
             {
                 endTypeFromShort.Add(valuePair.Key, valuePair.Value.ToObject<EndType>());
             }
+
             JArray noteJudgeRangesJArray = JArray.Parse(Resources.Load<TextAsset>("note_judge_range").text);
             noteJudgeRanges = new NoteJudgeRange[noteJudgeRangesJArray.Count];
             for (var i = 0; i < noteJudgeRangesJArray.Count; i++)
@@ -366,7 +367,7 @@ namespace DRFV.Global
                 _ => 17
             };
         }
-        
+
         public static string BoolArrayToString(bool[] arr)
         {
             StringBuilder sb = new StringBuilder();
@@ -394,14 +395,15 @@ namespace DRFV.Global
         public static long DateTimeToTimeStamp(DateTime? dateTime)
         {
             if (dateTime == null) return 0;
-            
-            TimeSpan ts = Convert.ToDateTime(dateTime).ToUniversalTime() - timeStampStart;//ToUniversalTime()转换为标准时区的时间,去掉的话直接就用北京时间
+
+            TimeSpan ts = Convert.ToDateTime(dateTime).ToUniversalTime() -
+                          timeStampStart; //ToUniversalTime()转换为标准时区的时间,去掉的话直接就用北京时间
             return Convert.ToInt64(ts.TotalSeconds);
         }
-        
+
         public static DateTime TimeStampToDateTime(long seconds)
         {
-            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(timeStampStart);//当地时区
+            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(timeStampStart); //当地时区
             return startTime.AddSeconds(seconds);
         }
 
@@ -432,6 +434,18 @@ namespace DRFV.Global
                 20 => 3.0f,
                 _ => 1.0f
             };
+        }
+
+        public static void FullGC()
+        {
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
+            GC.Collect();
         }
     }
 }

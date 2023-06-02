@@ -1,11 +1,13 @@
 #if UNITY_EDITOR
+using System;
+using System.Collections;
 using System.IO;
-using System.Text;
 using DRFV.Game;
 using DRFV.Game.HPBars;
+using DRFV.Global;
 using DRFV.inokana;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DRFV.Test

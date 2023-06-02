@@ -357,8 +357,8 @@ namespace DRFV.Game
                 saveAudio = songDataContainer.saveAudio;
                 float songSpeed = Util.TransformSongSpeed(currentSettings.SongSpeed);
                 VideoPlayer.playbackSpeed = BGMManager.pitch = songSpeed;
-                barType = (BarType) currentSettings.HPBarType;
-                gameSide = (GameSide) currentSettings.GameSide;
+                barType = (BarType)currentSettings.HPBarType;
+                gameSide = (GameSide)currentSettings.GameSide;
                 NoteJudgeRange aaa = Util.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
                 bool songspeedDiff = Math.Abs(songSpeed - 1.0f) > 0.1f;
                 enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
@@ -419,6 +419,7 @@ namespace DRFV.Game
                         PFms = aaa.P;
                         GDms = aaa.G;
                     }
+
                     barType = BarType.DEFAULT;
                     GameMirror = false;
                     isHard = false;
@@ -444,6 +445,7 @@ namespace DRFV.Game
                     {
                         originalBGM = ((DownloadHandlerAudioClip)uwr.downloadHandler).audioClip;
                     }
+
                     NoteJudgeRange aaaa = Util.GetNoteJudgeRange(-1);
                     PJms = aaaa.PJ;
                     PFms = aaaa.P;
@@ -1065,6 +1067,7 @@ namespace DRFV.Game
                         defaultFrequency = jObject["default_frequency"].ToObject<int>();
                     }
                 }
+
                 string freq = originalBGM.frequency == defaultFrequency ? "" : "_" + originalBGM.frequency;
 
                 yield return GetAudioClip("hit", result => _acHit = result);
@@ -1084,11 +1087,17 @@ namespace DRFV.Game
                         using var uwr =
                             UnityWebRequestMultimedia.GetAudioClip("file://" + tmpPath, tmpAudioType);
                         yield return uwr.SendWebRequest();
-                        audioClipReceiver.Invoke(uwr.result == UnityWebRequest.Result.Success
-                            ? DownloadHandlerAudioClip.GetContent(uwr)
-                            : null);
+                        AudioClip audioClip = DownloadHandlerAudioClip.GetContent(uwr);
+                        if (uwr.result == UnityWebRequest.Result.Success)
+                        {
+                            audioClipReceiver.Invoke(audioClip.frequency == originalBGM.frequency
+                                ? audioClip
+                                : AudioFrequencyConverter.ConvertAudioClip(audioClip, originalBGM.frequency, id));
+                            yield break;
+                        }
                     }
-                    else audioClipReceiver.Invoke(null);
+
+                    audioClipReceiver.Invoke(null);
                 }
 
 
@@ -2040,7 +2049,9 @@ namespace DRFV.Game
         public void UpdateNoteSpeed()
         {
             currentSettings.NoteSpeed = NoteSpeed = (int)slider.value;
-            RealNoteSpeed = Mathf.Abs(BGMManager.pitch - 1.0f) > 0.1f && currentSettings.enableSCFix ? NoteSpeed / BGMManager.pitch : NoteSpeed;
+            RealNoteSpeed = Mathf.Abs(BGMManager.pitch - 1.0f) > 0.1f && currentSettings.enableSCFix
+                ? NoteSpeed / BGMManager.pitch
+                : NoteSpeed;
             speedLabel.text = speedLabelText + (RealNoteSpeed / 2f).ToString("N1") + "x";
         }
 
@@ -2226,7 +2237,7 @@ namespace DRFV.Game
             GameObject go;
             float realMS = enableJudgeRangeFix ? ms / BGMManager.pitch : ms;
             if (!isFake) msDetailsList.Add(realMS);
-            int displayMS = isFake ? 0 : (int) realMS;
+            int displayMS = isFake ? 0 : (int)realMS;
 
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)
@@ -2600,17 +2611,15 @@ namespace DRFV.Game
             SCDown = SCDownImage.DOFade(0f, 0.1f);
         }
 
-        private AudioClip GetAudioClipFromRawWav(string path, int frequency = -1, string clipName = "", int bit = 16)
+        private AudioClip GetAudioClipFromRawWav(string path, int frequency = -1, string clipName = "")
         {
             RawWav rawWav = Resources.Load<RawWav>(path);
             if (rawWav == null) return null;
             WAV wav = new WAV(rawWav.data);
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN
             if (frequency > 0 && frequency != wav.Frequency)
             {
-                return WavConverter.ConvertWavToAudioClip(rawWav.data, frequency, bit, wav.ChannelCount, clipName);
+                return AudioFrequencyConverter.ConvertWavToAudioClip(rawWav.data, frequency, clipName);
             }
-#endif
 
             return wav.ToAudioClip();
         }

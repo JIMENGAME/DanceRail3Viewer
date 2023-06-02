@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace DRFV.Data
@@ -30,6 +31,40 @@ namespace DRFV.Data
         public int ChannelCount { get; internal set; }
         public int SampleCount { get; internal set; }
         public int Frequency { get; internal set; }
+
+        // public WAV(AudioClip clip)
+        // {
+        //     ChannelCount = clip.channels;
+        //     SampleCount = clip.samples;
+        //     Frequency = clip.frequency;
+        //     if (ChannelCount == 2)
+        //     {
+        //         StereoChannel = new float[SampleCount];
+        //         clip.GetData(StereoChannel, 0);
+        //         if (SampleCount % 2 != 0) throw new ArgumentException();
+        //         int singleLength = SampleCount / 2;
+        //         LeftChannel = new float[singleLength];
+        //         RightChannel = new float[singleLength];
+        //         for (int i = 0; i < StereoChannel.Length; i++)
+        //         {
+        //             if (i % 2 == 0)
+        //             {
+        //                 LeftChannel[i / 2] = StereoChannel[i];
+        //             }
+        //             else
+        //             {
+        //                 RightChannel[(i - 1) / 2] = StereoChannel[i];
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         LeftChannel = new float[SampleCount];
+        //         clip.GetData(LeftChannel, 0);
+        //         RightChannel = null;
+        //         StereoChannel = null;
+        //     }
+        // }
  
  
         public WAV(byte[] wav)
