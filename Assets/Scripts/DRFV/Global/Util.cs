@@ -447,5 +447,21 @@ namespace DRFV.Global
             GC.Collect();
             GC.Collect();
         }
+        
+        public static AudioClip MonoToStereo(this AudioClip audioClip)
+        {
+            if (audioClip == null || audioClip.channels == 2) return audioClip;
+            if (audioClip.channels != 1) throw new Exception();
+            float[] data = new float[audioClip.samples], output = new float[audioClip.samples * 2];
+            audioClip.GetData(data, 0);
+            for (int i = 0; i < data.Length; i ++)
+            {
+                output[2 * i] = data[i];
+                output[2 * i + 1] = data[i];
+            }
+            AudioClip clip = AudioClip.Create(audioClip.name, audioClip.samples, 2, audioClip.frequency, false);
+            clip.SetData(output, 0);
+            return clip;
+        }
     }
 }

@@ -22,18 +22,27 @@ namespace DRFV.Test
 
         public HPManager HpManager;
 
-        public Button pjskLongTest;
         public AudioSource longSource;
-        private Text componentInChildren;
 
         // Start is called before the first frame update
         protected override void OnAwake()
         {
             HpManager.Init(new HPBarDefault());
             DrawMesh();
-            
-            componentInChildren = pjskLongTest.GetComponentInChildren<Text>();
-            pjskLongTest.onClick.AddListener(UpdateLongSource);
+            StartCoroutine(Qwq());
+        }
+
+        IEnumerator Qwq()
+        {
+            using UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip("E:/DR3Maker/anrakushi.ogg", AudioType.OGGVORBIS);
+            yield return uwr.SendWebRequest();
+            if (uwr.result == UnityWebRequest.Result.Success)
+            {
+                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(uwr);
+                if (audioClip.channels != 2) audioClip.MonoToStereo();
+                longSource.clip = audioClip;
+                longSource.Play();
+            }
         }
 
         // Update is called once per frame
@@ -51,20 +60,6 @@ namespace DRFV.Test
                     Graphics.DrawMesh(simpleNote.GetMesh(), Vector3.zero, Quaternion.identity,
                         _materials[Mathf.Abs(simpleNote.materialId) % _materials.Length], 9);
                 }
-            }
-        }
-
-        public void UpdateLongSource()
-        {
-            if (longSource.isPlaying)
-            {
-                longSource.Stop();
-                componentInChildren.text = "开始播放";
-
-            }
-            else {
-                longSource.Play();
-                componentInChildren.text = "停止播放";
             }
         }
     }

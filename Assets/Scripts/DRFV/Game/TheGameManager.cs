@@ -459,6 +459,8 @@ namespace DRFV.Game
                 yield break;
             }
 
+            if (originalBGM.channels != 2) originalBGM = originalBGM.MonoToStereo();
+
             foreach (var sideChanger in SideChangers)
             {
                 sideChanger.SetSide(gameSide);
@@ -1147,32 +1149,38 @@ namespace DRFV.Game
                 _acHit = GetAudioClipFromRawWav("SE/hit", originalBGM.frequency, "hit");
                 // _acHit = Resources.Load<AudioClip>("SE/hit");
             }
-
-            if (_acExHit == null)
-            {
-                _acExHit = _acHit;
-            }
-
-            if (_acSlide == null)
-            {
-                _acSlide = _acHit;
-            }
-
-            if (_acHold == null)
-            {
-                _acHold = _acHit;
-            }
-
+            
             if (_acFlick == null)
             {
                 _acFlick = GetAudioClipFromRawWav("SE/flick", originalBGM.frequency, "flick");
                 // _acFlick = Resources.Load<AudioClip>("SE/flick");
             }
 
+            if (_acHit.channels != 2) _acHit = _acHit.MonoToStereo();
+            if (_acFlick.channels != 2) _acFlick = _acFlick.MonoToStereo();
+            
+            if (_acExHit == null)
+            {
+                _acExHit = _acHit;
+            } else if (_acExHit.channels != 2) _acExHit = _acExHit.MonoToStereo();
+
+            if (_acSlide == null)
+            {
+                _acSlide = _acHit;
+            } else if (_acSlide.channels != 2) _acSlide = _acSlide.MonoToStereo();
+
+            if (_acHold == null)
+            {
+                _acHold = _acHit;
+            } else if (_acHold.channels != 2) _acHold = _acHold.MonoToStereo();
+            
             if (_acFreeFlick == null)
             {
                 _acFreeFlick = _acFlick;
-            }
+            } else if (_acFreeFlick.channels != 2) _acFreeFlick = _acFreeFlick.MonoToStereo();
+            
+            if (_acLong != null && _acLong.channels != 2) _acLong = _acLong.MonoToStereo();
+
 
             //写入效果音A
             int bgmSamples = originalBGM.samples * originalBGM.channels;
@@ -1230,7 +1238,7 @@ namespace DRFV.Game
                 foreach (var noteData in drbfile.notes)
                 {
                     ProcessTapEffect(noteData);
-                    if (noteData.IsTail() && _acLong != null)
+                    if (noteData.IsTail() && noteData.isLast && _acLong != null)
                     {
                         NoteData finalParent = drbfile.notes[noteData.parent];
                         while (finalParent.IsTail() && finalParent.parent != finalParent.realId)
