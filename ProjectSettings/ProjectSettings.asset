@@ -145,7 +145,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.5.44
+  bundleVersion: 1.5.45
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -174,7 +174,7 @@ PlayerSettings:
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 58
+  AndroidBundleVersionCode: 59
   AndroidMinSdkVersion: 25
   AndroidTargetSdkVersion: 29
   AndroidPreferredInstallLocation: 1
@@ -888,7 +888,7 @@ PlayerSettings:
   allowUnsafeCode: 0
   useDeterministicCompilation: 0
   enableRoslynAnalyzers: 1
-  selectedPlatform: 3
+  selectedPlatform: 2
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
   gcIncremental: 0
