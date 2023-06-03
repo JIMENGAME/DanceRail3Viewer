@@ -60,6 +60,11 @@ namespace DRFV.Game
                 tmpNotes.Add(data);
             }
 
+            foreach (NoteData data in fakeNotes)
+            {
+                tmpNotes.Add(data);
+            }
+
             tmpNotes.Sort((a, b) =>
             {
                 if (!IsSame(a.time, b.time))
@@ -265,12 +270,22 @@ namespace DRFV.Game
                 note.ms = BPMCurve.Evaluate(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
             }
-            
+
             foreach (var note in fakeNotes)
             {
                 //计算每个音符的位置
                 note.ms = BPMCurve.Evaluate(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
+            }
+
+            for (int i = 0; i < notes.Count; i++)
+            {
+                notes[i].realId = i;
+            }
+
+            for (int i = 0; i < fakeNotes.Count; i++)
+            {
+                fakeNotes[i].realId = i;
             }
 
             foreach (var note in notes)
@@ -280,18 +295,20 @@ namespace DRFV.Game
                     if (note.parent == notes[j].id)
                     {
                         note.parent = j;
+                        notes[j].isLast = false;
                         break;
                     }
                 }
             }
-            
+
             foreach (var note in fakeNotes)
             {
-                for (int j = 0; j < notes.Count; j++)
+                for (int j = 0; j < fakeNotes.Count; j++)
                 {
-                    if (note.parent == notes[j].id)
+                    if (note.parent == fakeNotes[j].id)
                     {
                         note.parent = j;
+                        fakeNotes[j].isLast = false;
                         break;
                     }
                 }
@@ -305,14 +322,14 @@ namespace DRFV.Game
                 note.parent_pos = notes[note.parent].pos;
                 note.parent_width = notes[note.parent].width;
             }
-            
+
             foreach (var note in fakeNotes.Where(note => note.IsTail()))
             {
-                note.parent_time = notes[note.parent].time;
-                note.parent_ms = notes[note.parent].ms;
-                note.parent_dms = notes[note.parent].dms;
-                note.parent_pos = notes[note.parent].pos;
-                note.parent_width = notes[note.parent].width;
+                note.parent_time = fakeNotes[note.parent].time;
+                note.parent_ms = fakeNotes[note.parent].ms;
+                note.parent_dms = fakeNotes[note.parent].dms;
+                note.parent_pos = fakeNotes[note.parent].pos;
+                note.parent_width = fakeNotes[note.parent].width;
             }
         }
 
@@ -414,6 +431,8 @@ namespace DRFV.Game
 
     public class NoteData
     {
+        #region ChartConstant
+
         public int id;
         public NoteKind kind;
         public float time;
@@ -423,7 +442,13 @@ namespace DRFV.Game
         public int parent;
         public float maxtime;
         public NoteAppearMode mode = NoteAppearMode.None;
+        public bool isFake;
 
+        #endregion
+
+        #region RuntimeGenerated
+
+        public int realId;
         public float parent_time;
         public float parent_ms;
         public float parent_dms;
@@ -435,7 +460,9 @@ namespace DRFV.Game
         public float dms;
 
         public bool isJudgeTimeRangeConflicted;
-        public bool isFake;
+        public bool isLast = true;
+
+        #endregion
 
         public MD5Data GetMd5Data()
         {
@@ -449,7 +476,23 @@ namespace DRFV.Game
 
         private string GetMd5String()
         {
-            return $"{(int)kind}+{time:0.00000}+{Util.FloatToDRBDecimal(pos)}+{Util.FloatToDRBDecimal(width)}+{nsc}";
+            List<string> list = new List<string>();
+            list.Add(((int)kind).ToString());
+            list.Add(time.ToString("0.00000"));
+            list.Add(Util.FloatToDRBDecimal(pos));
+            list.Add(Util.FloatToDRBDecimal(width));
+            list.Add(mode == NoteAppearMode.Jump ? (this.IsTail() ? "0" : "1") : nsc.ToString());
+            if (mode != NoteAppearMode.None)
+            {
+                list.Add(ParseNoteAppearMode.ParseToString(mode));
+            }
+
+            if (isFake)
+            {
+                list.Add("1");
+            }
+
+            return string.Join(",", list);
         }
 
         public class MD5Data

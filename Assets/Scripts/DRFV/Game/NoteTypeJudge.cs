@@ -48,11 +48,17 @@ namespace DRFV.Game
             return false;
         }
 
-        public static bool IsSlideSound(this NoteData noteData)
+        public static bool IsHold(this NoteData noteData)
         {
             NoteKind k = noteData.kind;
             if (k == NoteKind.HOLD_START) return true;
             if (k == NoteKind.HOLD_END) return true;
+            return false;
+        }
+
+        public static bool IsSlideSound(this NoteData noteData)
+        {
+            NoteKind k = noteData.kind;
             if (k == NoteKind.SLIDE_START) return true;
             if (k == NoteKind.SLIDE_END) return true;
             if (k == NoteKind.BOOM) return true;

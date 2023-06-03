@@ -1073,8 +1073,7 @@ namespace DRFV.Game
 
         private IEnumerator ProcessMusic()
         {
-            AudioClip _acHit = null, _acSlide = null, _acFlick = null, _acFreeFlick = null;
-            bool slideEqualsHit = false, freeFlickEqualsFlick = false;
+            AudioClip _acHit = null, _acExHit = null, _acSlide = null, _acHold = null, _acFlick = null, _acFreeFlick = null, _acLong = null;
             bool disableOverlappingCheck = false;
             //获取效果音
             if (!DebugMode && !storyMode && !string.IsNullOrEmpty(currentSettings.selectedNoteSFX))
@@ -1099,9 +1098,12 @@ namespace DRFV.Game
                 string freq = originalBGM.frequency == defaultFrequency ? "" : "_" + originalBGM.frequency;
 
                 yield return GetAudioClip("hit", result => _acHit = result);
+                yield return GetAudioClip("exhit", result => _acExHit = result);
                 yield return GetAudioClip("slide", result => _acSlide = result);
+                yield return GetAudioClip("hold", result => _acHold = result);
                 yield return GetAudioClip("flick", result => _acFlick = result);
                 yield return GetAudioClip("free_flick", result => _acFreeFlick = result);
+                yield return GetAudioClip("long", result => _acLong = result);
 
                 IEnumerator GetAudioClip(string id, AudioClipReceiver audioClipReceiver)
                 {
@@ -1146,10 +1148,19 @@ namespace DRFV.Game
                 // _acHit = Resources.Load<AudioClip>("SE/hit");
             }
 
+            if (_acExHit == null)
+            {
+                _acExHit = _acHit;
+            }
+
             if (_acSlide == null)
             {
                 _acSlide = _acHit;
-                slideEqualsHit = true;
+            }
+
+            if (_acHold == null)
+            {
+                _acHold = _acHit;
             }
 
             if (_acFlick == null)
@@ -1161,22 +1172,27 @@ namespace DRFV.Game
             if (_acFreeFlick == null)
             {
                 _acFreeFlick = _acFlick;
-                freeFlickEqualsFlick = true;
             }
 
             //写入效果音A
             int bgmSamples = originalBGM.samples * originalBGM.channels;
             float[] f_hit = new float[_acHit.samples * _acHit.channels],
+                f_exHit = new float[_acExHit.samples * _acExHit.channels],
                 f_slide = new float[_acSlide.samples * _acSlide.channels],
+                f_hold = new float[_acHold.samples * _acHold.channels],
                 f_flick = new float[_acFlick.samples * _acFlick.channels],
                 f_freeFlick = new float[_acFreeFlick.samples * _acFreeFlick.channels],
+                f_long = new float[_acLong != null ? _acLong.samples * _acLong.channels : 0],
                 f_song = new float[bgmSamples];
             originalBGM.GetData(f_song, 0);
 
             _acHit.GetData(f_hit, 0);
+            _acExHit.GetData(f_exHit, 0);
             _acSlide.GetData(f_slide, 0);
+            _acHold.GetData(f_hold, 0);
             _acFlick.GetData(f_flick, 0);
             _acFreeFlick.GetData(f_freeFlick, 0);
+            if (_acLong != null) _acLong.GetData(f_long, 0);
 
             //音量减半
             for (int i = 0; i < f_song.Length; i++)
@@ -1184,7 +1200,7 @@ namespace DRFV.Game
                 f_song[i] *= volumeScale;
             }
 
-            List<int> list_hit = new(), list_slide = new(), list_flick = new(), list_freeFlick = new();
+            List<int> list_hit = new(), list_exHit = new(), list_slide = new(), list_hold = new(), list_flick = new(), list_freeFlick = new();
 
             //写入gater音
             if (GameEffectGaterLevel >= 1)
@@ -1207,26 +1223,6 @@ namespace DRFV.Game
                         }
                     }
                 }
-
-                foreach (var noteData in drbfile.fakeNotes)
-                {
-                    if (noteData.IsBitCrash())
-                    {
-                        int end = (int)(bgmSamples *
-                                        (noteData.ms / 1000.0f / originalBGM.length));
-                        int start = (int)(bgmSamples *
-                                          (drbfile.fakeNotes[noteData.parent].ms / 1000.0f /
-                                           originalBGM.length));
-
-                        if (end < bgmSamples)
-                        {
-                            for (int c = (end - start) / 2 + start; c < end; c++)
-                            {
-                                f_song[c] *= (10.0f - GameEffectGaterLevel) / 10.0f;
-                            }
-                        }
-                    }
-                }
             }
 
             if (GameEffectTap >= 1)
@@ -1234,87 +1230,83 @@ namespace DRFV.Game
                 foreach (var noteData in drbfile.notes)
                 {
                     ProcessTapEffect(noteData);
-                }
+                    if (noteData.IsTail() && _acLong != null)
+                    {
+                        NoteData finalParent = drbfile.notes[noteData.parent];
+                        while (finalParent.IsTail() && finalParent.parent != finalParent.realId)
+                        {
+                            finalParent = drbfile.notes[finalParent.parent];
+                        }
+                        int end = (int)(bgmSamples *
+                                        (noteData.ms / 1000.0f / originalBGM.length));
+                        int start = (int)(bgmSamples *
+                                          (finalParent.ms / 1000.0f / originalBGM.length));
 
-                foreach (var noteData in drbfile.fakeNotes)
-                {
-                    ProcessTapEffect(noteData);
+                        for (int c = start; c < end; c++)
+                        {
+                            f_song[c] += f_long[c % f_long.Length] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                        }
+                    }
                 }
 
                 void ProcessTapEffect(NoteData noteData)
                 {
-                    if (noteData.IsTapSound())
+                    //写入Tap音
+                    if (noteData.kind == NoteKind.TAP || noteData.kind == NoteKind.ExTAP && _acExHit == _acHit ||
+                        noteData.IsSlideSound() && _acSlide == _acHit || noteData.IsHold() && _acHold == _acHit)
                     {
-                        int start = (int)(bgmSamples *
-                                          (noteData.ms / 1000.0f / originalBGM.length));
-
-                        if (disableOverlappingCheck || !list_hit.Contains(start))
-                        {
-                            list_hit.Add(start);
-                            for (int c = 0; c < f_hit.Length; c++)
-                            {
-                                if (start + c < f_song.Length)
-                                    f_song[start + c] += f_hit[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
-                            }
-                        }
+                        WriteSamples(list_hit, f_hit, GameEffectTap);
                     }
-
-                    if (noteData.IsSlideSound())
+                    else
                     {
-                        int start = (int)(bgmSamples *
-                                          (noteData.ms / 1000.0f / originalBGM.length));
-
-                        if (disableOverlappingCheck ||
-                            !list_slide.Contains(start) && !(slideEqualsHit && list_hit.Contains(start)))
+                        if (noteData.kind == NoteKind.ExTAP)
                         {
-                            list_slide.Add(start);
-                            if (slideEqualsHit) list_hit.Add(start);
-                            for (int c = 0; c < f_slide.Length; c++)
-                            {
-                                if (start + c < f_song.Length)
-                                    f_song[start + c] += f_slide[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
-                            }
+                            WriteSamples(list_exHit, f_exHit, GameEffectTap);
+                        }
+
+                        if (noteData.IsSlideSound())
+                        {
+                            WriteSamples(list_slide, f_slide, GameEffectTap);
+                        }
+
+                        if (noteData.IsHold())
+                        {
+                            WriteSamples(list_hold, f_hold, GameEffectTap);
                         }
                     }
 
                     //写入flick音
-                    if (noteData.IsFlick())
+                    if (noteData.IsFlick() || noteData.kind == NoteKind.FLICK && _acFreeFlick == _acFlick)
                     {
-                        int start = (int)(bgmSamples *
-                                          (noteData.ms / 1000.0f / originalBGM.length));
-
-                        if (disableOverlappingCheck || !list_flick.Contains(start))
+                        WriteSamples(list_flick, f_flick, GameEffectTap);
+                    }
+                    else
+                    {
+                        if (noteData.kind == NoteKind.FLICK)
                         {
-                            list_flick.Add(start);
-                            for (int c = 0; c < f_flick.Length; c++)
-                            {
-                                if (start + c < f_song.Length)
-                                    f_song[start + c] += f_flick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
-                            }
+                            WriteSamples(list_freeFlick, f_freeFlick, GameEffectTap);
                         }
                     }
 
-                    if (noteData.kind == NoteKind.FLICK)
+                    void WriteSamples(List<int> checkOverlapping, float[] se, int volume)
                     {
                         int start = (int)(bgmSamples *
                                           (noteData.ms / 1000.0f / originalBGM.length));
 
-                        if (disableOverlappingCheck || !list_freeFlick.Contains(start) &&
-                            !(freeFlickEqualsFlick && list_flick.Contains(start)))
+                        if (disableOverlappingCheck || !checkOverlapping.Contains(start))
                         {
-                            list_freeFlick.Add(start);
-                            if (freeFlickEqualsFlick) list_flick.Add(start);
-                            for (int c = 0; c < f_freeFlick.Length; c++)
+                            checkOverlapping.Add(start);
+                            for (int c = 0; c < se.Length; c++)
                             {
                                 if (start + c < f_song.Length)
-                                    f_song[start + c] += f_freeFlick[c] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                                    f_song[start + c] += se[c] * 0.5f * ((volume + 3) / 10.0f);
                             }
                         }
                     }
                 }
             }
 
-            BGMManager.clip = AudioClip.Create("",
+            BGMManager.clip = AudioClip.Create("I'm Pepoyo's dog",
                 originalBGM.samples + (int)MathF.Max(_acHit.samples, Mathf.Max(_acSlide.samples, _acFlick.samples)),
                 originalBGM.channels, originalBGM.frequency, false);
             BGMManager.clip.SetData(f_song, 0);
@@ -2099,7 +2091,7 @@ namespace DRFV.Game
                     }
                 }
             }
-            
+
             for (int i = makenotestartFake; i < drbfile.fakeNotes.Count; i++)
             {
                 if (from > time) break;
@@ -2270,7 +2262,7 @@ namespace DRFV.Game
                     isCreated[i] = true;
                 }
             }
-            
+
             for (int i = 0; i < drbfile.fakeNotes.Count; i++)
             {
                 if (drbfile.notes[i].ms < from)
