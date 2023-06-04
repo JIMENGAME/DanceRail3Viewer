@@ -141,6 +141,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "dev.klrohias.unimage": {
+      "version": "https://github.com/Klrohias/unimage-unity.git#0.1.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "e2a0af9fcc1663449c01c996d2a94d137c80fcc9"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

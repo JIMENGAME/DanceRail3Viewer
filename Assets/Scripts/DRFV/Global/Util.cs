@@ -14,6 +14,7 @@ using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Unimage;
 using UnityEngine;
 
 namespace DRFV.Global
@@ -25,6 +26,17 @@ namespace DRFV.Global
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
         public static string localizationId = "zh-cn";
         private static readonly DateTime timeStampStart = new(1970, 1, 1);
+        public static readonly string[] ImageSuffixes = {".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif"};
+
+        ///
+    ///         if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
+    ///         else if (File.Exists(filePath + ".png")) filePath += ".png";
+    ///         else if (File.Exists(filePath + ".jpeg")) filePath += ".jpeg";
+    ///         else if (File.Exists(filePath + ".webp")) filePath += ".webp";
+    ///         else if (File.Exists(filePath + ".bmp")) filePath += ".bmp";
+    ///         else if (File.Exists(filePath + ".tga")) filePath += ".tga";
+    ///         else if (File.Exists(filePath + ".gif")) filePath += ".gif";
+    /// 
 
         public static void Init()
         {
@@ -462,6 +474,16 @@ namespace DRFV.Global
             AudioClip clip = AudioClip.Create(audioClip.name, audioClip.samples, 2, audioClip.frequency, false);
             clip.SetData(output, 0);
             return clip;
+        }
+
+        public static Sprite ByteArrayToSprite(byte[] data)
+        {
+            UnimageProcessor unimage = new UnimageProcessor();
+            unimage.Load(data);
+            Texture2D texture = unimage.GetTexture();
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f));
+            return sprite;
         }
     }
 }

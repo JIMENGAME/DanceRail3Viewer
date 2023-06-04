@@ -276,7 +276,7 @@ namespace DRFV.Login
 
         private void GetAvatarCallback(byte[] data)
         {
-            AccountInfo.Instance.avatar = GetSprite(data);
+            AccountInfo.Instance.avatar = Util.ByteArrayToSprite(data);
             EndLogin();
         }
 
@@ -299,14 +299,6 @@ namespace DRFV.Login
         private void ShowMessage(string message)
         {
             messageText.text = message;
-        }
-
-        public Sprite GetSprite(byte[] bytes)
-        {
-            Texture2D texture = new Texture2D(0, 0);
-            texture.LoadImage(bytes);
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            return sprite;
         }
 
         private string SaltedMD5(string password)

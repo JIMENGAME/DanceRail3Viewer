@@ -2,15 +2,9 @@
     "name": "DRFV",
     "rootNamespace": "",
     "references": [
-        "GUID:8fe6958ab1efeab4c85822babc593384",
-        "GUID:3de88c88fbbb8f944b9210d496af9762",
         "GUID:7ab3663edede26740845931880bf22af",
-        "GUID:c685d05731421f64287ad6d13be5af0e",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:4eb42d201ed4dcd46994ee5453464ae8",
         "GUID:0f2929da6755bfa489a48db5bd03b3e7",
-        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
-        "GUID:9f7331dac40e9234195ba6b3d1d0ef22"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [
         "Android",

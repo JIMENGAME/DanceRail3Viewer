@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using DRFV.Global;
 using DRFV.Pool;
+using Unimage;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -144,17 +145,22 @@ namespace DRFV.Select.Components
         {
             string filePath = StaticResources.Instance.dataPath + "songs/" + _songData.keyword +
                               "/base";
-            if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
-            else if (File.Exists(filePath + ".png")) filePath += ".png";
-            else
+            bool hasCover = false;
+            foreach (string suffix in Util.ImageSuffixes)
+            {
+                if (!File.Exists(filePath + suffix)) continue;
+                filePath = string.Concat(filePath, suffix);
+                hasCover = true;
+                break;
+            }
+            if (!hasCover)
             {
                 _songData.cover = null;
                 songCover.sprite = _placeholder;
                 return;
             }
 
-            Sprite cover = LoadTextureByIO(filePath);
-            _songData.cover = songCover.sprite = cover;
+            _songData.cover = songCover.sprite = LoadTextureByIO(filePath);
         }
 
         private Sprite LoadTextureByIO(string path)
@@ -176,21 +182,12 @@ namespace DRFV.Select.Components
             }
 
             fs.Close();
-
+            
             string md5 = Util.GetMD5(bytes);
             Sprite coverInPool = PoolManager.Instance.Get(PoolManager.Instance.spritePool, md5);
             if (coverInPool != null) return coverInPool;
-
-            Texture2D texture = new Texture2D(0, 0);
-            if (texture.LoadImage(bytes))
-            {
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(0.5f, 0.5f));
-                PoolManager.Instance.Push(PoolManager.Instance.spritePool, md5, sprite);
-                return sprite;
-            }
-
-            return null;
+            
+            return Util.ByteArrayToSprite(bytes);
         }
 
         public void OnPressed()
