@@ -480,7 +480,7 @@ namespace DRFV.Global
         {
             UnimageProcessor unimage = new UnimageProcessor();
             unimage.Load(data);
-            Texture2D texture = unimage.GetTexture();
+            Texture2D texture = unimage.GetTexture(false, true, false);
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(0.5f, 0.5f));
             return sprite;
