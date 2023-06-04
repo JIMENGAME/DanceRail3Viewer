@@ -238,11 +238,13 @@ namespace DRFV.Game
                     note.mode = sss.Length > 7 ? ParseNoteAppearMode.ParseToMode(sss[7].Trim()) : NoteAppearMode.None;
                     note.isFake = sss.Length > 8 && int.Parse(sss[7]) == 1;
 
-                    if (!note.isFake)
-                        drbFile.notes.Add(note);
-                    else
+                    if (note.isFake)
                     {
                         drbFile.fakeNotes.Add(note);
+                    }
+                    else
+                    {
+                        drbFile.notes.Add(note);
                         drbFile.noteWeightCount += HPBar.NoteWeight[(int)note.kind];
                     }
                 }

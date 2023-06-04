@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using DRFV.Enums;
 using DRFV.Global;
@@ -113,8 +113,10 @@ namespace DRFV.Game
             //_mesh.RecalculateBounds();
         }
 
-        public void Ready(NoteData noteData)
+        public void Ready(TheGameManager gm, InputManager im, NoteData noteData)
         {
+            gameManager = gm;
+            inputManager = im;
             _noteData = noteData;
             _noteData.center = _noteData.pos + _noteData.width * 0.5f;
             if (!_noteData.IsTail())
@@ -263,7 +265,7 @@ namespace DRFV.Game
             // _noteData.isNear = false;
             isWaitForGD = false;
             isWaitForPF = false;
-            _judgeEnumerator = gameManager.GameAuto ? AutoJudge() : Judge();
+            _judgeEnumerator = gameManager.GameAuto || _noteData.isFake ? AutoJudge() : Judge();
             StartCoroutine(_judgeEnumerator);
         }
 
@@ -730,13 +732,6 @@ namespace DRFV.Game
 
             judge_flag = true;
             DistroyThis();
-        }
-
-
-        public void SetGMIMG(TheGameManager gm, InputManager im)
-        {
-            gameManager = gm;
-            inputManager = im;
         }
     }
 }

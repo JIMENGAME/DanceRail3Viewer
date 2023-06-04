@@ -68,6 +68,7 @@ namespace DRFV.Setting
         public string selectedNoteSFX;
         public bool enableJudgeRangeFix;
         public bool enableSCFix;
+        public int GameModeDance; // 0: 4k, 1: 6k
 
         public GlobalSettings()
         {
@@ -103,6 +104,7 @@ namespace DRFV.Setting
             selectedNoteSFX = "";
             enableJudgeRangeFix = false;
             enableSCFix = false;
+            GameModeDance = 0;
         }
     }
 

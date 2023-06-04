@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,9 +69,7 @@ namespace DRFV.Game
         [SerializeField] public float PJms = 30.0f, PFms = 60.0f, GDms = 100.0f;
 
         public GameObject BeforeGameBackground;
-
-        public int tapSize, freeFlickSize, flickSize, tapAlpha, freeFlickAlpha, flickAlpha;
-
+        
         private GameObject songDataObject;
         public SongDataContainer songDataContainer;
 
@@ -313,12 +311,6 @@ namespace DRFV.Game
             {
                 originalBGM = Resources.Load<AudioClip>("DEBUG/" + SongKeyword);
                 if (sprSongImage) sprSongImage.sprite = Resources.Load<Sprite>("DEBUG/" + SongKeyword);
-                tapSize = 2;
-                tapAlpha = 3;
-                flickSize = 3;
-                flickAlpha = 3;
-                freeFlickSize = 3;
-                freeFlickAlpha = 3;
                 VideoPlayer.playbackSpeed = BGMManager.pitch;
                 if (SongKeyword.Equals("hello") && SongHard == 13)
                 {
@@ -342,12 +334,6 @@ namespace DRFV.Game
                 GameMirror = currentSettings.IsMirror;
                 isHard = currentSettings.HardMode;
                 skillcheck = currentSettings.SkillCheckMode;
-                tapSize = currentSettings.TapSize;
-                tapAlpha = currentSettings.TapAlpha;
-                flickSize = currentSettings.FlickSize;
-                flickAlpha = currentSettings.FlickAlpha;
-                freeFlickSize = currentSettings.FreeFlickSize;
-                freeFlickAlpha = currentSettings.FreeFlickAlpha;
                 GameEffectParamEQLevel = currentSettings.GameEffectParamEQLevel;
                 GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
                 GameEffectTap = currentSettings.GameEffectTap;
@@ -783,15 +769,11 @@ namespace DRFV.Game
                             : File.ReadAllText(path));
                 drbFile.GenerateAttributesOnPlay();
 
-                CurveAndBool generatePositionCurve = GeneratePositionCurve(drbFile);
-                PositionCurve = generatePositionCurve.curve;
-                hasMover = generatePositionCurve.b;
+                (PositionCurve, hasMover) = GeneratePositionCurve(drbFile);
             }
             else
             {
-                CurveAndBool generatePositionCurve = GeneratePositionCurve(drbfile);
-                PositionCurve = generatePositionCurve.curve;
-                hasMover = generatePositionCurve.b;
+                (PositionCurve, hasMover) = GeneratePositionCurve(drbfile);
             }
 
             if (!DebugMode && ((!storyMode && File.Exists(path =
@@ -1610,8 +1592,7 @@ namespace DRFV.Game
                             note.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
-                        note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
-                        note.GetComponent<TheNote>().Ready(drbfile.notes[i]);
+                        note.GetComponent<TheNote>().Ready(this, inputManager, drbfile.notes[i]);
                         note.GetComponent<TheNote>().StartC();
 
 
@@ -1658,8 +1639,7 @@ namespace DRFV.Game
                             note.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
                         note.GetComponent<TheNote>().mDrawer = meshDrawer;
-                        note.GetComponent<TheNote>().SetGMIMG(this, inputManager);
-                        note.GetComponent<TheNote>().Ready(drbfile.fakeNotes[i]);
+                        note.GetComponent<TheNote>().Ready(this, inputManager, drbfile.fakeNotes[i]);
                         note.GetComponent<TheNote>().StartC();
 
                         isCreated[i + drbfile.notes.Count] = true;
@@ -2358,7 +2338,6 @@ namespace DRFV.Game
             msDetailsList.Add(0f);
             PerfectJ++;
             AddCombo();
-            //if (imgHanteiBeam[0]) imgHanteiBeam[0].color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
             hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
         }
 
@@ -2382,6 +2361,9 @@ namespace DRFV.Game
                     PerfectJ++;
                     AddCombo();
                     hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
+                                    if (imgJudgeBeam[0])
+                                        imgJudgeBeam[0].color = new Color(imgJudgeBeam[0].color.r, imgJudgeBeam[0].color.g,
+                                            imgJudgeBeam[0].color.b, 1.0f);
                 }
 
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
@@ -2389,9 +2371,6 @@ namespace DRFV.Game
                 if (gameSubJudgeDisplay == GameSubJudgeDisplay.MS && kind == NoteKind.TAP)
                     go2.GetComponent<JudgeImage>().Init(4, true, displayMS);
                 else go2.GetComponent<JudgeImage>().Init(4);
-                if (imgJudgeBeam[0])
-                    imgJudgeBeam[0].color = new Color(imgJudgeBeam[0].color.r, imgJudgeBeam[0].color.g,
-                        imgJudgeBeam[0].color.b, 1.0f);
             }
             //PERFECT 判定
             else if (Mathf.Abs(ms) <= PFms)
@@ -2416,10 +2395,10 @@ namespace DRFV.Game
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                                if (imgJudgeBeam[1])
+                                    imgJudgeBeam[1].color = new Color(imgJudgeBeam[1].color.r, imgJudgeBeam[1].color.g,
+                                        imgJudgeBeam[1].color.b, 1.0f);
 
-                if (imgJudgeBeam[1])
-                    imgJudgeBeam[1].color = new Color(imgJudgeBeam[1].color.r, imgJudgeBeam[1].color.g,
-                        imgJudgeBeam[1].color.b, 1.0f);
                 ////Event
                 //if (isEvent)
                 //{
@@ -2759,7 +2738,7 @@ namespace DRFV.Game
             return wav.ToAudioClip();
         }
 
-        private CurveAndBool GeneratePositionCurve(DRBFile drbfile)
+        private (AnimationCurve, bool) GeneratePositionCurve(DRBFile drbfile)
         {
             List<float> existedTime = new List<float>();
             List<Keyframe> kfpos = new List<Keyframe>();
@@ -2783,7 +2762,7 @@ namespace DRFV.Game
 
             Keyframe[] kfposa = kfpos.ToArray();
             Util.LinearKeyframe(kfposa);
-            return new CurveAndBool(new AnimationCurve(kfposa), kfpos.Count > 1);
+            return (new AnimationCurve(kfposa), kfpos.Count > 1);
         }
 
         private void GenerateHeightCurve(DRBFile drbfile)
@@ -2898,18 +2877,6 @@ namespace DRFV.Game
             }
 
             item = temp;
-        }
-    }
-
-    class CurveAndBool
-    {
-        public AnimationCurve curve;
-        public bool b;
-
-        public CurveAndBool(AnimationCurve curve, bool b)
-        {
-            this.curve = curve;
-            this.b = b;
         }
     }
 }
