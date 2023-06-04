@@ -29,22 +29,13 @@ namespace DRFV.Test
         {
             HpManager.Init(new HPBarDefault());
             DrawMesh();
-            StartCoroutine(Qwq());
         }
 
-        IEnumerator Qwq()
+        private IEnumerator Qwq()
         {
-            using UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip("E:/DR3Maker/anrakushi.ogg", AudioType.OGGVORBIS);
-            yield return uwr.SendWebRequest();
-            if (uwr.result == UnityWebRequest.Result.Success)
-            {
-                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(uwr);
-                if (audioClip.channels != 2) audioClip.MonoToStereo();
-                longSource.clip = audioClip;
-                longSource.Play();
-            }
+            yield return null;
         }
-
+        
         // Update is called once per frame
         void Update()
         {
