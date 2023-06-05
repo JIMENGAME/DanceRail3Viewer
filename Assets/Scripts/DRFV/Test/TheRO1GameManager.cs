@@ -1,4 +1,4 @@
-﻿using System;
+﻿#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +13,7 @@ using Random = UnityEngine.Random;
 
 namespace DRFV.Test
 {
-    public class AaaAAaa : MonoBehaviour
+    public class TheRO1GameManager : MonoBehaviour
     {
         private DRBFile drbfile;
         private GlobalSettings _globalSettings;
@@ -535,3 +535,4 @@ namespace DRFV.Test
         }
     }
 }
+#endif

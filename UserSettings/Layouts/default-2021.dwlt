@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Hierarchy
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 30
+  controlID: 104
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 31
+  controlID: 105
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,8 +189,8 @@ MonoBehaviour:
     y: 0
     width: 300
     height: 671
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -272,8 +272,8 @@ MonoBehaviour:
     y: 0
     width: 323
     height: 939
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 20}
@@ -404,9 +404,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: dc140000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 3cf6ffff00fbffff
+      m_ExpandedIDs: 2ed9ffff6cd9ffffaadaffffb0daffffb6daffffbcdaffffe2daffffe8daffff0cdbffff32dbffff40dbffff42ddffff76ddffffb0ddffffe6ddffffeaddffff9eeaffffe0eaffff1eecffff24ecffff2aecffff30ecffff56ecffff5cecffff80ecffffa6ecffffb4ecffffb6eeffffbaeeffffdceefffffeeeffff02efffffc0effffffaefffff30f0ffff34f0ffff2af2ffff6cf2ffffaaf3ffffb0f3ffffb6f3ffffbcf3ffffe2f3ffffe8f3ffff0cf4ffff32f4ffff40f4ffff42f6ffff76f6ffffb2f6ffffe8f6ffffecf6ffff02fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -778,22 +778,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/DRFV/Game
+    - Assets/Scripts/DRFV/Test
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts/DRFV/Game
+  - Assets/Scripts/DRFV/Test
   m_LastFoldersGridSize: -1
   m_LastProjectPath: E:\Users\Administrator\WebstormProjects\DanceRail3Viewer
   m_LockTracker:
     m_IsLocked: 1
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 189}
-    m_SelectedIDs: b6560000
-    m_LastClickedID: 22198
-    m_ExpandedIDs: 0000000080560000a0560000aa56000000ca9a3b
+    scrollPos: {x: 0, y: 461}
+    m_SelectedIDs: a2560000
+    m_LastClickedID: 22178
+    m_ExpandedIDs: 000000004c5600006a5600007456000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -821,7 +821,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000080560000
+    m_ExpandedIDs: 000000004c560000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

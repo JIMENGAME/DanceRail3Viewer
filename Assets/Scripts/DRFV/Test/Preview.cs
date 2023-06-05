@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections;
 using System.IO;
 using DRFV.Global;
@@ -89,3 +90,4 @@ namespace DRFV.Test
 
     }
 }
+#endif
