@@ -26,18 +26,21 @@ namespace DRFV.Global
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
         public static string localizationId = "zh-cn";
         private static readonly DateTime timeStampStart = new(1970, 1, 1);
-        public static readonly string[] ImageSuffixes = {".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif"};
+#if UNITY_IOS
+        public static readonly string[] ImageSuffixes = {".jpg", ".png"};
+#else
+        public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif" };
+#endif
 
         ///
-    ///         if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
-    ///         else if (File.Exists(filePath + ".png")) filePath += ".png";
-    ///         else if (File.Exists(filePath + ".jpeg")) filePath += ".jpeg";
-    ///         else if (File.Exists(filePath + ".webp")) filePath += ".webp";
-    ///         else if (File.Exists(filePath + ".bmp")) filePath += ".bmp";
-    ///         else if (File.Exists(filePath + ".tga")) filePath += ".tga";
-    ///         else if (File.Exists(filePath + ".gif")) filePath += ".gif";
-    /// 
-
+        ///         if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
+        ///         else if (File.Exists(filePath + ".png")) filePath += ".png";
+        ///         else if (File.Exists(filePath + ".jpeg")) filePath += ".jpeg";
+        ///         else if (File.Exists(filePath + ".webp")) filePath += ".webp";
+        ///         else if (File.Exists(filePath + ".bmp")) filePath += ".bmp";
+        ///         else if (File.Exists(filePath + ".tga")) filePath += ".tga";
+        ///         else if (File.Exists(filePath + ".gif")) filePath += ".gif";
+        /// 
         public static void Init()
         {
             var endTypeShortJObject = JObject.Parse(Resources.Load<TextAsset>("end_type_short").text);
@@ -459,18 +462,19 @@ namespace DRFV.Global
             GC.Collect();
             GC.Collect();
         }
-        
+
         public static AudioClip MonoToStereo(this AudioClip audioClip)
         {
             if (audioClip == null || audioClip.channels == 2) return audioClip;
             if (audioClip.channels != 1) throw new Exception();
             float[] data = new float[audioClip.samples], output = new float[audioClip.samples * 2];
             audioClip.GetData(data, 0);
-            for (int i = 0; i < data.Length; i ++)
+            for (int i = 0; i < data.Length; i++)
             {
                 output[2 * i] = data[i];
                 output[2 * i + 1] = data[i];
             }
+
             AudioClip clip = AudioClip.Create(audioClip.name, audioClip.samples, 2, audioClip.frequency, false);
             clip.SetData(output, 0);
             return clip;
@@ -478,9 +482,17 @@ namespace DRFV.Global
 
         public static Sprite ByteArrayToSprite(byte[] data)
         {
+            Texture2D texture;
+            bool succeeded = true;
+#if UNITY_IOS
+            texture = new Texture2D(0, 0);
+            succeeded = texture.LoadImage(data);
+#else
             UnimageProcessor unimage = new UnimageProcessor();
             unimage.Load(data);
-            Texture2D texture = unimage.GetTexture(false, true, false);
+            texture = unimage.GetTexture(false, true, false);
+#endif
+            if (!succeeded) throw new ArgumentException("Unable to load Sprite");
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(0.5f, 0.5f));
             return sprite;
