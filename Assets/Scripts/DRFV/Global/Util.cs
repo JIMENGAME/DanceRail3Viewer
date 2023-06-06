@@ -14,7 +14,9 @@ using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+#if !UNITY_IOS
 using Unimage;
+#endif
 using UnityEngine;
 
 namespace DRFV.Global
