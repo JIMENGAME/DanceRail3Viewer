@@ -42,9 +42,9 @@ namespace DRFV.Shop
                 bpm.text = "BPM：" + songInfo.bpm;
                 cover.transform.parent.gameObject.SetActive(false);
                 title.transform.parent.gameObject.SetActive(true);
-                Texture2D texture2D = shopManager.placeholder.texture;
+                Texture2D texture2D = Util.SpritePlaceholder.texture;
                 WriteFile(coverCachPath, texture2D.EncodeToJPG());
-                SetCover(shopManager.placeholder);
+                SetCover(Util.SpritePlaceholder);
             }
         }
 

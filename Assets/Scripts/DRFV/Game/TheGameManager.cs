@@ -88,8 +88,6 @@ namespace DRFV.Game
 
         public GameObject AegleseekerObject;
 
-        public Sprite CoverPlaceholder;
-
         public List<float> AccMSList = new();
 
         private bool videoPrepared;
@@ -370,7 +368,7 @@ namespace DRFV.Game
 
                 if (sprSongImage)
                     sprSongImage.sprite =
-                        songDataContainer.songData.cover ? songDataContainer.songData.cover : CoverPlaceholder;
+                        songDataContainer.songData.cover ? songDataContainer.songData.cover : Util.SpritePlaceholder;
                 if (barType == BarType.HARD)
                     currentSettings.HardMode = true;
                 else if (barType == BarType.EASY)
@@ -988,8 +986,8 @@ namespace DRFV.Game
             }
             else
             {
-                coverFrame.color = new Color(1f, 130f / 255f, 1f);
-                cover.sprite = CoverPlaceholder;
+                coverFrame.color = Util.SpritePlaceholderBGColor;
+                cover.sprite = Util.SpritePlaceholder;
             }
 
             coverFrame.rectTransform.DOAnchorPosY(-200f, 1f).SetEase(Ease.OutSine);

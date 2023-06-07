@@ -25,9 +25,6 @@ namespace DRFV.Shop
 
         public RectTransform mainPanel;
 
-        public Sprite placeholder;
-        private Color placeholderBackgroundColor = new(1f, 130f / 255f, 1f);
-
         private int nowSelectedIndex = -1;
 
         public Image cover, coverBackground;
@@ -321,7 +318,7 @@ namespace DRFV.Shop
             cover.sprite = shopItems[nowSelectedIndex].GetCover();
             coverBackground.color = songInfos[nowSelectedIndex].hasCover
                 ? Util.GetAvgColor(cover.sprite)
-                : placeholderBackgroundColor;
+                : Util.SpritePlaceholderBGColor;
             previewSource.Play();
             UpdateSongPanelState(true);
         }

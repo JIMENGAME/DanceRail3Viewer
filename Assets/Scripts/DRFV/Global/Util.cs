@@ -14,9 +14,7 @@ using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-#if !UNITY_IOS
 using Unimage;
-#endif
 using UnityEngine;
 
 namespace DRFV.Global
@@ -28,11 +26,9 @@ namespace DRFV.Global
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
         public static string localizationId = "zh-cn";
         private static readonly DateTime timeStampStart = new(1970, 1, 1);
-#if UNITY_IOS
-        public static readonly string[] ImageSuffixes = {".jpg", ".png"};
-#else
         public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif" };
-#endif
+        public static Sprite SpritePlaceholder { get; private set; }
+        public static readonly Color SpritePlaceholderBGColor = new(1f, 130f / 255f, 1f);
 
         ///
         ///         if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
@@ -58,6 +54,8 @@ namespace DRFV.Global
                 var token = noteJudgeRangesJArray[i];
                 noteJudgeRanges[i] = token.ToObject<NoteJudgeRange>();
             }
+
+            SpritePlaceholder = Resources.Load<Sprite>("placeholder");
         }
 
         public static bool[] GenerateNewBoolArray(int length)
@@ -484,20 +482,20 @@ namespace DRFV.Global
 
         public static Sprite ByteArrayToSprite(byte[] data)
         {
-            Texture2D texture;
-            bool succeeded = true;
-#if UNITY_IOS
-            texture = new Texture2D(0, 0);
-            succeeded = texture.LoadImage(data);
-#else
-            UnimageProcessor unimage = new UnimageProcessor();
-            unimage.Load(data);
-            texture = unimage.GetTexture(false, true, false);
-#endif
-            if (!succeeded) throw new ArgumentException("Unable to load Sprite");
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f));
-            return sprite;
+            try
+            {
+                UnimageProcessor unimage = new UnimageProcessor();
+                unimage.Load(data);
+                Texture2D texture = unimage.GetTexture(false, true, false);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f));
+                return sprite;
+            }
+            catch (Exception)
+            {
+                NotificationBarManager.Instance.Show("错误：不支持的图片格式");
+                return SpritePlaceholder;
+            }
         }
     }
 }

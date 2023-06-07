@@ -142,11 +142,11 @@
       }
     },
     "dev.klrohias.unimage": {
-      "version": "https://github.com/Klrohias/unimage-unity.git#0.1.1",
+      "version": "https://github.com/Klrohias/unimage-unity.git#0.1.2",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "78e4cca0852d0ad8ef4869d0a015521d4461a594"
+      "hash": "c9c929e4532260c9080887148aefebadb53e028d"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

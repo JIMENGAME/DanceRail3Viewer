@@ -19,7 +19,6 @@ namespace DRFV.Select.Components
         public Image press;
         public bool pressed;
         private TheSelectManager.SongData _songData;
-        private Sprite _placeholder;
         private AudioClip preview;
 
         public void Init(TheSelectManager.SongData songData, int id)
@@ -28,7 +27,6 @@ namespace DRFV.Select.Components
             _songData = songData;
             songName.text = songData.songName;
             songArtist.text = songData.songArtist;
-            _placeholder = TheSelectManager.Instance.CoverPlaceholder;
             ReadCoverByIO();
             press.color = new Color(1.0f, 1.0f, 1.0f, 0f);
         }
@@ -156,7 +154,7 @@ namespace DRFV.Select.Components
             if (!hasCover)
             {
                 _songData.cover = null;
-                songCover.sprite = _placeholder;
+                songCover.sprite = Util.SpritePlaceholder;
                 return;
             }
 

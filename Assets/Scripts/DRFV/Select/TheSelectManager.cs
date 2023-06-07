@@ -472,13 +472,11 @@ namespace DRFV.Select
         //
         //     return null;
         // }
-
-        public Sprite CoverPlaceholder;
-
+        
         private void RefreshSongNow()
         {
             songName.transform.parent.gameObject.SetActive(true);
-            songCover.sprite = songDataNow.cover ? songDataNow.cover : CoverPlaceholder;
+            songCover.sprite = songDataNow.cover ? songDataNow.cover : Util.SpritePlaceholder;
             songName.text = songDataNow.songName;
             songArtist.text = songDataNow.songArtist;
             songBpm.text = "BPM " + songDataNow.bpm;

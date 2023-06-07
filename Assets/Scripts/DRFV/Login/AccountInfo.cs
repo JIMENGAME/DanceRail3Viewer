@@ -1,4 +1,5 @@
 using System;
+using DRFV.Global;
 using DRFV.inokana;
 using DRFV.Shop;
 using UnityEngine;
@@ -23,7 +24,7 @@ namespace DRFV.Login
         {
             acountStatus = AcountStatus.UNINITIALIZED;
             username = "Offline...";
-            avatar = Resources.Load<Sprite>("placeholder");
+            avatar = Util.SpritePlaceholder;
             loginToken = "";
             urlPrefix = "";
             songlistGot = false;

@@ -51,8 +51,6 @@ namespace DRFV.Result
 
         public Text Artist;
 
-        public Sprite CoverPlaceHolder;
-
         public Text HPAcc;
 
         public Text SongSpeed;
@@ -221,8 +219,8 @@ namespace DRFV.Result
             }
             else
             {
-                CoverBackground.color = new Color(1f, 130f / 255f, 1f);
-                Cover.sprite = CoverPlaceHolder;
+                CoverBackground.color = Util.SpritePlaceholderBGColor;
+                Cover.sprite = Util.SpritePlaceholder;
             }
 
             Title.text = songDataContainer.songData.songName;
