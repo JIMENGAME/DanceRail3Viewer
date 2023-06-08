@@ -480,7 +480,7 @@ namespace DRFV.Global
             return clip;
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data, string keyword = "")
+        public static Sprite ByteArrayToSprite(byte[] data)
         {
             Texture2D texture;
             try
@@ -494,7 +494,6 @@ namespace DRFV.Global
             }
             catch (Exception e)
             {
-                Debug.LogError($"无法加载{keyword}：" + e.Message);
                 texture = new Texture2D(0, 0);
                 if (texture.LoadImage(data))
                 {

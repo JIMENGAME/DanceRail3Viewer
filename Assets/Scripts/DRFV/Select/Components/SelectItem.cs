@@ -185,7 +185,7 @@ namespace DRFV.Select.Components
             Sprite coverInPool = PoolManager.Instance.Get(PoolManager.Instance.spritePool, md5);
             if (coverInPool != null) return coverInPool;
 
-            Sprite sprite = Util.ByteArrayToSprite(bytes, _songData.keyword);
+            Sprite sprite = Util.ByteArrayToSprite(bytes);
             PoolManager.Instance.Push(PoolManager.Instance.spritePool, md5, sprite);
             return sprite;
         }
