@@ -494,7 +494,7 @@ namespace DRFV.Global
             }
             catch (Exception e)
             {
-                Debug.LogError($"无法加载\n{keyword}" + e);
+                Debug.LogError($"无法加载{keyword}\n" + e.Message);
                 texture = new Texture2D(0, 0);
                 if (texture.LoadImage(data))
                 {
