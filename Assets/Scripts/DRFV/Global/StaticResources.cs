@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using DRFV.CoinShop.Data;
 using DRFV.inokana;
 using Newtonsoft.Json.Linq;
@@ -20,6 +19,7 @@ namespace DRFV.Global
         protected override void OnAwake()
         {
             DontDestroyOnLoad(gameObject);
+            Util.Init();
             dataPath = GetDataPath();
             cachePath = GetCachePath();
             if (!Directory.Exists(dataPath))
@@ -45,7 +45,7 @@ namespace DRFV.Global
             if (!Directory.Exists(cachePath))
             {
                 Directory.CreateDirectory(cachePath);
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
             File.SetAttributes(cachePath, FileAttributes.Hidden);
 #endif
             }

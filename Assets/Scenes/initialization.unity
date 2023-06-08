@@ -1279,8 +1279,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1710685174}
-  - component: {fileID: 1710685183}
   - component: {fileID: 1710685173}
+  - component: {fileID: 1710685183}
   - component: {fileID: 1710685175}
   - component: {fileID: 1710685176}
   - component: {fileID: 1710685177}
@@ -1452,15 +1452,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8082839cc3854689916f6b881a4beda7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PrimeStartDate: 0
-  PrimeEndDate: 0
-  PrimeStartTime: 0
   PrimeEndTime: 0
   coin: 0
   purpleCard: 0
   exp: 0
   masterLevel: 0
+  level: 0
   changeNickNameCard: 0
+  skillTier: 0
   ExpLevelCurve:
     serializedVersion: 2
     m_Curve:

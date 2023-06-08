@@ -30,7 +30,6 @@ namespace DRFV.Init
         // Start is called before the first frame update
         void Start()
         {
-            Util.Init();
             DateTime now = DateTime.Now;
             RuntimeSettingsManager.Instance.isAprilFool = now.Month == 4 && now.Day == 1;
 #if UNITY_EDITOR

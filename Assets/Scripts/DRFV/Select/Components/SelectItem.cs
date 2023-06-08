@@ -185,7 +185,7 @@ namespace DRFV.Select.Components
             Sprite coverInPool = PoolManager.Instance.Get(PoolManager.Instance.spritePool, md5);
             if (coverInPool != null) return coverInPool;
             
-            return Util.ByteArrayToSprite(bytes);
+            return Util.ByteArrayToSprite(bytes, _songData.keyword);
         }
 
         public void OnPressed()

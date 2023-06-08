@@ -480,19 +480,28 @@ namespace DRFV.Global
             return clip;
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data)
+        public static Sprite ByteArrayToSprite(byte[] data, string keyword = "")
         {
+            Texture2D texture;
             try
             {
                 UnimageProcessor unimage = new UnimageProcessor();
                 unimage.Load(data);
-                Texture2D texture = unimage.GetTexture(false, true, false);
+                texture = unimage.GetTexture(false, true, false);
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f));
                 return sprite;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.LogError($"无法加载{keyword}" + e);
+                texture = new Texture2D(0, 0);
+                if (texture.LoadImage(data))
+                {
+                    Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                        new Vector2(0.5f, 0.5f));
+                    return sprite;
+                }
                 NotificationBarManager.Instance.Show("错误：不支持的图片格式");
                 return SpritePlaceholder;
             }
