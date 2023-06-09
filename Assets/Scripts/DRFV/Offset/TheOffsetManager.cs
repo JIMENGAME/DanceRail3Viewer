@@ -140,7 +140,7 @@ namespace DRFV.Offset
             GlobalSettings a = GlobalSettings.CurrentSettings;
             a.Offset = NoteOffset;
             GlobalSettings.CurrentSettings = a;
-            FadeManager.Instance.LoadScene("settings");
+            FadeManager.Instance.Back();
         }
 
         // Update is called once per frame

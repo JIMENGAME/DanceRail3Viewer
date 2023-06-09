@@ -158,7 +158,7 @@ namespace DRFV.Story
         public void Back()
         {
             Resources.UnloadUnusedAssets();
-            FadeManager.Instance.LoadScene("main");
+            FadeManager.Instance.Back();
         }
     }
 }

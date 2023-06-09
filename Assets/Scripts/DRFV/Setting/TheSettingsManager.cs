@@ -203,7 +203,7 @@ namespace DRFV.Setting
 
         public void Back()
         {
-            FadeManager.Instance.LoadScene("main");
+            FadeManager.Instance.Back();
         }
 
         public void ResetSettings()
@@ -212,7 +212,8 @@ namespace DRFV.Setting
             {
                 SaveVersion = 0
             };
-            FadeManager.Instance.LoadScene("settings", settings);
+            GlobalSettings.CurrentSettings = settings;
+            FadeManager.Instance.JumpScene("settings");
         }
 
         public void ExportScore()

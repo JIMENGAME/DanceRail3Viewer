@@ -254,7 +254,7 @@ namespace DRFV.Select
         {
             if (atSelect)
             {
-                FadeManager.Instance.LoadScene("main", currentSettings);
+                BackToMain();
                 return;
             }
 
@@ -277,8 +277,14 @@ namespace DRFV.Select
             if (FadeManager.Instance.isFading()) return;
             if (Input.GetKey(KeyCode.Escape))
             {
-                FadeManager.Instance.LoadScene("main", currentSettings);
+                BackToMain();
             }
+        }
+
+        private void BackToMain()
+        {
+            GlobalSettings.CurrentSettings = currentSettings;
+            FadeManager.Instance.Back();
         }
 
         public GameObject[] hideInNoDiffs;
@@ -679,7 +685,8 @@ namespace DRFV.Select
             InputManager.TOUCH_MAX = 20;
             DontDestroyOnLoad(go);
 
-            FadeManager.Instance.LoadScene("game", currentSettings);
+            GlobalSettings.CurrentSettings = currentSettings;
+            FadeManager.Instance.LoadScene("game");
         }
 
         public void SetAuto(bool value)

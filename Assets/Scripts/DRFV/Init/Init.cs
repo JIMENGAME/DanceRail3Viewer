@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using DG.Tweening;
-using DRFV.Global;
 using DRFV.Global.Managers;
 using DRFV.Language;
 using DRFV.Setting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace DRFV.Init
@@ -38,6 +38,7 @@ namespace DRFV.Init
             entryMask.color = RuntimeSettingsManager.Instance.isAprilFool ? CameraColor : MaskColor;
             Camera.main.backgroundColor = RuntimeSettingsManager.Instance.isAprilFool ? MaskColor : CameraColor;
             if (RuntimeSettingsManager.Instance.isAprilFool) music.clip = aprilFoolClip;
+            FadeManager.Instance.JumpScene(SceneManager.GetActiveScene().name);
             StartCoroutine(LoadEntry());
         }
 
@@ -121,7 +122,7 @@ namespace DRFV.Init
             if (!Input.GetMouseButtonDown(0) || IsOutScreen(Input.mousePosition) || !inited || loadingStarted) return;
             loadingStarted = true;
             music.Stop();
-            FadeManager.Instance.LoadScene("main");
+            FadeManager.Instance.JumpScene("main");
         }
 
         private static bool IsOutScreen(Vector3 position)

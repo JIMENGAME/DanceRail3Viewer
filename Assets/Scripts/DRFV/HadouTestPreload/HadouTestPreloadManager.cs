@@ -57,7 +57,7 @@ namespace DRFV.HadouTestPreload
 
         public void Exit()
         {
-            FadeManager.Instance.LoadScene("main");
+            FadeManager.Instance.Back();
         }
     }
 }

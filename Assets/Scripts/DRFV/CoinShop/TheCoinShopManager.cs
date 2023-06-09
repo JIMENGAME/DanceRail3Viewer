@@ -178,6 +178,6 @@ public class TheCoinShopManager : MonoBehaviour
     public void Back()
     {
         PlayerData.Instance.Save();
-        FadeManager.Instance.LoadScene("main");
+        FadeManager.Instance.Back();
     }
 }

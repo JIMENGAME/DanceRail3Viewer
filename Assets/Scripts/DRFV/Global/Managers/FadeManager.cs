@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using DRFV.inokana;
 using DRFV.Setting;
 using UnityEngine;
@@ -8,6 +10,10 @@ namespace DRFV.Global.Managers
 {
     public class FadeManager : MonoSingleton<FadeManager>
     {
+        class SceneInfo
+        {
+            public string scene = "";
+        }
         [SerializeField] private Texture img;
         [SerializeField] private int width = 16;
         [SerializeField] private int height = 9;
@@ -15,6 +21,9 @@ namespace DRFV.Global.Managers
         private Vector2 blocksize;
         private bool flag;
         public GameObject mask;
+        private Stack<SceneInfo> scenesStack = new();
+        private Exception stackIsEmptyException => new InvalidOperationException("Stack is empty");
+
 
         protected override void OnAwake()
         {
@@ -26,11 +35,63 @@ namespace DRFV.Global.Managers
             }
         }
 
-        public void LoadScene(string SceneName, GlobalSettings globalSettings = null)
+        /// <summary>
+        /// 跳转 不可返回
+        /// </summary>
+        /// <param name="SceneName">场景名称</param>
+        /// <exception cref="InvalidOperationException">场景Stack为空</exception>
+        public void JumpScene(string SceneName)
         {
-            if (globalSettings != null) GlobalSettings.CurrentSettings = globalSettings;
-            if (flag)
+            if (flag) return;
+            
+            if (scenesStack.Count == 0)
+            {
+                scenesStack.Push(new()
+                {
+                    scene = SceneName,
+                });
                 return;
+            }
+
+            if (!scenesStack.TryPeek(out var item))
+                throw stackIsEmptyException;
+
+            item.scene = SceneName;
+            DoScene(SceneName);
+        }
+
+        /// <summary>
+        /// 跳转 可以返回
+        /// </summary>
+        /// <param name="SceneName">场景名称</param>
+        /// <exception cref="InvalidOperationException">场景Stack为空</exception>
+        public void LoadScene(string SceneName)
+        {
+            if (flag) return;
+            if (scenesStack.Count == 0)
+                throw stackIsEmptyException;
+
+            scenesStack.Push(new()
+            {
+                scene = SceneName
+            });
+            DoScene(SceneName);
+        }
+
+        public void Back()
+        {
+            if (flag) return;
+            if (scenesStack.Count == 1)
+                return;
+
+            scenesStack.Pop();
+            var lastScene = scenesStack.Peek();
+            DoScene(lastScene.scene);
+        }
+
+        private void DoScene(string SceneName)
+        {
+            if (flag) return;
             blocksize = new Vector2(Screen.width / (float)width, Screen.height / (float)height);
             StartCoroutine(ShowFade(SceneName));
         }

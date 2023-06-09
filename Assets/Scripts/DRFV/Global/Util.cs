@@ -492,7 +492,7 @@ namespace DRFV.Global
                     new Vector2(0.5f, 0.5f));
                 return sprite;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 texture = new Texture2D(0, 0);
                 if (texture.LoadImage(data))

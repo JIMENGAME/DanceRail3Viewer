@@ -352,13 +352,13 @@ namespace DRFV.Result
         {
             CheckDataContainers.CleanSongDataContainer();
             CheckDataContainers.CleanResultDataContainer();
-            FadeManager.Instance.LoadScene("select");
+            FadeManager.Instance.Back();
         }
 
         public void Retry()
         {
             CheckDataContainers.CleanResultDataContainer();
-            FadeManager.Instance.LoadScene("game");
+            FadeManager.Instance.JumpScene("game");
         }
 
         private string RankToRankText(int rank)

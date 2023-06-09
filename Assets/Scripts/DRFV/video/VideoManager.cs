@@ -45,9 +45,9 @@ namespace DRFV.video
             }
 
             GameObject songDataObject = GameObject.FindWithTag("SongData");
-            if (!songDataObject) FadeManager.Instance.LoadScene("story");
+            if (!songDataObject) FadeManager.Instance.Back();
             StoryChallengeContainer storyChallengeContainer = songDataObject.GetComponent<StoryChallengeContainer>();
-            if (!storyChallengeContainer) FadeManager.Instance.LoadScene("story");
+            if (!storyChallengeContainer) FadeManager.Instance.Back();
             key = $"story_video_{storyChallengeContainer.songData.keyword}";
             videoPlayer.clip = Resources.Load<VideoClip>($"STORY/VIDEOS/{storyChallengeContainer.songData.keyword}");
             audioSource.clip = Resources.Load<AudioClip>($"STORY/VIDEOS/{storyChallengeContainer.songData.keyword}");
@@ -72,12 +72,12 @@ namespace DRFV.video
                 _ => throw new ArgumentOutOfRangeException()
             };
             tier.text = storyChallengeContainer.selectedDiff + (storyChallengeContainer.ratingPlus ? "+" : "");
-            if (!videoPlayer.clip || !audioSource.clip) FadeManager.Instance.LoadScene("game");
+            if (!videoPlayer.clip || !audioSource.clip) FadeManager.Instance.JumpScene("game");
             timeToShow = storyChallengeContainer.timeToVideoShow * 1000f;
             timeToEnter = storyChallengeContainer.timeToEnter * 1000f;
             videoPlayer.targetTexture.Release();
             _stopwatch.Reset();
-            videoPlayer.errorReceived += (_, _) => FadeManager.Instance.LoadScene("game");
+            videoPlayer.errorReceived += (_, _) => FadeManager.Instance.JumpScene("game");
             videoPlayer.prepareCompleted += _ => { StartCoroutine(StartPlay()); };
             RectTransform rectTransform = videoPlayer.GetComponent<RectTransform>();
             int width = videoPlayer.targetTexture.width = (int)videoPlayer.width;
@@ -91,7 +91,7 @@ namespace DRFV.video
 #if UNITY_EDITOR
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space)) FadeManager.Instance.LoadScene("game");
+            if (Input.GetKeyDown(KeyCode.Space)) FadeManager.Instance.JumpScene("game");
         }
 #endif
 
@@ -114,7 +114,7 @@ namespace DRFV.video
             }).SetEase(Ease.Linear);
             PlayerPrefs.SetInt(key, 1);
             PlayerPrefs.Save();
-            FadeManager.Instance.LoadScene("game");
+            FadeManager.Instance.JumpScene("game");
         }
 
         private void EnableEntrance()

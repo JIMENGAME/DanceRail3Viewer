@@ -423,7 +423,7 @@ namespace DRFV.Game
                         uwr.result == UnityWebRequest.Result.ProtocolError)
                     {
                         NotificationBarManager.Instance.Show("错误: " + uwr.responseCode + " : " + uwr.error + "\n");
-                        FadeManager.Instance.LoadScene("hadoutest");
+                        FadeManager.Instance.Back();
                     }
                     else if (uwr.isDone)
                     {
@@ -439,7 +439,7 @@ namespace DRFV.Game
             else
             {
                 NotificationBarManager.Instance.Show("你怎么进来的");
-                LoadSelect();
+                QuitGame();
                 yield break;
             }
 
@@ -573,7 +573,7 @@ namespace DRFV.Game
                     uwr.result == UnityWebRequest.Result.ProtocolError)
                 {
                     NotificationBarManager.Instance.Show("谱找不到");
-                    FadeManager.Instance.LoadScene("hadoutest");
+                    FadeManager.Instance.Back();
                     yield break;
                 }
 
@@ -610,7 +610,8 @@ namespace DRFV.Game
             {
                 Debug.LogError(e);
                 NotificationBarManager.Instance.Show($"错误：读取谱面时出错");
-                FadeManager.Instance.LoadScene("select", currentSettings);
+                GlobalSettings.CurrentSettings = currentSettings;
+                FadeManager.Instance.Back();
                 yield break;
             }
 
@@ -1680,8 +1681,7 @@ namespace DRFV.Game
 
             if (endType == EndType.GAME_OVER)
             {
-                if (!storyMode) LoadSelect();
-                else LoadStory();
+                QuitGame();
                 return;
             }
 
@@ -1713,7 +1713,7 @@ namespace DRFV.Game
                         break;
                 }
 
-                LoadStory();
+                QuitGame();
             }
             else
             {
@@ -1741,20 +1741,16 @@ namespace DRFV.Game
                 resultDataContainer.noteTotal = noteTotal;
                 resultDataContainer.msDetails = msDetailsList;
                 DontDestroyOnLoad(go);
-                FadeManager.Instance.LoadScene("result", currentSettings);
+                GlobalSettings.CurrentSettings = currentSettings;
+                FadeManager.Instance.JumpScene("result");
             }
         }
 
-        void LoadSelect()
+        void QuitGame()
         {
             CheckDataContainers.CleanSongDataContainer();
-            FadeManager.Instance.LoadScene("select", currentSettings);
-        }
-
-        void LoadStory()
-        {
-            CheckDataContainers.CleanSongDataContainer();
-            FadeManager.Instance.LoadScene("story", currentSettings);
+            GlobalSettings.CurrentSettings = currentSettings;
+            FadeManager.Instance.Back();
         }
 
         IEnumerator CleanTypeAnimation(GameObject cleanTypeObj)
@@ -1827,7 +1823,8 @@ namespace DRFV.Game
             storyChallengeContainer.customTierColor = customTierColor;
             storyChallengeContainer.ratingPlus = ratingPlus;
             DontDestroyOnLoad(storyChallengeContainer);
-            FadeManager.Instance.LoadScene("game", currentSettings);
+            GlobalSettings.CurrentSettings = currentSettings;
+            FadeManager.Instance.JumpScene("game");
         }
 
         private void EtherStrike()
@@ -1871,7 +1868,8 @@ namespace DRFV.Game
                 bpm = "210",
                 hards = new[] { 11 }
             }, "axiumcrisis", GameSide.DARK, 20, "Future", Util.GetTierColor(16));
-            FadeManager.Instance.LoadScene("game", currentSettings);
+            GlobalSettings.CurrentSettings = currentSettings;
+            FadeManager.Instance.JumpScene("game");
         }
 
         IEnumerator EndEvent(EndType grade)
@@ -2163,7 +2161,8 @@ namespace DRFV.Game
         public void Retry()
         {
             if (!pauseable || BGMManager.time <= 0) return;
-            FadeManager.Instance.LoadScene("game", currentSettings);
+            GlobalSettings.CurrentSettings = currentSettings;
+            FadeManager.Instance.JumpScene("game");
         }
 
         public void Resume()
@@ -2190,7 +2189,7 @@ namespace DRFV.Game
                 return;
             }
 #endif
-            if (!DebugMode) LoadSelect();
+            if (!DebugMode) QuitGame();
             else Application.Quit();
         }
 
