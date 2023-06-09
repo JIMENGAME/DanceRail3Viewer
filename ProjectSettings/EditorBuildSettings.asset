@@ -47,4 +47,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/coinshop.unity
     guid: 83ff72d4ae845814aaefcf0c5b4184b8
+  - enabled: 1
+    path: Assets/Scenes/unimage.unity
+    guid: 3a8730b095d3e6747895ab22ac738eb1
   m_configObjects: {}

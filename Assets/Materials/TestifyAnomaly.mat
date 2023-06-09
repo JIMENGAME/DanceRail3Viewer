@@ -70,7 +70,7 @@ Material:
     - _MinEffectIntensity: 8
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OverallEffectStrength: 0.30512318
+    - _OverallEffectStrength: 0
     - _Parallax: 0.02
     - _SampleCount: 12
     - _SmoothnessTextureChannel: 0

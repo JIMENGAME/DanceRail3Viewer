@@ -24,10 +24,17 @@ namespace DRFV.Test
 
         public AudioSource longSource;
 
+        public Image cover;
+
         // Start is called before the first frame update
         protected override void OnAwake()
         {
             HpManager.Init(new HPBarDefault());
+            if (cover)
+            {
+                cover.sprite = Util.ByteArrayToSprite(File.ReadAllBytes("G:/羽毛球awa_1674408471848226.comp.webp"));
+            }
+
             DrawMesh();
         }
 
@@ -35,7 +42,7 @@ namespace DRFV.Test
         {
             yield return null;
         }
-        
+
         // Update is called once per frame
         void Update()
         {
