@@ -215,14 +215,11 @@ namespace DRFV.Global
         public static void CreateDirectory(DirectoryInfo directoryInfo)
         {
             if (directoryInfo.Exists) return;
-            if (directoryInfo.Parent == null || directoryInfo.Parent.Exists)
-            {
-                directoryInfo.Create();
-            }
-            else
+            if (directoryInfo.Parent is { Exists: false })
             {
                 CreateDirectory(directoryInfo.Parent);
             }
+            directoryInfo.Create();
         }
 
         public static string ParseScore(int score, int? maxDigit = null, bool? usePadding = null)
@@ -482,6 +479,9 @@ namespace DRFV.Global
 
         public static Sprite ByteArrayToSprite(byte[] data, bool b = true, string ext = "")
         {
+#if UNITY_EDITOR_WIN || UNITY_ANDROID || UNITY_IOS || UNITY_STANDALONE_WIN
+            
+#endif
             Texture2D texture;
             try
             {
@@ -494,21 +494,22 @@ namespace DRFV.Global
             }
             catch (Exception e)
             {
-                if (b)
+                if (!b)
                 {
-                    texture = new Texture2D(0, 0);
-                    if (texture.LoadImage(data))
-                    {
-                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                            new Vector2(0.5f, 0.5f));
-                        return sprite;
-                    }
+                    Debug.LogError($"{ext}: " + e.Message);
+                    NotificationBarManager.Instance.Show("错误：不支持的图片格式");
+                    return SpritePlaceholder;
                 }
-                Debug.LogError($"{ext}: " + e.Message);
-
-                NotificationBarManager.Instance.Show("错误：不支持的图片格式");
-                return SpritePlaceholder;
             }
+            texture = new Texture2D(0, 0);
+            if (texture.LoadImage(data))
+            {
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f));
+                return sprite;
+            }
+            NotificationBarManager.Instance.Show("错误：不支持的图片格式");
+            return SpritePlaceholder;
         }
     }
 }

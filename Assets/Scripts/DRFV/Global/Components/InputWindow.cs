@@ -26,6 +26,12 @@ namespace DRFV.Global.Components
         public void Show([CanBeNull] string title, [CanBeNull] string onError, byte[] password,
             Callback callback)
         {
+            if (AccountInfo.Instance.acountStatus == AccountInfo.AcountStatus.DEMO)
+            {
+                callback?.Invoke(true);
+                Destroy(gameObject);
+                return;
+            }
             title ??= "请输入密码...";
             _onError = onError ?? "密码错误";
             _password = password;
