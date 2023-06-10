@@ -18088,7 +18088,6 @@ MonoBehaviour:
   noteSpeedSlider: {fileID: 1030166919}
   noteSpeedLabel: {fileID: 1190752203}
   noteSpeedPrefix: 
-  CoverPlaceholder: {fileID: 21300000, guid: aaf9db699ee1113498d7e2bd4436f3e7, type: 3}
   queue: 0
   debugScore: {fileID: 762526145}
 --- !u!4 &2019586658

@@ -477,11 +477,8 @@ namespace DRFV.Global
             return clip;
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data, bool b = true, string ext = "")
+        public static Sprite ByteArrayToSprite(byte[] data)
         {
-#if UNITY_EDITOR_WIN || UNITY_ANDROID || UNITY_IOS || UNITY_STANDALONE_WIN
-            
-#endif
             Texture2D texture;
             try
             {
@@ -494,12 +491,7 @@ namespace DRFV.Global
             }
             catch (Exception e)
             {
-                if (!b)
-                {
-                    Debug.LogError($"{ext}: " + e.Message);
-                    NotificationBarManager.Instance.Show("错误：不支持的图片格式");
-                    return SpritePlaceholder;
-                }
+                Debug.LogError(e.Message);
             }
             texture = new Texture2D(0, 0);
             if (texture.LoadImage(data))

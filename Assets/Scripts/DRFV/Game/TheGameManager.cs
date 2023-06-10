@@ -305,6 +305,7 @@ namespace DRFV.Game
 #if UNITY_EDITOR
             DebugMode = songDataObject == null;
 #endif
+            currentSettings = GlobalSettings.CurrentSettings;
             if (DebugMode)
             {
                 originalBGM = Resources.Load<AudioClip>("DEBUG/" + SongKeyword);
@@ -319,7 +320,6 @@ namespace DRFV.Game
             }
             else if (songDataObject != null)
             {
-                currentSettings = GlobalSettings.CurrentSettings;
                 songDataContainer = songDataObject.GetComponent<SongDataContainer>();
                 SongKeyword = songDataContainer.songData.keyword;
                 SongHard = songDataContainer.selectedDiff;
@@ -876,7 +876,7 @@ namespace DRFV.Game
         {
             inited = true;
 
-            OBSManager.Instance.StartRecording();
+            OBSManager.Instance?.StartRecording();
             progressManager.AddDelay(NoteOffset / 1000f);
             progressManager.AddDelay(0.1f);
             progressManager.AddStartDelay(ReadyTime / 1000f);

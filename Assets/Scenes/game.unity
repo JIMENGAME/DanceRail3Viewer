@@ -9676,11 +9676,12 @@ MonoBehaviour:
   - {fileID: 1640587149}
   - {fileID: 465628069}
   - {fileID: 866835850}
-  SongKeyword: mute
-  SongHard: 10
+  SongKeyword: bluemelody
+  SongHard: 8
   SongTitle: Blue Melody
   SongArtist: "\u6CE2\u5C0ELucario"
   NoteSpeed: 12
+  RealNoteSpeed: 12
   NoteOffset: 20
   GameAuto: 1
   GameMirror: 0
@@ -9692,12 +9693,6 @@ MonoBehaviour:
   PFms: 60
   GDms: 100
   BeforeGameBackground: {fileID: 1076400768}
-  tapSize: 0
-  freeFlickSize: 0
-  flickSize: 0
-  tapAlpha: 0
-  freeFlickAlpha: 0
-  flickAlpha: 0
   songDataContainer: {fileID: 0}
   autoPlayHint: {fileID: 1692807787}
   ProgramInfoTitle: {fileID: 179577214}
@@ -9707,7 +9702,6 @@ MonoBehaviour:
   theLyricManager: {fileID: 1000643471}
   FCAPIndicator: 0
   AegleseekerObject: {fileID: 2035223911}
-  CoverPlaceholder: {fileID: 21300000, guid: aaf9db699ee1113498d7e2bd4436f3e7, type: 3}
   AccMSList: []
   Score: 0
   LiLunZhi: 0

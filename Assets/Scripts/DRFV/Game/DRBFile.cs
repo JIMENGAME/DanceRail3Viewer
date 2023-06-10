@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using DRFV.Enums;
 using DRFV.Game.HPBars;
@@ -140,117 +141,127 @@ namespace DRFV.Game
             string[] chartLines = chart.Split("\n");
             for (int i = 0; i < chartLines.Length; i++)
             {
-                //空き行を抜く
-                if (chartLines[i] == "") continue;
-                //命令行を認識
-                if (chartLines[i].Substring(0, 1) == "#")
+                try
                 {
-                    //OFFSET認識
-                    if (chartLines[i].StartsWith("#OFFSET"))
+                    //空き行を抜く
+                    if (chartLines[i] == "") continue;
+                    //命令行を認識
+                    if (chartLines[i].Substring(0, 1) == "#")
                     {
-                        string ss = chartLines[i];
-                        ss = ss.Replace("#OFFSET=", "");
-                        ss = ss.Replace(";", "");
-                        drbFile.offset = float.Parse(ss.Trim());
-                    }
-                    else //BEAT認識
-                    if (chartLines[i].StartsWith("#BEAT"))
-                    {
-                        string ss = chartLines[i];
-                        ss = ss.Replace("#BEAT=", "");
-                        ss = ss.Replace(";", "");
-                        drbFile.beat = float.Parse(ss.Trim());
-                    }
-                    else //BPM [i]認識
-                    if (chartLines[i].StartsWith("#BPM [" + drbFile.bpms.Count + "]"))
-                    {
-                        string ss = chartLines[i];
-                        string ss2 = chartLines[i + 1];
-                        ss = ss.Replace("#BPM [" + drbFile.bpms.Count + "]=", "");
-                        ss = ss.Replace(";", "");
-                        ss2 = ss2.Replace("#BPMS[" + drbFile.bpms.Count + "]=", "");
-                        ss2 = ss2.Replace(";", "");
-                        BPM bpm = new BPM
+                        //OFFSET認識
+                        if (chartLines[i].StartsWith("#OFFSET"))
                         {
-                            bpm = float.Parse(ss),
-                            bpms = float.Parse(ss2)
-                        };
-                        drbFile.bpms.Add(bpm);
-                    }
-                    else //SC [i]認識
-                    if (chartLines[i].StartsWith("#SC [" + drbFile.scs.Count + "]"))
-                    {
-                        string ss = chartLines[i].Trim();
-                        string ss2 = chartLines[i + 1].Trim();
-                        ss = ss.Replace("#SC [" + drbFile.scs.Count + "]=", "");
-                        ss = ss.Replace(";", "");
-                        ss2 = ss2.Replace("#SCI[" + drbFile.scs.Count + "]=", "");
-                        ss2 = ss2.Replace(";", "");
-                        SCS sc = new SCS
+                            string ss = chartLines[i];
+                            ss = ss.Replace("#OFFSET=", "");
+                            ss = ss.Replace(";", "");
+                            drbFile.offset = float.Parse(ss.Trim());
+                        }
+                        else //BEAT認識
+                        if (chartLines[i].StartsWith("#BEAT"))
                         {
-                            sc = float.Parse(ss),
-                            sci = float.Parse(ss2)
-                        };
-                        drbFile.scs.Add(sc);
+                            string ss = chartLines[i];
+                            ss = ss.Replace("#BEAT=", "");
+                            ss = ss.Replace(";", "");
+                            drbFile.beat = float.Parse(ss.Trim());
+                        }
+                        else //BPM [i]認識
+                        if (chartLines[i].StartsWith("#BPM [" + drbFile.bpms.Count + "]"))
+                        {
+                            string ss = chartLines[i];
+                            string ss2 = chartLines[i + 1];
+                            ss = ss.Replace("#BPM [" + drbFile.bpms.Count + "]=", "");
+                            ss = ss.Replace(";", "");
+                            ss2 = ss2.Replace("#BPMS[" + drbFile.bpms.Count + "]=", "");
+                            ss2 = ss2.Replace(";", "");
+                            BPM bpm = new BPM
+                            {
+                                bpm = float.Parse(ss),
+                                bpms = float.Parse(ss2)
+                            };
+                            drbFile.bpms.Add(bpm);
+                        }
+                        else //SC [i]認識
+                        if (chartLines[i].StartsWith("#SC [" + drbFile.scs.Count + "]"))
+                        {
+                            string ss = chartLines[i].Trim();
+                            string ss2 = chartLines[i + 1].Trim();
+                            ss = ss.Replace("#SC [" + drbFile.scs.Count + "]=", "");
+                            ss = ss.Replace(";", "");
+                            ss2 = ss2.Replace("#SCI[" + drbFile.scs.Count + "]=", "");
+                            ss2 = ss2.Replace(";", "");
+                            SCS sc = new SCS
+                            {
+                                sc = float.Parse(ss),
+                                sci = float.Parse(ss2)
+                            };
+                            drbFile.scs.Add(sc);
+                        }
+                        else //NoteDesigner認識;
+                        if (chartLines[i].StartsWith("#NDNAME"))
+                        {
+                            string ss = chartLines[i].Trim();
+                            ss = ss.Replace("#NDNAME=", "");
+                            ss = ss.Replace(";", "");
+                            //ss = ss.Replace("\'", "");
+                            drbFile.ndname = ss;
+                        }
+                        else if (chartLines[i].StartsWith("#NOPOS"))
+                        {
+                            drbFile.noPos = true;
+                        }
+                        else
+                        {
+                            if (chartLines[i].StartsWith("#BPM_NUMBER") ||
+                                chartLines[i].StartsWith("#SCN") ||
+                                chartLines[i].StartsWith("#SCI[") ||
+                                chartLines[i].StartsWith("#BPMS[")) continue;
+                            Debug.LogError("Error: Unknown command: " + chartLines[i]);
+                        }
                     }
-                    else //NoteDesigner認識;
-                    if (chartLines[i].StartsWith("#NDNAME"))
+
+                    //ノーツ行を認識
+                    else if (chartLines[i].StartsWith("<"))
                     {
-                        string ss = chartLines[i].Trim();
-                        ss = ss.Replace("#NDNAME=", "");
-                        ss = ss.Replace(";", "");
-                        //ss = ss.Replace("\'", "");
-                        drbFile.ndname = ss;
-                    }
-                    else if (chartLines[i].StartsWith("#NOPOS"))
-                    {
-                        drbFile.noPos = true;
+                        //Notesデータ取得
+                        string ss = chartLines[i].Replace("<", "").Trim();
+                        string[] sss = ss.Substring(0, ss.Length - 1).Split('>');
+                        NoteData note = new NoteData();
+                        note.id = int.Parse(sss[0].Trim());
+                        note.kind = (NoteKind)int.Parse(sss[1].Trim());
+                        if (note.kind == NoteKind.FAKE_CENTER) note.kind = NoteKind.SLIDE_CENTER;
+                        if (note.kind == NoteKind.FAKE) note.kind = NoteKind.SLIDE_END;
+                        note.time = float.Parse(sss[2].Trim());
+                        note.pos = float.Parse(sss[3].Trim());
+                        note.width = float.Parse(sss[4].Trim());
+
+                        note.nsc = NoteData.NoteSC.Parse(sss[5].Trim());
+                        if (note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
+
+                        note.parent = int.Parse(sss[6].Trim());
+                        note.mode = sss.Length > 7
+                            ? ParseNoteAppearMode.ParseToMode(sss[7].Trim())
+                            : NoteAppearMode.None;
+                        note.isFake = sss.Length > 8 && int.Parse(sss[7]) == 1;
+
+                        if (note.isFake)
+                        {
+                            drbFile.fakeNotes.Add(note);
+                        }
+                        else
+                        {
+                            drbFile.notes.Add(note);
+                            drbFile.noteWeightCount += HPBar.NoteWeight[(int)note.kind];
+                        }
                     }
                     else
                     {
-                        if (chartLines[i].StartsWith("#BPM_NUMBER") ||
-                            chartLines[i].StartsWith("#SCN") ||
-                            chartLines[i].StartsWith("#SCI[") ||
-                            chartLines[i].StartsWith("#BPMS[")) continue;
-                        Debug.LogError("Error: Unknown command: " + chartLines[i]);
+                        throw new ArgumentException("Unknown Line");
                     }
                 }
-
-                //ノーツ行を認識
-                else if (chartLines[i].StartsWith("<"))
+                catch (Exception)
                 {
-                    //Notesデータ取得
-                    string ss = chartLines[i].Replace("<", "").Trim();
-                    string[] sss = ss.Substring(0, ss.Length - 1).Split('>');
-                    NoteData note = new NoteData();
-                    note.id = int.Parse(sss[0].Trim());
-                    note.kind = (NoteKind)int.Parse(sss[1].Trim());
-                    if (note.kind == NoteKind.FAKE_CENTER) note.kind = NoteKind.SLIDE_CENTER;
-                    if (note.kind == NoteKind.FAKE) note.kind = NoteKind.SLIDE_END;
-                    note.time = float.Parse(sss[2].Trim());
-                    note.pos = float.Parse(sss[3].Trim());
-                    note.width = float.Parse(sss[4].Trim());
-
-                    note.nsc = NoteData.NoteSC.Parse(sss[5].Trim());
-                    if (note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
-
-                    note.parent = int.Parse(sss[6].Trim());
-                    note.mode = sss.Length > 7 ? ParseNoteAppearMode.ParseToMode(sss[7].Trim()) : NoteAppearMode.None;
-                    note.isFake = sss.Length > 8 && int.Parse(sss[7]) == 1;
-
-                    if (note.isFake)
-                    {
-                        drbFile.fakeNotes.Add(note);
-                    }
-                    else
-                    {
-                        drbFile.notes.Add(note);
-                        drbFile.noteWeightCount += HPBar.NoteWeight[(int)note.kind];
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("Unknown Line: " + chartLines[i]);
+                    Debug.LogError("Error Statement: " + chartLines[i]);
+                    throw;
                 }
             }
 
@@ -525,26 +536,34 @@ namespace DRFV.Game
 
             public static NoteSC Parse(string str)
             {
-                NoteSC noteSc = new NoteSC();
-                noteSc.type = str.Contains(":") ? NoteSCType.MULTI : NoteSCType.SINGLE;
-                switch (noteSc.type)
+                try
                 {
-                    case NoteSCType.SINGLE:
-                        noteSc.value = float.Parse(str);
-                        break;
-                    case NoteSCType.MULTI:
-                        string[] split = str.Split(";");
-                        foreach (string s in split)
-                        {
-                            noteSc.data.Add(MultiData.Parse(s));
-                        }
+                    NoteSC noteSc = new NoteSC();
+                    noteSc.type = str.Contains(":") ? NoteSCType.MULTI : NoteSCType.SINGLE;
+                    switch (noteSc.type)
+                    {
+                        case NoteSCType.SINGLE:
+                            noteSc.value = float.Parse(str);
+                            break;
+                        case NoteSCType.MULTI:
+                            string[] split = str.Split(";");
+                            foreach (string s in split)
+                            {
+                                noteSc.data.Add(MultiData.Parse(s));
+                            }
 
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    return noteSc;
                 }
-
-                return noteSc;
+                catch (Exception)
+                {
+                    Debug.LogError("Error Statement: " + str);
+                    throw;
+                }
             }
 
             public override string ToString()
@@ -568,13 +587,21 @@ namespace DRFV.Game
 
                 public static MultiData Parse(string str)
                 {
-                    string[] split = str.Split(":");
-                    if (split.Length != 2) throw new ArgumentException();
-                    return new MultiData
+                    try
                     {
-                        realValue = float.Parse(split[0]),
-                        value = float.Parse(split[1])
-                    };
+                        string[] split = str.Split(":");
+                        if (split.Length != 2) throw new ArgumentException();
+                        return new MultiData
+                        {
+                            realValue = float.Parse(split[0]),
+                            value = float.Parse(split[1])
+                        };
+                    }
+                    catch (Exception)
+                    {
+                        Debug.LogError("Error Statement: " + str);
+                        throw;
+                    }
                 }
 
                 public override string ToString()

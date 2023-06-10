@@ -124,7 +124,7 @@ namespace DRFV.Select
                 PoolManager.Instance.Clear(PoolManager.Instance.audioClipPool);
             }
 
-            string lastSelectedKeyword = songDataNow?.keyword;
+            string lastSelectedKeyword = PlayerPrefs.GetString("last_selected_song", "");
             content.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             if (previewSource.isPlaying) previewSource.Stop();
             songlist = Util.ReadSonglist().songs;
@@ -284,6 +284,7 @@ namespace DRFV.Select
         private void BackToMain()
         {
             GlobalSettings.CurrentSettings = currentSettings;
+            SaveLastSelectedSong();
             FadeManager.Instance.Back();
         }
 
@@ -319,6 +320,13 @@ namespace DRFV.Select
 
             diffButtons = list.ToArray();
             diffButtons[0].OnClicked();
+        }
+
+        private void SaveLastSelectedSong()
+        {
+            if (songDataNow == null) return;
+            PlayerPrefs.SetString("last_selected_song", songDataNow.keyword);
+            PlayerPrefs.Save();
         }
 
         private object pressLock = new();
@@ -686,6 +694,7 @@ namespace DRFV.Select
             DontDestroyOnLoad(go);
 
             GlobalSettings.CurrentSettings = currentSettings;
+            SaveLastSelectedSong();
             FadeManager.Instance.LoadScene("game");
         }
 
