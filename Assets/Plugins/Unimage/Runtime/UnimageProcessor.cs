@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unimage
 {
-    public class UnimageProcessor
+    public class UnimageProcessor : ICloneable, IDisposable
     {
         public UnimageHandle Handle { get; } = new();
 
@@ -12,6 +12,11 @@ namespace Unimage
         public int Height => Handle.GetHeight();
         public UnimageFormat Format => Handle.GetFormat();
 
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+        
         public UnimageProcessor Clone()
         {
             var newProcessor = new UnimageProcessor();
@@ -54,6 +59,11 @@ namespace Unimage
         public void Load(byte[] pixelData, int width, int height, UnimageFormat format)
         {
             Handle.Load(pixelData, width, height, format);
+        }
+
+        public void Dispose()
+        {
+            Handle?.Dispose();
         }
     }
 }

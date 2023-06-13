@@ -223,26 +223,8 @@ namespace DRFV.Game
                     else if (chartLines[i].StartsWith("<"))
                     {
                         //Notesデータ取得
-                        string ss = chartLines[i].Replace("<", "").Trim();
-                        string[] sss = ss.Substring(0, ss.Length - 1).Split('>');
-                        NoteData note = new NoteData();
-                        note.id = int.Parse(sss[0].Trim());
-                        note.kind = (NoteKind)int.Parse(sss[1].Trim());
-                        if (note.kind == NoteKind.FAKE_CENTER) note.kind = NoteKind.SLIDE_CENTER;
-                        if (note.kind == NoteKind.FAKE) note.kind = NoteKind.SLIDE_END;
-                        note.time = float.Parse(sss[2].Trim());
-                        note.pos = float.Parse(sss[3].Trim());
-                        note.width = float.Parse(sss[4].Trim());
-
-                        note.nsc = NoteData.NoteSC.Parse(sss[5].Trim());
-                        if (note.nsc.value == 0.0f) note.nsc = NoteData.NoteSC.GetCommonNSC();
-
-                        note.parent = int.Parse(sss[6].Trim());
-                        note.mode = sss.Length > 7
-                            ? ParseNoteAppearMode.ParseToMode(sss[7].Trim())
-                            : NoteAppearMode.None;
-                        note.isFake = sss.Length > 8 && int.Parse(sss[7]) == 1;
-
+                        NoteData note = NoteData.Parse(chartLines[i]);
+                        
                         if (note.isFake)
                         {
                             drbFile.fakeNotes.Add(note);
@@ -476,6 +458,30 @@ namespace DRFV.Game
         public bool isLast = true;
 
         #endregion
+
+        public static NoteData Parse(string line)
+        {
+            NoteData note = new NoteData();
+            string ss = line.Replace("<", "").Trim();
+            string[] sss = ss.Substring(0, ss.Length - 1).Split('>');
+
+            note.id = int.Parse(sss[0].Trim());
+            note.kind = (NoteKind)int.Parse(sss[1].Trim());
+            if (note.kind == NoteKind.FAKE_CENTER) note.kind = NoteKind.SLIDE_CENTER;
+            if (note.kind == NoteKind.FAKE) note.kind = NoteKind.SLIDE_END;
+            note.time = float.Parse(sss[2].Trim());
+            note.pos = float.Parse(sss[3].Trim());
+            note.width = float.Parse(sss[4].Trim());
+
+            note.nsc = NoteSC.Parse(sss[5].Trim());
+            if (note.nsc.value == 0.0f) note.nsc = NoteSC.GetCommonNSC();
+
+            note.parent = int.Parse(sss[6].Trim());
+            if (sss.Length > 7) note.mode = ParseNoteAppearMode.ParseToMode(sss[7].Trim());
+            if (sss.Length > 8) note.isFake = int.Parse(sss[7]) == 1;
+
+            return note;
+        }
 
         public MD5Data GetMd5Data()
         {

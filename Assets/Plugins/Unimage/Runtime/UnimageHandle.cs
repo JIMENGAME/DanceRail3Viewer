@@ -106,5 +106,10 @@ namespace Unimage
             if (Interop.unimage_clip(_handle, x, y, width, height) == 0)
                 ThrowException();
         }
+
+        public unsafe void* GetBuffer()
+        {
+            return Interop.unimage_get_buffer(_handle);
+        }
     }
 }
