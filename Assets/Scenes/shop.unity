@@ -1264,13 +1264,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40f1c7042a5e58d4ab04f17f5035fddf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  accountInfo: {fileID: 0}
-  httpRequest: {fileID: 0}
   shopList: {fileID: 1266785698}
   shopItemPrefab: {fileID: 6293259159108505680, guid: 1fa8a2ddb54304647b0b9e3b9a680fe2,
     type: 3}
   mainPanel: {fileID: 1636038183}
-  placeholder: {fileID: 21300000, guid: aaf9db699ee1113498d7e2bd4436f3e7, type: 3}
   cover: {fileID: 746560946}
   coverBackground: {fileID: 423214975}
   previewSource: {fileID: 1843673419}
@@ -1940,6 +1937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -4099,7 +4097,8 @@ AudioSource:
   m_GameObject: {fileID: 1843673418}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 219090c123d635e468e60d64d20e5ded,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1

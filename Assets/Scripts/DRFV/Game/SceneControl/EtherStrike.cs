@@ -46,18 +46,18 @@ namespace DRFV.Game.SceneControl
             float hp = Math.Max(_theGameManager.hpManager.HpNow, 50);
             _theGameManager.hpManager.Init(new HPBarEtherStrike(_theGameManager.hpManager));
             _theGameManager.hpManager.HpNow = hp;
-            var bgmManager = _theGameManager.BGMManager;
+            var bgmManager = _theGameManager.bgmManager;
             bgmManager.Pause();
-            float time = bgmManager.time;
-            bgmManager.clip = anomaly;
-            bgmManager.time = time;
+            float time = bgmManager.Time;
+            bgmManager.MainClip = anomaly;
+            bgmManager.Time = time;
             bgmManager.Play();
             yield return new WaitWhile(() => _theGameManager.progressManager.NowTime < 87692f);
-            o.DOFade(1, (112308f - _theGameManager.progressManager.NowTime) / 1000f / _theGameManager.BGMManager.pitch);
+            o.DOFade(1, (112308f - _theGameManager.progressManager.NowTime) / 1000f / _theGameManager.bgmManager.Pitch);
             yield return new WaitWhile(() => _theGameManager.progressManager.NowTime < 136800f);
             _theGameManager.DoSCDown();
             yield return new WaitWhile(() => _theGameManager.progressManager.NowTime < 136923f);
-            o.DOFade(0, (138462f - _theGameManager.progressManager.NowTime) / 1000f / _theGameManager.BGMManager.pitch);
+            o.DOFade(0, (138462f - _theGameManager.progressManager.NowTime) / 1000f / _theGameManager.bgmManager.Pitch);
         }
     }
 }

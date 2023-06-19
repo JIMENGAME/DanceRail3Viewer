@@ -5,6 +5,7 @@ using DRFV.CoinShop.Data;
 using DRFV.inokana;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Audio;
 using Application = UnityEngine.Application;
 
 namespace DRFV.Global
@@ -14,6 +15,7 @@ namespace DRFV.Global
         public string dataPath;
         public string cachePath;
         public ShopItem[] shopItems;
+        public AudioMixer audioMixer;
 
         // Start is called before the first frame update
         protected override void OnAwake()

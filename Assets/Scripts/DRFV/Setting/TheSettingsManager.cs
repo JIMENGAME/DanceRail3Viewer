@@ -20,40 +20,42 @@ namespace DRFV.Setting
     public class TheSettingsManager : MonoBehaviour
     {
         public GlobalSettings currentSettings;
-        public Sprite imageButton, imageButtonPressed;
+        [SerializeField] private Sprite imageButton, imageButtonPressed;
 
-        public GameObject[] FPSButtons;
+        [SerializeField] private GameObject[] FPSButtons;
 
-        public Image TapExample;
-        public Image FreeFlickExample;
-        public Image FlickExample;
-        public Slider TapSizeSlider;
-        public Slider FreeFlickSizeSlider;
-        public Slider FlickSizeSlider;
-        public Slider TapAlphaSlider;
-        public Slider FreeFlickAlphaSlider;
-        public Slider FlickAlphaSlider;
+        [SerializeField] private Image TapExample;
+        [SerializeField] private Image FreeFlickExample;
+        [SerializeField] private Image FlickExample;
+        [SerializeField] private Slider TapSizeSlider;
+        [SerializeField] private Slider FreeFlickSizeSlider;
+        [SerializeField] private Slider FlickSizeSlider;
+        [SerializeField] private Slider TapAlphaSlider;
+        [SerializeField] private Slider FreeFlickAlphaSlider;
+        [SerializeField] private Slider FlickAlphaSlider;
 
-        public SettingSlider ParamEQSlider;
-        public SettingSlider GaterSlider;
-        public SettingSlider TapEffectSlider;
+        [SerializeField] private SettingSlider MasterVolumeSlider;
+        [SerializeField] private SettingSlider MusicVolumeSlider;
+        [SerializeField] private SettingSlider ParamEQSlider;
+        [SerializeField] private SettingSlider GaterSlider;
+        [SerializeField] private SettingSlider TapEffectSlider;
 
-        public ButtonGroup[] Groups;
-        public Dropdown noteSfxDropdown;
+        [SerializeField] private ButtonGroup[] Groups;
+        [SerializeField] private Dropdown noteSfxDropdown;
 
-        public Toggle FCAPIndicatorToggle, OBSRecordModeToggle;
+        [SerializeField] private Toggle FCAPIndicatorToggle, OBSRecordModeToggle;
 
         private SettingLanguage _settingLanguage;
 
-        public GameObject aboutObj, cleanCacheObj;
+        [SerializeField] private GameObject aboutObj, cleanCacheObj;
 
-        public RectTransform content;
+        [SerializeField] private RectTransform content;
 
-        public Text tLogout;
+        [SerializeField] private Text tLogout;
 
-        public GameObject InputWindowPrefab;
+        [SerializeField] private GameObject InputWindowPrefab;
 
-        public Toggle DebugModeToggle, UseMemoryCacheToggle, EnableJudgeRangeFixToggle, EnableSCFixToggle;
+        [SerializeField] private Toggle DebugModeToggle, UseMemoryCacheToggle, EnableJudgeRangeFixToggle, EnableSCFixToggle;
 
         // Start is called before the first frame update
         void Start()
@@ -79,6 +81,8 @@ namespace DRFV.Setting
             }
 
             SetFPS(currentSettings.MaxFPS);
+            MasterVolumeSlider.SetValue(currentSettings.GameMasterVolume);
+            MusicVolumeSlider.SetValue(currentSettings.GameMusicVolume);
             ParamEQSlider.SetValue(currentSettings.GameEffectParamEQLevel);
             GaterSlider.SetValue(currentSettings.GameEffectGaterLevel);
             TapEffectSlider.SetValue(currentSettings.GameEffectTap);
@@ -187,9 +191,11 @@ namespace DRFV.Setting
             currentSettings.TapAlpha = (int)TapAlphaSlider.value;
             currentSettings.FreeFlickAlpha = (int)FreeFlickAlphaSlider.value;
             currentSettings.FlickAlpha = (int)FlickAlphaSlider.value;
-            currentSettings.GameEffectParamEQLevel = ParamEQSlider.GetValue();
-            currentSettings.GameEffectGaterLevel = GaterSlider.GetValue();
-            currentSettings.GameEffectTap = TapEffectSlider.GetValue();
+            currentSettings.GameMasterVolume = MasterVolumeSlider.Value;
+            currentSettings.GameMusicVolume = MusicVolumeSlider.Value;
+            currentSettings.GameEffectParamEQLevel = ParamEQSlider.Value;
+            currentSettings.GameEffectGaterLevel = GaterSlider.Value;
+            currentSettings.GameEffectTap = TapEffectSlider.Value;
             currentSettings.FCAPIndicator = FCAPIndicatorToggle.isOn;
             currentSettings.Offset = offset;
             currentSettings.OBSRecord = OBSRecordModeToggle.isOn;
@@ -203,6 +209,7 @@ namespace DRFV.Setting
 
         public void Back()
         {
+            currentSettings.GameMasterVolume = currentSettings.GameMasterVolume;
             FadeManager.Instance.Back();
         }
 
@@ -420,6 +427,11 @@ namespace DRFV.Setting
         public void IntoOffset()
         {
             FadeManager.Instance.LoadScene("offset");
+        }
+
+        public void UpdateMasterVolume(Single value)
+        {
+            StaticResources.Instance.audioMixer.SetFloat("MasterVolume", value * 0.8f - 80f);
         }
     }
 

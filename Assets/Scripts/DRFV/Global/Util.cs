@@ -42,7 +42,7 @@ namespace DRFV.Global
         public static void Init()
         {
             var endTypeShortJObject = JObject.Parse(Resources.Load<TextAsset>("end_type_short").text);
-            foreach (KeyValuePair<string, JToken?> valuePair in endTypeShortJObject)
+            foreach (KeyValuePair<string, JToken> valuePair in endTypeShortJObject)
             {
                 endTypeFromShort.Add(valuePair.Key, valuePair.Value.ToObject<EndType>());
             }

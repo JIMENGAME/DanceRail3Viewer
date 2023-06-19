@@ -63,7 +63,7 @@ namespace DRFV.Game.HPBars
         }
         private IEnumerator Hard()
         {
-            WaitForSeconds waitForSeconds = new WaitForSeconds(1f / _hpManager.manager.BGMManager.pitch);
+            WaitForSeconds waitForSeconds = new WaitForSeconds(1f / _hpManager.manager.bgmManager.Pitch);
             if (!_hpManager.manager.pauseable) yield return new WaitUntil(() => _hpManager.manager.pauseable);
             while (!_hpManager.manager.ended)
             {

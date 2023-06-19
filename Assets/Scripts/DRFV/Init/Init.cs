@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using DRFV.Global;
 using DRFV.Global.Managers;
 using DRFV.Language;
 using DRFV.Setting;

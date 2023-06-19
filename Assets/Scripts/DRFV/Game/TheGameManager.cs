@@ -24,6 +24,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using Debug = UnityEngine.Debug;
@@ -125,8 +126,8 @@ namespace DRFV.Game
 
         float ReadyTime = 1990f;
 
-        [SerializeField] // [SerializeField, HideInInspector] 
-        public AudioSource BGMManager;
+        [SerializeField] // [SerializeField, HideInInspector]
+        public BGMManager bgmManager;
 
         private AudioClip _acGameover;
 
@@ -194,9 +195,8 @@ namespace DRFV.Game
 
         [SerializeField] // [SerializeField, HideInInspector] 
         GameObject TheCamera;
-
-        [SerializeField] // [SerializeField, HideInInspector] 
-        AudioMixer audioMixer;
+        
+        private AudioMixer audioMixer;
 
         [SerializeField] // [SerializeField, HideInInspector] 
         Image HPMask;
@@ -267,6 +267,7 @@ namespace DRFV.Game
         {
             //メモリ解放
             Resources.UnloadUnusedAssets();
+            audioMixer = StaticResources.Instance.audioMixer;
             VideoPlayer.targetTexture.Release();
             BeforeGameBackground.SetActive(true);
 
@@ -296,7 +297,7 @@ namespace DRFV.Game
 
         private float GetPitch()
         {
-            return BGMManager.pitch;
+            return bgmManager.Pitch;
         }
 
         private IEnumerator ApplySettings()
@@ -310,7 +311,7 @@ namespace DRFV.Game
             {
                 originalBGM = Resources.Load<AudioClip>("DEBUG/" + SongKeyword);
                 if (sprSongImage) sprSongImage.sprite = Resources.Load<Sprite>("DEBUG/" + SongKeyword);
-                VideoPlayer.playbackSpeed = BGMManager.pitch;
+                VideoPlayer.playbackSpeed = bgmManager.Pitch;
                 if (SongKeyword.Equals("hello") && SongHard == 13)
                 {
                     isHard = true;
@@ -340,7 +341,7 @@ namespace DRFV.Game
                 FCAPIndicator = currentSettings.FCAPIndicator;
                 saveAudio = songDataContainer.saveAudio;
                 float songSpeed = Util.TransformSongSpeed(currentSettings.SongSpeed);
-                VideoPlayer.playbackSpeed = BGMManager.pitch = songSpeed;
+                VideoPlayer.playbackSpeed = bgmManager.Pitch = songSpeed;
                 barType = (BarType)currentSettings.HPBarType;
                 gameSide = (GameSide)currentSettings.GameSide;
                 NoteJudgeRange aaa = Util.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
@@ -387,7 +388,7 @@ namespace DRFV.Game
                     ratingPlus = storyChallengeContainer.ratingPlus;
                     GameAuto |= isComputerInStory;
                     RealNoteSpeed = NoteSpeed = currentSettings.NoteSpeed;
-                    VideoPlayer.playbackSpeed = BGMManager.pitch = storyChallengeContainer.songSpeed;
+                    VideoPlayer.playbackSpeed = bgmManager.Pitch = storyChallengeContainer.songSpeed;
                     enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
                                           Math.Abs(storyChallengeContainer.songSpeed - 1.0f) > 0.1f;
                     aaa = Util.GetNoteJudgeRange(storyChallengeContainer.NoteJudgeRange);
@@ -726,9 +727,11 @@ namespace DRFV.Game
         private void StartB()
         {
             if (saveAudio && !DebugMode)
+            {
                 SavWav.Save(StaticResources.Instance.dataPath + "songs/" + SongKeyword +
                             "/" + SongHard +
-                            ".wav", BGMManager.clip);
+                            ".wav", bgmManager.NoteFxClip);
+            }
 
             foreach (NoteData data in drbfile.notes)
             {
@@ -742,7 +745,7 @@ namespace DRFV.Game
 
             SetTimeToEnd(timeList.Count > 0
                 ? timeList.OrderByDescending(time => time).ToList()[0]
-                : BGMManager.clip.length * 1000f - 1);
+                : bgmManager.MainClip.length * 1000f - 1);
 
 
             //复杂整理03：按节点计算front和back的判定范围
@@ -883,7 +886,7 @@ namespace DRFV.Game
             yield return BeforeGameAnimation();
             if (hasTextBeforeStart) yield return ShowTextBeforeStart();
             progressManager.StartTiming();
-            BGMManager.PlayScheduled(AudioSettings.dspTime + ReadyTime / 1000f);
+            bgmManager.PlayScheduled(AudioSettings.dspTime + ReadyTime / 1000f);
             isPause = false;
             yield return new WaitForSecondsRealtime(ReadyTime / 1000f);
             if (hasVideo) VideoPlayer.Play();
@@ -1172,7 +1175,8 @@ namespace DRFV.Game
                 f_flick = new float[_acFlick.samples * _acFlick.channels],
                 f_freeFlick = new float[_acFreeFlick.samples * _acFreeFlick.channels],
                 f_long = new float[_acLong != null ? _acLong.samples * _acLong.channels : 0],
-                f_song = new float[bgmSamples];
+                f_song = new float[bgmSamples],
+                f_fx = new float[bgmSamples];
             originalBGM.GetData(f_song, 0);
 
             _acHit.GetData(f_hit, 0);
@@ -1181,6 +1185,11 @@ namespace DRFV.Game
             _acHold.GetData(f_hold, 0);
             _acFlick.GetData(f_flick, 0);
             _acFreeFlick.GetData(f_freeFlick, 0);
+            
+            for (var i = 0; i < f_fx.Length; i++)
+            {
+                f_fx[i] = 0.0f;
+            }
             if (_acLong != null) _acLong.GetData(f_long, 0);
 
             //音量减半
@@ -1213,7 +1222,14 @@ namespace DRFV.Game
                     }
                 }
             }
+            
+            int finalSamplesCount = originalBGM.samples +
+                                    (int)MathF.Max(_acHit.samples, Mathf.Max(_acSlide.samples, _acFlick.samples));
 
+            AudioClip main = AudioClip.Create("I'm Pepoyo's dog", finalSamplesCount, originalBGM.channels, originalBGM.frequency, false);
+            main.SetData(f_song, 0);
+            bgmManager.MainClip = main;
+            
             if (GameEffectTap >= 1)
             {
                 foreach (var noteData in drbfile.notes)
@@ -1233,7 +1249,7 @@ namespace DRFV.Game
 
                         for (int c = start; c < end; c++)
                         {
-                            f_song[c] += f_long[c % f_long.Length] * 0.5f * ((GameEffectTap + 3) / 10.0f);
+                            f_fx[c] += f_long[c % f_long.Length] * 0.5f * ((GameEffectTap + 3) / 10.0f);
                         }
                     }
                 }
@@ -1288,17 +1304,16 @@ namespace DRFV.Game
                             for (int c = 0; c < se.Length; c++)
                             {
                                 if (start + c < f_song.Length)
-                                    f_song[start + c] += se[c] * 0.5f * ((volume + 3) / 10.0f);
+                                    f_fx[start + c] += se[c] * 0.5f * ((volume + 3) / 10.0f);
                             }
                         }
                     }
                 }
             }
-
-            BGMManager.clip = AudioClip.Create("I'm Pepoyo's dog",
-                originalBGM.samples + (int)MathF.Max(_acHit.samples, Mathf.Max(_acSlide.samples, _acFlick.samples)),
-                originalBGM.channels, originalBGM.frequency, false);
-            BGMManager.clip.SetData(f_song, 0);
+            
+            AudioClip noteFx = AudioClip.Create("Aren't you?", finalSamplesCount, originalBGM.channels, originalBGM.frequency, false);
+            noteFx.SetData(f_fx, 0);
+            bgmManager.NoteFxClip = noteFx;
         }
 
         private void RegisterAegleseekerAnomaly()
@@ -1494,9 +1509,9 @@ namespace DRFV.Game
                 if (!drbfile.noPos)
                 {
                     var pos = TheCamera.transform.position;
-                    pos.y -= (pos.y - (9.0f + 18.0f * HeightCurve.Evaluate(BGMManager.time))) * 20.0f * Time.deltaTime;
-                    pos.z -= (pos.z - (-7.0f - 14.0f * HeightCurve.Evaluate(BGMManager.time))) * 20.0f * Time.deltaTime;
-                    pos.x -= (pos.x - PositionCurve.Evaluate(BGMManager.time)) * 30.0f * Time.deltaTime;
+                    pos.y -= (pos.y - (9.0f + 18.0f * HeightCurve.Evaluate(bgmManager.Time))) * 20.0f * Time.deltaTime;
+                    pos.z -= (pos.z - (-7.0f - 14.0f * HeightCurve.Evaluate(bgmManager.Time))) * 20.0f * Time.deltaTime;
+                    pos.x -= (pos.x - PositionCurve.Evaluate(bgmManager.Time)) * 30.0f * Time.deltaTime;
                     TheCamera.transform.position = pos;
                 }
 
@@ -1562,7 +1577,7 @@ namespace DRFV.Game
 
 
             //曲の進捗を表示する
-            if (sliderMusicTime) sliderMusicTime.value = BGMManager.time / BGMManager.clip.length;
+            if (sliderMusicTime) sliderMusicTime.value = bgmManager.Time / bgmManager.MainClip.length;
 
             //終了処理
             //なし
@@ -1856,7 +1871,7 @@ namespace DRFV.Game
 
             for (int i = 0; i < 10; i++)
             {
-                BGMManager.volume -= 0.1f;
+                bgmManager.Volume -= 0.1f;
                 yield return w01s;
             }
 
@@ -1885,7 +1900,7 @@ namespace DRFV.Game
             }
 
 
-            BGMManager.DOFade(0, 1).SetEase(Ease.Linear);
+            bgmManager.DoFade(0, 1, Ease.Linear);
             yield return new WaitForSeconds(1f);
 
             //終了処理
@@ -1904,7 +1919,7 @@ namespace DRFV.Game
             if (AnimationGrades[(int)EndType.GAME_OVER])
                 AnimationGrades[(int)EndType.GAME_OVER].SetActive(true);
 
-            BGMManager.Pause();
+            bgmManager.Pause();
             if (hasVideo) VideoPlayer.Pause();
             progressManager.StopTiming();
 
@@ -1949,14 +1964,14 @@ namespace DRFV.Game
 
             if (SteroList.Count <= 0)
             {
-                BGMManager.panStereo = 0;
+                bgmManager.panStereo = 0;
             }
             else
             {
                 float result = SteroList.Average();
                 if (result > 1) result = 1;
                 if (result < -1) result = -1;
-                BGMManager.panStereo = result;
+                bgmManager.panStereo = result;
             }
 
             audioMixer.SetFloat("Center", EQCurve.Evaluate(AudioMixerCenter));
@@ -2017,10 +2032,10 @@ namespace DRFV.Game
             float time;
             try
             {
-                time = BPMCurve.Evaluate(float.Parse(inputJumpTo.text)) * BGMManager.pitch;
-                if (BGMManager.clip.length < time / 1000)
+                time = BPMCurve.Evaluate(float.Parse(inputJumpTo.text)) * bgmManager.Pitch;
+                if (bgmManager.MainClip.length < time / 1000)
                 {
-                    time = BGMManager.clip.length * 1000 - 1;
+                    time = bgmManager.MainClip.length * 1000 - 1;
                 }
 
                 if (time < 0)
@@ -2101,13 +2116,13 @@ namespace DRFV.Game
 
             progressManager.AddDelay((from - time) / 1000f);
             Distance = SCCurve.Evaluate(time);
-            BGMManager.time = time / 1000;
+            bgmManager.Time = time / 1000;
             if (hasVideo) VideoPlayer.time = time / 1000;
             theLyricManager.JumpTo(time);
 
             progressManager.ContinueTiming();
             isPause = false;
-            BGMManager.UnPause();
+            bgmManager.UnPause();
             pauseUI.SetActive(false);
         }
 
@@ -2134,9 +2149,9 @@ namespace DRFV.Game
 
         public void Pause()
         {
-            if (!pauseable || BGMManager.time <= 0) return;
+            if (!pauseable || bgmManager.Time <= 0) return;
             isPause = true;
-            BGMManager.Pause();
+            bgmManager.Pause();
             VideoPlayer.Pause();
             progressManager.StopTiming();
             pauseUI.SetActive(true);
@@ -2152,22 +2167,22 @@ namespace DRFV.Game
         public void UpdateNoteSpeed()
         {
             currentSettings.NoteSpeed = NoteSpeed = (int)slider.value;
-            RealNoteSpeed = Mathf.Abs(BGMManager.pitch - 1.0f) > 0.1f && currentSettings.enableSCFix
-                ? NoteSpeed / BGMManager.pitch
+            RealNoteSpeed = Mathf.Abs(bgmManager.Pitch - 1.0f) > 0.1f && currentSettings.enableSCFix
+                ? NoteSpeed / bgmManager.Pitch
                 : NoteSpeed;
             speedLabel.text = speedLabelText + (RealNoteSpeed / 2f).ToString("N1") + "x";
         }
 
         public void Retry()
         {
-            if (!pauseable || BGMManager.time <= 0) return;
+            if (!pauseable || bgmManager.Time <= 0) return;
             GlobalSettings.CurrentSettings = currentSettings;
             FadeManager.Instance.JumpScene("game");
         }
 
         public void Resume()
         {
-            if (!pauseable || BGMManager.time <= 0) return;
+            if (!pauseable || bgmManager.Time <= 0) return;
             isPause = false;
             pauseUI.SetActive(false);
             TimeGoBack(3000f);
@@ -2175,7 +2190,7 @@ namespace DRFV.Game
 
         public void Quit()
         {
-            if (!pauseable || BGMManager.time <= 0) return;
+            if (!pauseable || bgmManager.Time <= 0) return;
             progressManager.StopTiming();
             QuitDirectly();
         }
@@ -2201,7 +2216,7 @@ namespace DRFV.Game
         IEnumerator TimeGoBackCoroutine(float delta)
         {
             float from = progressManager.NowTime + NoteOffset + 100f;
-            float to = progressManager.NowTime + NoteOffset + 100f - delta * BGMManager.pitch;
+            float to = progressManager.NowTime + NoteOffset + 100f - delta * bgmManager.Pitch;
             for (var i = 0; i < notesUp.transform.childCount; i++)
             {
                 try
@@ -2226,16 +2241,16 @@ namespace DRFV.Game
                 }
             }
 
-            if (BGMManager.time < delta * BGMManager.pitch / 1000f)
+            if (bgmManager.Time < delta * bgmManager.Pitch / 1000f)
             {
-                delta = BGMManager.time * 1000f / BGMManager.pitch;
-                BGMManager.time = 0;
+                delta = bgmManager.Time * 1000f / bgmManager.Pitch;
+                bgmManager.Time = 0;
                 if (hasVideo) VideoPlayer.time = 0;
                 progressManager.AddDelay(delta / 1000f);
             }
             else
             {
-                if (BGMManager.clip.length > to / 1000f) BGMManager.time = to / 1000f;
+                if (bgmManager.MainClip.length > to / 1000f) bgmManager.Time = to / 1000f;
                 if (hasVideo && VideoPlayer.length > to / 1000f) VideoPlayer.time = to / 1000f;
                 progressManager.AddDelay(delta / 1000f);
             }
@@ -2281,14 +2296,14 @@ namespace DRFV.Game
             }
 
             progressManager.ContinueTiming();
-            BGMManager.UnPause();
+            bgmManager.UnPause();
             if (hasVideo) VideoPlayer.Play();
 
-            BGMManager.volume = 0;
+            bgmManager.Volume = 0;
             int subdivision = Mathf.FloorToInt(delta / 100f);
             if (subdivision <= 0)
             {
-                BGMManager.volume = 1;
+                bgmManager.Volume = 1;
                 yield break;
             }
 
@@ -2301,7 +2316,7 @@ namespace DRFV.Game
 
             for (int i = 1; i <= subdivision; i++)
             {
-                BGMManager.volume = i * 1.0f / subdivision;
+                bgmManager.Volume = i * 1.0f / subdivision;
                 yield return qwq;
             }
         }
@@ -2346,7 +2361,7 @@ namespace DRFV.Game
 
             var go2 = Instantiate(HanteiPrefab, pos, Quaternion.identity);
             GameObject go;
-            float realMS = enableJudgeRangeFix ? ms / BGMManager.pitch : ms;
+            float realMS = enableJudgeRangeFix ? ms / bgmManager.Pitch : ms;
             if (!isFake) msDetailsList.Add(realMS);
             int displayMS = isFake ? 0 : (int)realMS;
 
@@ -2813,7 +2828,7 @@ namespace DRFV.Game
         public void SetTimeToEnd(float value)
         {
             lastNoteTime = value;
-            endTime = Math.Max(lastNoteTime + GDms, BGMManager.clip.length * 1000f - 1);
+            endTime = Math.Max(lastNoteTime + GDms, bgmManager.MainClip.length * 1000f - 1);
         }
 
         private (float, float, float, int, TestifyAnomalyArguments[]) GenerateTestifyAnomaly()

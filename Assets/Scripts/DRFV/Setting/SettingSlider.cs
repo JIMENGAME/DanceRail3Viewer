@@ -5,34 +5,30 @@ namespace DRFV.Setting
 {
     public class SettingSlider : MonoBehaviour
     {
-        public Text Value;
+        [SerializeField] private Text tValue;
 
-        public Slider Slider;
+        [SerializeField] private Slider Slider;
+        
+        public int Value => (int)Slider.value;
 
-        public void ChangeValue(int value)
+        public void AddOrMinusValue(int delta)
         {
-            int final = (int) Slider.value + value;
-            if (Slider.value <= final && final <= Slider.maxValue || Slider.value > final && final >= Slider.minValue)
-            {
-                Slider.value = final;
-                UpdateValue();
-            }
-        }
-
-        public int GetValue()
-        {
-            return (int) Slider.value;
+            SetValue(Slider.value + delta);
         }
 
         public void UpdateValue()
         {
-            Value.text = (int) Slider.value * 10 + "%";
+            tValue.text = ParseValue(Slider.value);
         }
 
-        public void SetValue(int value)
+        protected virtual string ParseValue(float value)
         {
-            if ((!(value >= Slider.minValue)) || (!(value <= Slider.maxValue))) return;
-            Slider.value = value;
+            return (int) value + "";
+        }
+
+        public void SetValue(float value)
+        {
+            Slider.value = Mathf.Clamp(value, Slider.minValue, Slider.maxValue);
             UpdateValue();
         }
     }

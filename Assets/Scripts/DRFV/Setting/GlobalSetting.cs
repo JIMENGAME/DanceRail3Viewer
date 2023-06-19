@@ -1,7 +1,7 @@
 using DRFV.Enums;
+using DRFV.Global;
 using DRFV.Select;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using UnityEngine;
 
 namespace DRFV.Setting
@@ -39,13 +39,40 @@ namespace DRFV.Setting
         public int MaxFPS
         {
             get => _fps;
+            set
+            {
+                int i;
 #if UNITY_EDITOR
-            set => _fps = value;
+                i = -1;
 #else
-            set => Application.targetFrameRate = _fps = value;
+                i = value;
 #endif
+                Application.targetFrameRate = _fps = i;
+            }
         }
 
+        private int _gameMasterVolume;
+        private int _gameMusicVolume;
+
+        public int GameMasterVolume
+        {
+            get => _gameMasterVolume;
+            set
+            {
+                _gameMasterVolume = value;
+                StaticResources.Instance.audioMixer.SetFloat("MasterVolume", _gameMasterVolume * 0.8f - 80f);
+            }
+        }
+
+        public int GameMusicVolume
+        {
+            get => _gameMusicVolume;
+            set
+            {
+                _gameMusicVolume = value;
+                StaticResources.Instance.audioMixer.SetFloat("MusicVolume", _gameMusicVolume * 0.8f - 80f);
+            }
+        }
         public int GameEffectParamEQLevel;
         public int GameEffectGaterLevel;
         public int GameEffectTap;
@@ -82,6 +109,8 @@ namespace DRFV.Setting
             FreeFlickAlpha = 3;
             FlickAlpha = 3;
             MaxFPS = 60;
+            GameMasterVolume = 100;
+            GameMusicVolume = 100;
             GameEffectParamEQLevel = 10;
             GameEffectGaterLevel = 10;
             GameEffectTap = 10;
