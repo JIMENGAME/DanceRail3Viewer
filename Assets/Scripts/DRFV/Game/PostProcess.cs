@@ -25,9 +25,9 @@ public class PostProcess : MonoBehaviour
         enablePostProcess = true;
     }
 
-    public void Update()
+    public void UpdateMaterial()
     {
-        if (!enablePostProcess) return;
+        if (!enablePostProcess || Material == null) return;
         if (_progressManager.NowTime < _arguments[0].startTime) return;
         if (_progressManager.NowTime >= _arguments[^1].startTime + _arguments[^1].duration)
         {
@@ -64,7 +64,9 @@ public class PostProcess : MonoBehaviour
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        if (enablePostProcess && Material != null)
+        if (!enablePostProcess) return;
+        UpdateMaterial();
+        if (Material != null)
         {
             Graphics.Blit(src, dest, Material);
         }

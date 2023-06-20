@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using DG.Tweening;
 using DRFV.Data;
 using DRFV.Enums;
@@ -724,13 +725,19 @@ namespace DRFV.Game
             StartB();
         }
 
+        private IEnumerator SaveNoteFX()
+        {
+            SavWav.Save(StaticResources.Instance.dataPath + "songs/" + SongKeyword +
+                        "/" + SongHard +
+                        ".wav", bgmManager.NoteFxClip);
+            yield break;
+        }
+
         private void StartB()
         {
             if (saveAudio && !DebugMode)
             {
-                SavWav.Save(StaticResources.Instance.dataPath + "songs/" + SongKeyword +
-                            "/" + SongHard +
-                            ".wav", bgmManager.NoteFxClip);
+                StartCoroutine(SaveNoteFX());
             }
 
             foreach (NoteData data in drbfile.notes)

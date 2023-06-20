@@ -1,4 +1,3 @@
-
 Shader "Arcaea/TransverseChromaticAberration"
 {
     Properties

@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DRFV.inokana;
 using UnityEngine;
 
 namespace DRFV.Global
@@ -41,16 +42,26 @@ namespace DRFV.Global
             {
                 filepath += ".wav";
             }
+            
+            NotificationBarManager.Instance.Show("保存wav中");
 
-            // Debug.Log(filepath);
-
-            // Make sure directory exists if user is saving to sub dir.
-            Directory.CreateDirectory(Path.GetDirectoryName(filepath));
-
-            using (var fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write))
+            try
             {
+                // Debug.Log(filepath);
+
+                // Make sure directory exists if user is saving to sub dir.
+                Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+
+                using var fileStream = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                 fileStream.Write(AudioClipToByteArray(clip));
             }
+            catch (Exception e)
+            {
+                string qwq = e.Message.Remove('\r');
+                NotificationBarManager.Instance.Show("保存失败：" + qwq.Substring(0, qwq.IndexOf("\n", StringComparison.Ordinal)));
+                throw;
+            }
+            NotificationBarManager.Instance.Show("保存成功！");
         }
 
         public static byte[] AudioClipToByteArray(AudioClip clip)
