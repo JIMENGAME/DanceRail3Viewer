@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace DRFV.Data
 {
     public class TestifyAnomaly
@@ -6,15 +9,19 @@ namespace DRFV.Data
         public float maxEffect;
         public float strength;
         public int sampleCount;
-        public TestifyAnomalyArguments[] args;
+        public List<TestifyAnomalyArguments> args;
     }
 
     public class TestifyAnomalyArguments
     {
         public int startTime;
         public int duration;
+        [JsonIgnore]
+        public int endTime;
         public float startStrength;
         public float deltaStrength;
+        [JsonIgnore]
+        public float endStrength;
         public StrengthType strengthType;
     }
 

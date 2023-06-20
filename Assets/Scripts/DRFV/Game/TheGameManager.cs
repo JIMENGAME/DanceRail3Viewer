@@ -714,10 +714,9 @@ namespace DRFV.Game
                 etherStrike.Init(this);
             }
 
-            if (storyMode && SongKeyword == "testify" || enableTestifyAnomaly)
+            if ((storyMode && SongKeyword == "testify" || enableTestifyAnomaly ) && postProcess)
             {
-                var (min, max, strength, count, arguments) = GenerateTestifyAnomaly();
-                if (postProcess) postProcess.Init(progressManager, min, max, strength, count, arguments);
+                postProcess.Init(progressManager, GenerateTestifyAnomaly());
             }
 
             _acGameover = Resources.Load<AudioClip>("SE/gameover");
@@ -2838,15 +2837,18 @@ namespace DRFV.Game
             endTime = Math.Max(lastNoteTime + GDms, bgmManager.MainClip.length * 1000f - 1);
         }
 
-        private (float, float, float, int, TestifyAnomalyArguments[]) GenerateTestifyAnomaly()
+        private TestifyAnomaly GenerateTestifyAnomaly()
         {
             TestifyAnomaly testifyAnomaly =
                 JsonConvert.DeserializeObject<TestifyAnomaly>(
                     Resources.Load<TextAsset>("testify_shader_arguments").text);
-            var testifyAnomalyArgumentsArray = testifyAnomaly.args.ToList();
-            testifyAnomalyArgumentsArray.Sort((a, b) => a.startTime - b.startTime);
-            return (testifyAnomaly.minEffect, testifyAnomaly.maxEffect, testifyAnomaly.strength,
-                testifyAnomaly.sampleCount, testifyAnomalyArgumentsArray.ToArray());
+            testifyAnomaly.args.Sort((a, b) => a.startTime - b.startTime);
+            foreach (TestifyAnomalyArguments arg in testifyAnomaly.args)
+            {
+                arg.endTime = arg.startTime + arg.duration;
+                arg.endStrength = arg.startStrength + arg.deltaStrength;
+            }
+            return testifyAnomaly;
         }
     }
 

@@ -1,4 +1,3 @@
-using System;
 using DRFV.Data;
 using DRFV.Global;
 using DRFV.inokana;
@@ -7,56 +6,53 @@ using UnityEngine;
 [ExecuteInEditMode, ImageEffectAllowedInSceneView]
 public class PostProcess : MonoBehaviour
 {
-    public Material Material;
+    [SerializeField] private Material Material;
     public bool enablePostProcess;
     private ProgressManager _progressManager;
     private TestifyAnomalyArguments[] _arguments;
     private int index;
 
-    public void Init(ProgressManager progressManager, float minEffect, float maxEffect, float strength, int sampleCount,
-        TestifyAnomalyArguments[] arguments)
+    public void Init(ProgressManager progressManager, TestifyAnomaly testifyAnomaly)
     {
         _progressManager = progressManager;
-        Material.SetFloat(Uniform.minEffect, minEffect);
-        Material.SetFloat(Uniform.maxEffect, maxEffect);
-        Material.SetFloat(Uniform.strength, strength);
-        Material.SetInt(Uniform.sampleCount, sampleCount);
-        _arguments = arguments;
+        Material.SetFloat(Uniform.minEffect, testifyAnomaly.minEffect);
+        Material.SetFloat(Uniform.maxEffect, testifyAnomaly.maxEffect);
+        Material.SetFloat(Uniform.strength, testifyAnomaly.strength);
+        Material.SetInt(Uniform.sampleCount, testifyAnomaly.sampleCount);
+        _arguments = testifyAnomaly.args.ToArray();
         enablePostProcess = true;
     }
 
-    public void UpdateMaterial()
+    private void UpdateMaterial()
     {
-        if (!enablePostProcess || Material == null) return;
         if (_progressManager.NowTime < _arguments[0].startTime) return;
-        if (_progressManager.NowTime >= _arguments[^1].startTime + _arguments[^1].duration)
+        for (var i = 0; i < _arguments.Length; i++)
         {
-            Material.SetFloat(Uniform.strength, _arguments[^1].startStrength + _arguments[^1].deltaStrength);
-            return;
-        }
-
-        for (var index1 = 0; index1 < _arguments.Length; index1++)
-        {
-            var testifyAnomalyArguments = _arguments[index1];
+            var testifyAnomalyArguments = _arguments[i];
             if (testifyAnomalyArguments.startTime <= _progressManager.NowTime && _progressManager.NowTime <
-                testifyAnomalyArguments.startTime + testifyAnomalyArguments.duration)
+                testifyAnomalyArguments.endTime)
             {
-                float i = (_progressManager.NowTime - testifyAnomalyArguments.startTime) /
+                float k = (_progressManager.NowTime - testifyAnomalyArguments.startTime) /
                           testifyAnomalyArguments.duration;
                 Material.SetFloat(Uniform.strength,
                     testifyAnomalyArguments.startStrength +
-                    (testifyAnomalyArguments.strengthType == StrengthType.SineOut ? Util.SineOutEase(i) : i) *
+                    (testifyAnomalyArguments.strengthType == StrengthType.SineOut ? Util.SineOutEase(k) : k) *
                     testifyAnomalyArguments.deltaStrength);
                 return;
             }
 
-            if (index1 == _arguments.Length - 1) return;
-            var nextTestifyAnomalyArguments = _arguments[index1 + 1];
-            if (testifyAnomalyArguments.startTime + testifyAnomalyArguments.duration <= _progressManager.NowTime &&
+            if (i == _arguments.Length - 1)
+            {
+                Material.SetFloat(Uniform.strength, _arguments[^1].endStrength);
+                return;
+            }
+
+            var nextTestifyAnomalyArguments = _arguments[i + 1];
+            if (testifyAnomalyArguments.endTime <= _progressManager.NowTime &&
                 _progressManager.NowTime < nextTestifyAnomalyArguments.startTime)
             {
                 Material.SetFloat(Uniform.strength,
-                    testifyAnomalyArguments.startStrength + testifyAnomalyArguments.deltaStrength);
+                    testifyAnomalyArguments.endStrength);
                 return;
             }
         }
@@ -64,16 +60,13 @@ public class PostProcess : MonoBehaviour
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
-        if (!enablePostProcess) return;
-        UpdateMaterial();
-        if (Material != null)
+        if (enablePostProcess && Material != null)
         {
+            UpdateMaterial();
             Graphics.Blit(src, dest, Material);
+            return;
         }
-        else
-        {
-            Graphics.Blit(src, dest);
-        }
+        Graphics.Blit(src, dest);
     }
 
     static class Uniform
