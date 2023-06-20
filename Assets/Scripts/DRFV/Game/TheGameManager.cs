@@ -264,6 +264,8 @@ namespace DRFV.Game
 
         private bool enableJudgeRangeFix;
 
+        private float lastNoteTime;
+
         void Start()
         {
             //メモリ解放
@@ -683,7 +685,7 @@ namespace DRFV.Game
                 GenerateHelloWinnerNotes();
             }
 
-            drbfile.GenerateAttributesOnPlay();
+            drbfile.GenerateAttributesOnPlay(SongHard);
 
             BPMCurve = drbfile.BPMCurve;
             //SC
@@ -739,19 +741,7 @@ namespace DRFV.Game
                 StartCoroutine(SaveNoteFX());
             }
 
-            foreach (NoteData data in drbfile.notes)
-            {
-                timeList.Add(data.ms);
-            }
-
-            foreach (NoteData data in drbfile.fakeNotes)
-            {
-                timeList.Add(data.ms);
-            }
-
-            SetTimeToEnd(timeList.Count > 0
-                ? timeList.OrderByDescending(time => time).ToList()[0]
-                : bgmManager.MainClip.length * 1000f - 1);
+            SetTimeToEnd(drbfile.LastNoteTime);
 
 
             //复杂整理03：按节点计算front和back的判定范围
@@ -775,7 +765,7 @@ namespace DRFV.Game
                         storyMode
                             ? Resources.Load<TextAsset>($"STORY/SONGS/custom_mover.{SongKeyword}.{SongHard}").text
                             : File.ReadAllText(path));
-                drbFile.GenerateAttributesOnPlay();
+                drbFile.GenerateAttributesOnPlay(SongHard);
 
                 (PositionCurve, hasMover) = GeneratePositionCurve(drbFile);
             }
@@ -794,7 +784,7 @@ namespace DRFV.Game
                         storyMode
                             ? Resources.Load<TextAsset>($"STORY/SONGS/custom_height.{SongKeyword}.{SongHard}").text
                             : File.ReadAllText(path));
-                drbFile.GenerateAttributesOnPlay();
+                drbFile.GenerateAttributesOnPlay(SongHard);
 
                 GenerateHeightCurve(drbFile);
             }
@@ -1161,7 +1151,7 @@ namespace DRFV.Game
 
             if (_acHold == null)
             {
-                _acHold = _acHit;
+                _acHold = _acSlide;
             } else if (_acHold.channels != 2) _acHold = _acHold.MonoToStereo();
             
             if (_acFreeFlick == null)
@@ -1456,9 +1446,6 @@ namespace DRFV.Game
 
         public GameObject questionPrefab;
         public Transform canvasNormal;
-
-        private List<float> timeList = new();
-        public float lastNoteTime;
 
         private bool inited;
         public bool pauseable;
@@ -2834,7 +2821,7 @@ namespace DRFV.Game
         public void SetTimeToEnd(float value)
         {
             lastNoteTime = value;
-            endTime = Math.Max(lastNoteTime + GDms, bgmManager.MainClip.length * 1000f - 1);
+            endTime = Math.Max(value + GDms, bgmManager.MainClip.length * 1000f - 1);
         }
 
         private TestifyAnomaly GenerateTestifyAnomaly()

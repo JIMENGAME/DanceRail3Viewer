@@ -23,6 +23,9 @@ namespace DRFV.Game
         public int noteWeightCount;
         public bool noPos;
         public AnimationCurve BPMCurve = null, SCCurve = null;
+        public int TotalNotes => notes.Count;
+        public float LastNoteTime { get; private set; }
+        public float SingleHp { get; private set; }
 
         private DRBFile()
         {
@@ -254,10 +257,17 @@ namespace DRFV.Game
             return drbFile;
         }
 
-        public void GenerateAttributesOnPlay()
+        public void GenerateAttributesOnPlay(int tier)
         {
             GenerateBpmCurve();
             GenerateSCCurve();
+            
+            List<float> timeList = new();
+            timeList.AddRange(notes.Select(data => data.ms));
+            timeList.AddRange(fakeNotes.Select(data => data.ms));
+
+            LastNoteTime = timeList.Count > 0 ? timeList.OrderByDescending(time => time).ToList()[0] : -1f;
+            SingleHp = CalculateSingleHp(TotalNotes, tier);
 
             foreach (var note in notes)
             {
@@ -421,6 +431,19 @@ namespace DRFV.Game
             Util.LinearKeyframe(SCKeyframe);
 
             SCCurve = new AnimationCurve(SCKeyframe);
+        }
+        
+        private float CalculateSingleHp(int maxCombo, int tier)
+        {
+            float hpCoefficient = tier >= 14 ? 0.8f : 1;
+
+            // print($"{recallCoefficient}, {maxCombo}, {rating}, {CurrentHpBarItem.HpBarType}");
+
+            if (maxCombo >= 600) return (96f / maxCombo + 0.08f) * hpCoefficient;
+            if (maxCombo >= 400) return (32f / maxCombo + 0.2f) * hpCoefficient;
+            if (maxCombo > 0) return (80f / maxCombo + 0.2f) * hpCoefficient;
+
+            return 0;
         }
     }
 
