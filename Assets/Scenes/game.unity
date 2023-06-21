@@ -10154,7 +10154,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   TheCamera: {fileID: 1884687360}
-  audioMixer: {fileID: 24100000, guid: 219090c123d635e468e60d64d20e5ded, type: 2}
   HPMask: {fileID: 1114644889}
   AnimationGradesParent: {fileID: 55093857}
   AnimationGrades: []
@@ -10198,7 +10197,6 @@ MonoBehaviour:
   questionPrefab: {fileID: 6479053380049343696, guid: 30ed889ee755c0b4b8ee69b82eed420e,
     type: 3}
   canvasNormal: {fileID: 686537813}
-  lastNoteTime: 0
   pauseable: 0
   SCUpImage: {fileID: 773650186}
   SCDownImage: {fileID: 2076636445}

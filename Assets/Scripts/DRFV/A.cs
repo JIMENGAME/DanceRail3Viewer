@@ -1,64 +1,97 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using DRFV.Enums;
+using DRFV.Game;
+using DRFV.Global;
 using DRFV.inokana;
 using UnityEngine;
 
 namespace DRFV
 {
-    public class A
+    public class A : MonoSingleton<A>
     {
+        private TheGameManager _theGameManager;
         public List<float> pures = new(), fars = new(), losts = new();
-        private float singleRecall = 0.901754385965f, lastNoteTime = 114514f, noteCount = 114; //假装我算好了
-        private bool isPlaying = true;
         public float hpNow = 100f; // 假装这个是总HP
         private static readonly float ln2 = Mathf.Log(2);
-        private ProgressManager _progressManager;
+        private ProgressManager ProgressManager => _theGameManager.progressManager;
+        private DRBFile DrbFile => _theGameManager.drbfile;
+        private float hpDelta = 0f;
+        private float StartTime, ShutterOffset;
+        private float lostTime;
+        private float offset;
+        private float AudioTiming => ProgressManager.NowTime + offset;
+        private bool prepared;
 
-        public void Judge(string judgeType, float judgeTime)
+        public void Init(TheGameManager theGameManager)
+        {
+            _theGameManager = theGameManager;
+            offset = DrbFile.offset * 1000f;
+            StartTime = 6000 - offset;
+            ShutterOffset = 6000 + offset;
+            lostTime = DrbFile.SingleHp * DrbFile.TotalNotes / (DrbFile.LastNoteTime / 1000f + 0.5f);
+            prepared = true;
+        }
+
+        public void Judge(JudgeType judgeType, float judgeTime)
         {
             switch (judgeType)
             {
-                case "pure":
+                case JudgeType.PERFECT_J:
                     pures.Add(judgeTime);
                     break;
-                case "far":
+                case JudgeType.PERFECT:
+                case JudgeType.GOOD:
                     fars.Add(judgeTime);
                     break;
-                case "lost":
+                case JudgeType.MISS:
                     losts.Add(judgeTime);
                     break;
                 default:
-                    throw new Exception();
+                    throw new ArgumentOutOfRangeException(nameof(judgeType), judgeType, null);
             }
         }
 
-        public float GetFadingSpeed()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool CanCalculateTempestHp(float hp)
         {
-            float hpDelta = 0f;
-            foreach (float t in pures)
+            return (hp + hpDelta).InRange(0, 100) && _theGameManager.IsPlaying;
+        }
+
+        private float GetHpNow()
+        {
+            float hp = 100f;
+
+            hp -= Mathf.Min(DrbFile.LastNoteTime + ShutterOffset, AudioTiming + StartTime) / 1000f * lostTime;
+
+            foreach (var t in pures)
             {
-                hpDelta += ln2 * (2 * singleRecall) * Mathf.Pow(2, t - _progressManager.NowTime);
-            }
-            foreach (float t in pures)
-            {
-                hpDelta += ln2 * singleRecall * Mathf.Pow(2, t - _progressManager.NowTime);
-            }
-            foreach (float t in losts)
-            {
-                hpDelta -= 0.5f * ln2 * 18 * Mathf.Pow(2, 0.5f * (t - _progressManager.NowTime));
+                if (CanCalculateTempestHp(hp)) hpDelta += ln2 * (2 * DrbFile.SingleHp) * Mathf.Pow(2, t - ProgressManager.NowTime) * Time.deltaTime;
             }
 
-            return hpDelta;
-        }
-        
-        public IEnumerator NaturalFading()
-        {
-            while (isPlaying)
+            foreach (var t in pures)
             {
-                hpNow -= singleRecall * noteCount / (lastNoteTime + 0.5f) * Time.deltaTime;
-                yield return null;
+                if (CanCalculateTempestHp(hp)) hpDelta += ln2 * DrbFile.SingleHp * Mathf.Pow(2, t - ProgressManager.NowTime) * Time.deltaTime;
             }
+
+            foreach (var t in losts)
+            {
+                if (CanCalculateTempestHp(hp)) hpDelta -= 0.5f * ln2 * 18 * Mathf.Pow(2, 0.5f * (t - ProgressManager.NowTime)) * Time.deltaTime;
+            }
+
+            hp += hpDelta;
+            
+            return Math.Clamp(hp, 0, 100);
+        }
+
+        private void Update()
+        {
+            if (!prepared) return;
+            float hp = GetHpNow();
+            Debug.Log((hp >= hpNow ? "蓝色" : "红色") + hp);
+            hpNow = hp;
         }
     }
 }

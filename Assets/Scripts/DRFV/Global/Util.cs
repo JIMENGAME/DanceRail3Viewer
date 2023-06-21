@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -503,5 +504,10 @@ namespace DRFV.Global
             NotificationBarManager.Instance.Show("错误：不支持的图片格式");
             return SpritePlaceholder;
         }
+        
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool InRange(this float value, Single min, Single max)
+            => value >= min && value <= max;
     }
 }

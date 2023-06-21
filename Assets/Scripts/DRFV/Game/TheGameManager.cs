@@ -71,7 +71,7 @@ namespace DRFV.Game
         [SerializeField] public float PJms = 30.0f, PFms = 60.0f, GDms = 100.0f;
 
         public GameObject BeforeGameBackground;
-        
+
         private GameObject songDataObject;
         public SongDataContainer songDataContainer;
 
@@ -196,7 +196,7 @@ namespace DRFV.Game
 
         [SerializeField] // [SerializeField, HideInInspector] 
         GameObject TheCamera;
-        
+
         private AudioMixer audioMixer;
 
         [SerializeField] // [SerializeField, HideInInspector] 
@@ -686,6 +686,8 @@ namespace DRFV.Game
             }
 
             drbfile.GenerateAttributesOnPlay(SongHard);
+            
+            // if (A.Instance) A.Instance.Init(this);
 
             BPMCurve = drbfile.BPMCurve;
             //SC
@@ -716,7 +718,7 @@ namespace DRFV.Game
                 etherStrike.Init(this);
             }
 
-            if ((storyMode && SongKeyword == "testify" || enableTestifyAnomaly ) && postProcess)
+            if ((storyMode && SongKeyword == "testify" || enableTestifyAnomaly) && postProcess)
             {
                 postProcess.Init(progressManager, GenerateTestifyAnomaly());
             }
@@ -1055,7 +1057,13 @@ namespace DRFV.Game
 
         private IEnumerator ProcessMusic()
         {
-            AudioClip _acHit = null, _acExHit = null, _acSlide = null, _acHold = null, _acFlick = null, _acFreeFlick = null, _acLong = null;
+            AudioClip _acHit = null,
+                _acExHit = null,
+                _acSlide = null,
+                _acHold = null,
+                _acFlick = null,
+                _acFreeFlick = null,
+                _acLong = null;
             bool disableOverlappingCheck = false;
             //获取效果音
             if (!DebugMode && !storyMode && !string.IsNullOrEmpty(currentSettings.selectedNoteSFX))
@@ -1129,7 +1137,7 @@ namespace DRFV.Game
                 _acHit = GetAudioClipFromRawWav("SE/hit", originalBGM.frequency, "hit");
                 // _acHit = Resources.Load<AudioClip>("SE/hit");
             }
-            
+
             if (_acFlick == null)
             {
                 _acFlick = GetAudioClipFromRawWav("SE/flick", originalBGM.frequency, "flick");
@@ -1138,27 +1146,31 @@ namespace DRFV.Game
 
             if (_acHit.channels != 2) _acHit = _acHit.MonoToStereo();
             if (_acFlick.channels != 2) _acFlick = _acFlick.MonoToStereo();
-            
+
             if (_acExHit == null)
             {
                 _acExHit = _acHit;
-            } else if (_acExHit.channels != 2) _acExHit = _acExHit.MonoToStereo();
+            }
+            else if (_acExHit.channels != 2) _acExHit = _acExHit.MonoToStereo();
 
             if (_acSlide == null)
             {
                 _acSlide = _acHit;
-            } else if (_acSlide.channels != 2) _acSlide = _acSlide.MonoToStereo();
+            }
+            else if (_acSlide.channels != 2) _acSlide = _acSlide.MonoToStereo();
 
             if (_acHold == null)
             {
                 _acHold = _acSlide;
-            } else if (_acHold.channels != 2) _acHold = _acHold.MonoToStereo();
-            
+            }
+            else if (_acHold.channels != 2) _acHold = _acHold.MonoToStereo();
+
             if (_acFreeFlick == null)
             {
                 _acFreeFlick = _acFlick;
-            } else if (_acFreeFlick.channels != 2) _acFreeFlick = _acFreeFlick.MonoToStereo();
-            
+            }
+            else if (_acFreeFlick.channels != 2) _acFreeFlick = _acFreeFlick.MonoToStereo();
+
             if (_acLong != null && _acLong.channels != 2) _acLong = _acLong.MonoToStereo();
 
 
@@ -1181,11 +1193,12 @@ namespace DRFV.Game
             _acHold.GetData(f_hold, 0);
             _acFlick.GetData(f_flick, 0);
             _acFreeFlick.GetData(f_freeFlick, 0);
-            
+
             for (var i = 0; i < f_fx.Length; i++)
             {
                 f_fx[i] = 0.0f;
             }
+
             if (_acLong != null) _acLong.GetData(f_long, 0);
 
             //音量减半
@@ -1194,7 +1207,12 @@ namespace DRFV.Game
                 f_song[i] *= volumeScale;
             }
 
-            List<int> list_hit = new(), list_exHit = new(), list_slide = new(), list_hold = new(), list_flick = new(), list_freeFlick = new();
+            List<int> list_hit = new(),
+                list_exHit = new(),
+                list_slide = new(),
+                list_hold = new(),
+                list_flick = new(),
+                list_freeFlick = new();
 
             //写入gater音
             if (GameEffectGaterLevel >= 1)
@@ -1218,14 +1236,15 @@ namespace DRFV.Game
                     }
                 }
             }
-            
+
             int finalSamplesCount = originalBGM.samples +
                                     (int)MathF.Max(_acHit.samples, Mathf.Max(_acSlide.samples, _acFlick.samples));
 
-            AudioClip main = AudioClip.Create("I'm Pepoyo's dog", finalSamplesCount, originalBGM.channels, originalBGM.frequency, false);
+            AudioClip main = AudioClip.Create("I'm Pepoyo's dog", finalSamplesCount, originalBGM.channels,
+                originalBGM.frequency, false);
             main.SetData(f_song, 0);
             bgmManager.MainClip = main;
-            
+
             if (GameEffectTap >= 1)
             {
                 foreach (var noteData in drbfile.notes)
@@ -1238,6 +1257,7 @@ namespace DRFV.Game
                         {
                             finalParent = drbfile.notes[finalParent.parent];
                         }
+
                         int end = (int)(bgmSamples *
                                         (noteData.ms / 1000.0f / originalBGM.length));
                         int start = (int)(bgmSamples *
@@ -1306,8 +1326,9 @@ namespace DRFV.Game
                     }
                 }
             }
-            
-            AudioClip noteFx = AudioClip.Create("Aren't you?", finalSamplesCount, originalBGM.channels, originalBGM.frequency, false);
+
+            AudioClip noteFx = AudioClip.Create("Aren't you?", finalSamplesCount, originalBGM.channels,
+                originalBGM.frequency, false);
             noteFx.SetData(f_fx, 0);
             bgmManager.NoteFxClip = noteFx;
         }
@@ -2068,7 +2089,7 @@ namespace DRFV.Game
                 {
                     if (drbfile.notes[i].ms < time && drbfile.notes[i].ms >= from)
                     {
-                        JudgeDirectly(drbfile.notes[i].kind, drbfile.notes[i].isFake);
+                        JudgeDirectly(drbfile.notes[i].kind, drbfile.notes[i].ms, drbfile.notes[i].isFake);
 
                         isCreated[i] = true;
 
@@ -2091,7 +2112,7 @@ namespace DRFV.Game
                 {
                     if (drbfile.fakeNotes[i].ms < time && drbfile.fakeNotes[i].ms >= from)
                     {
-                        JudgeDirectly(drbfile.fakeNotes[i].kind, drbfile.fakeNotes[i].isFake);
+                        JudgeDirectly(drbfile.fakeNotes[i].kind, drbfile.notes[i].ms, drbfile.fakeNotes[i].isFake);
 
                         isCreated[i + drbfile.notes.Count] = true;
 
@@ -2337,13 +2358,14 @@ namespace DRFV.Game
             msDetailsList.Clear();
         }
 
-        private void JudgeDirectly(NoteKind kind, bool isFake)
+        private void JudgeDirectly(NoteKind kind, float noteMs, bool isFake)
         {
             if (isFake) return;
             msDetailsList.Add(0f);
             PerfectJ++;
             AddCombo();
             hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
+            // if (A.Instance) A.Instance.Judge(JudgeType.PERFECT_J, noteMs);
         }
 
         //判定処理
@@ -2357,18 +2379,20 @@ namespace DRFV.Game
             float realMS = enableJudgeRangeFix ? ms / bgmManager.Pitch : ms;
             if (!isFake) msDetailsList.Add(realMS);
             int displayMS = isFake ? 0 : (int)realMS;
+            JudgeType judgeType;
 
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)
             {
+                judgeType = JudgeType.PERFECT_J;
                 if (!isFake)
                 {
                     PerfectJ++;
                     AddCombo();
                     hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
-                                    if (imgJudgeBeam[0])
-                                        imgJudgeBeam[0].color = new Color(imgJudgeBeam[0].color.r, imgJudgeBeam[0].color.g,
-                                            imgJudgeBeam[0].color.b, 1.0f);
+                    if (imgJudgeBeam[0])
+                        imgJudgeBeam[0].color = new Color(imgJudgeBeam[0].color.r, imgJudgeBeam[0].color.g,
+                            imgJudgeBeam[0].color.b, 1.0f);
                 }
 
                 go = Instantiate(prefabEffect[(int)kind], pos, Quaternion.identity);
@@ -2380,6 +2404,7 @@ namespace DRFV.Game
             //PERFECT 判定
             else if (Mathf.Abs(ms) <= PFms)
             {
+                judgeType = JudgeType.PERFECT;
                 Perfect++;
                 AddCombo();
                 FastOrSlow(ms);
@@ -2400,9 +2425,10 @@ namespace DRFV.Game
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                                if (imgJudgeBeam[1])
-                                    imgJudgeBeam[1].color = new Color(imgJudgeBeam[1].color.r, imgJudgeBeam[1].color.g,
-                                        imgJudgeBeam[1].color.b, 1.0f);
+
+                if (imgJudgeBeam[1])
+                    imgJudgeBeam[1].color = new Color(imgJudgeBeam[1].color.r, imgJudgeBeam[1].color.g,
+                        imgJudgeBeam[1].color.b, 1.0f);
 
                 ////Event
                 //if (isEvent)
@@ -2418,6 +2444,7 @@ namespace DRFV.Game
             //GOOD 判定
             else if (Mathf.Abs(ms) <= GDms)
             {
+                judgeType = JudgeType.GOOD;
                 good++;
                 AddCombo();
                 FastOrSlow(ms);
@@ -2456,6 +2483,7 @@ namespace DRFV.Game
             //MISS 判定
             else
             {
+                judgeType = JudgeType.MISS;
                 miss++;
                 if (Combo >= 30)
                 {
@@ -2483,6 +2511,8 @@ namespace DRFV.Game
                 //    }
                 //}
             }
+
+            // if (A.Instance) A.Instance.Judge(judgeType, progressManager.NowTime + ms);
 
             if (go)
             {
@@ -2835,6 +2865,7 @@ namespace DRFV.Game
                 arg.endTime = arg.startTime + arg.duration;
                 arg.endStrength = arg.startStrength + arg.deltaStrength;
             }
+
             return testifyAnomaly;
         }
     }

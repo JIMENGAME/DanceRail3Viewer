@@ -66,7 +66,6 @@ namespace DRFV.Enums
         SINGLE = 0,
         MULTI = 1
     }
-
     public enum NoteAppearMode
     {
         None = 0,
@@ -75,11 +74,18 @@ namespace DRFV.Enums
         High = 3,
         Jump = 4
     }
+
+    public enum JudgeType
+    {
+        PERFECT_J = 0,
+        PERFECT = 1,
+        GOOD = 2,
+        MISS = 3
+    }
 }
 
 namespace DRFV.Game
 {
-    
     public static class ParseNoteAppearMode
     {
         public static NoteAppearMode ParseToMode(string str)

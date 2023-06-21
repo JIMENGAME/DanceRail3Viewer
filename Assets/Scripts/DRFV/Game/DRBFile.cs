@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using DRFV.Enums;
 using DRFV.Game.HPBars;
@@ -262,11 +261,7 @@ namespace DRFV.Game
             GenerateBpmCurve();
             GenerateSCCurve();
             
-            List<float> timeList = new();
-            timeList.AddRange(notes.Select(data => data.ms));
-            timeList.AddRange(fakeNotes.Select(data => data.ms));
-
-            LastNoteTime = timeList.Count > 0 ? timeList.OrderByDescending(time => time).ToList()[0] : -1f;
+            
             SingleHp = CalculateSingleHp(TotalNotes, tier);
 
             foreach (var note in notes)
@@ -282,6 +277,12 @@ namespace DRFV.Game
                 note.ms = BPMCurve.Evaluate(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
             }
+            
+            List<float> timeList = new();
+            timeList.AddRange(notes.Select(data => data.ms));
+            timeList.AddRange(fakeNotes.Select(data => data.ms));
+
+            LastNoteTime = timeList.Count > 0 ? timeList.OrderByDescending(time => time).ToList()[0] : -1f;
 
             for (int i = 0; i < notes.Count; i++)
             {
@@ -439,8 +440,8 @@ namespace DRFV.Game
 
             // print($"{recallCoefficient}, {maxCombo}, {rating}, {CurrentHpBarItem.HpBarType}");
 
-            if (maxCombo >= 600) return (96f / maxCombo + 0.08f) * hpCoefficient;
-            if (maxCombo >= 400) return (32f / maxCombo + 0.2f) * hpCoefficient;
+            if (maxCombo >= 1000) return (96f / maxCombo + 0.08f) * hpCoefficient;
+            if (maxCombo >= 600) return (32f / maxCombo + 0.2f) * hpCoefficient;
             if (maxCombo > 0) return (80f / maxCombo + 0.2f) * hpCoefficient;
 
             return 0;
