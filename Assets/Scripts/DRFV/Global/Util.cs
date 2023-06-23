@@ -467,7 +467,38 @@ namespace DRFV.Global
             return SpritePlaceholder;
         }
 
-#if false
+        public static float ScoreToRate(float score, int hard, float speed)
+        {
+            score = Mathf.Clamp(score, 0f, 3000000f);
+            float k = score switch
+            {
+                <= 2400000f => score / 2400000f,
+                < 2450000f => SongRateEase((score - 2400000f) / 50000f) * 0.1f + 0f,
+                < 2500000f => SongRateEase((score - 2450000f) / 50000f) * 0.1f + 0.1f,
+                < 2550000f => SongRateEase((score - 2500000f) / 50000f) * 0.2f + 0.2f,
+                < 2600000f => SongRateEase((score - 2550000f) / 50000f) * 0.2f + 0.4f,
+                < 2650000f => SongRateEase((score - 2600000f) / 50000f) * 0.2f + 0.6f,
+                < 2700000f => SongRateEase((score - 2650000f) / 50000f) * 0.2f + 0.8f,
+                < 2750000f => SongRateEase((score - 2700000f) / 50000f) * 0.2f + 1.0f,
+                < 2800000f => SongRateEase((score - 2750000f) / 50000f) * 0.2f + 1.2f,
+                < 2850000f => SongRateEase((score - 2800000f) / 50000f) * 0.3f + 1.4f,
+                < 2900000f => SongRateEase((score - 2850000f) / 50000f) * 0.4f + 1.7f,
+                < 2950000f => SongRateEase((score - 2900000f) / 50000f) * 0.4f + 2.1f,
+                <= 3000000f => SongRateEase((score - 2950000f) / 50000f) * 0.5f + 2.5f,
+                _ => Single.NaN
+            };
+
+            return (score > 2400000f) ? (k + hard * speed) : (k * hard * speed);
+        }
+        
+        public static float SongRateEase(float x)
+        {
+            x = Mathf.Clamp01(x);
+            return -(Mathf.Cos(Mathf.PI * x) - 1) / 2;
+            // return x < 0.5f ? 4f * x * x * x : 1f - 4f * Mathf.Pow(1f - x, 3f);
+        }
+
+#if true
         public static AnimationCurve GetAnimationCurveFromDumpedFile(string path)
         {
             WrapMode postWrapMode = WrapMode.ClampForever, preWrapMode = WrapMode.ClampForever;

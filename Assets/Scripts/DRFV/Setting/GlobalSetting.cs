@@ -60,7 +60,7 @@ namespace DRFV.Setting
             set
             {
                 _gameMasterVolume = value;
-                StaticResources.Instance.audioMixer.SetFloat("MasterVolume", _gameMasterVolume * 0.8f - 80f);
+                if (StaticResources.Instance && StaticResources.Instance.audioMixer) StaticResources.Instance.audioMixer.SetFloat("MasterVolume", _gameMasterVolume * 0.8f - 80f);
             }
         }
 
@@ -70,7 +70,7 @@ namespace DRFV.Setting
             set
             {
                 _gameMusicVolume = value;
-                StaticResources.Instance.audioMixer.SetFloat("MusicVolume", _gameMusicVolume * 0.8f - 80f);
+                if (StaticResources.Instance && StaticResources.Instance.audioMixer) StaticResources.Instance.audioMixer.SetFloat("MusicVolume", _gameMusicVolume * 0.8f - 80f);
             }
         }
         public int GameEffectParamEQLevel;

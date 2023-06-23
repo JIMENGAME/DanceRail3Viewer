@@ -16,7 +16,7 @@ namespace DRFV.Global
         public string cachePath;
         public ShopItem[] shopItems;
         public AudioMixer audioMixer;
-        public AnimationCurve ScoreRankCurve, RankRatingCurve;
+        [SerializeField] private AnimationCurve RankRatingCurve;
 
         // Start is called before the first frame update
         protected override void OnAwake()
@@ -70,6 +70,8 @@ namespace DRFV.Global
             }
 
             shopItems = shopItemList.ToArray();
+
+            RankRatingCurve = Util.GetAnimationCurveFromDumpedFile("G:/dancerail3 win1.68v2/rating_curve.txt");
         }
 
         private string GetDataPath()
@@ -121,6 +123,11 @@ namespace DRFV.Global
                     Application.Quit();
                     throw new ArgumentException("Unsupported System");
             }
+        }
+        
+        public float ScoreToRate(float score, int hard, float speed)
+        {
+            return (score > 2400000f) ? (RankRatingCurve.Evaluate(score) + hard * speed) : (score * hard * speed / 2400000f);
         }
     }
 }
