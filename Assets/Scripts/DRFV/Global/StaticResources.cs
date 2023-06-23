@@ -16,6 +16,7 @@ namespace DRFV.Global
         public string cachePath;
         public ShopItem[] shopItems;
         public AudioMixer audioMixer;
+        public AnimationCurve ScoreRankCurve, RankRatingCurve;
 
         // Start is called before the first frame update
         protected override void OnAwake()
@@ -38,7 +39,7 @@ namespace DRFV.Global
             {
                 Directory.CreateDirectory(dataPath + "settings");
             }
-            
+
             if (!Directory.Exists(dataPath + "settings/note_sfx"))
             {
                 Directory.CreateDirectory(dataPath + "settings/note_sfx");
@@ -48,11 +49,11 @@ namespace DRFV.Global
             {
                 Directory.CreateDirectory(cachePath);
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-            File.SetAttributes(cachePath, FileAttributes.Hidden);
+                File.SetAttributes(cachePath, FileAttributes.Hidden);
 #endif
             }
-            
-            JArray shopItemsJArray= JArray.Parse(Resources.Load<TextAsset>("SHOP/shop_items_list").text);
+
+            JArray shopItemsJArray = JArray.Parse(Resources.Load<TextAsset>("SHOP/shop_items_list").text);
             List<ShopItem> shopItemList = new List<ShopItem>();
             for (var i = 0; i < shopItemsJArray.Count; i++)
             {
@@ -64,12 +65,11 @@ namespace DRFV.Global
                     ShopItem.ShopItemType.SONG => "SONGS",
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                _data.icon = Resources.Load<Sprite>($"SHOP/{a}/{_data.spritePath}"); 
+                _data.icon = Resources.Load<Sprite>($"SHOP/{a}/{_data.spritePath}");
                 shopItemList.Add(_data);
             }
 
             shopItems = shopItemList.ToArray();
-
         }
 
         private string GetDataPath()
@@ -82,6 +82,7 @@ namespace DRFV.Global
                     {
                         result = sr.ReadLine();
                     }
+
                     result = result.Replace("\\", "/");
                     if (!result.EndsWith("/")) result += "/";
                     return result;

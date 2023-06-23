@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -220,6 +218,7 @@ namespace DRFV.Global
             {
                 CreateDirectory(directoryInfo.Parent);
             }
+
             directoryInfo.Create();
         }
 
@@ -304,17 +303,6 @@ namespace DRFV.Global
             }
         }
 
-
-        public static Color ModifyAlpha(this Color color, float alpha)
-        {
-            return new Color(color.r, color.g, color.b, alpha);
-        }
-
-        public static Vector3 ModifyX(this Vector3 position, float x)
-        {
-            return new Vector3(x, position.y, position.z);
-        }
-
         public static float SineOutEase(float a)
         {
             return Mathf.Sin(a * Mathf.PI / 2f);
@@ -341,17 +329,6 @@ namespace DRFV.Global
         public static int GetNoteJudgeRangeCount()
         {
             return noteJudgeRanges.Length;
-        }
-
-        public static float Variance(this float[] data)
-        {
-            float average = data.Average();
-            return (float)data.Sum(x => Math.Pow(x - average, 2)) / data.Length;
-        }
-
-        public static float StandardDeviation(this float[] data)
-        {
-            return Mathf.Pow(data.Variance(), 0.5f);
         }
 
         public static int ScoreToRank(int score)
@@ -461,23 +438,6 @@ namespace DRFV.Global
             GC.Collect();
         }
 
-        public static AudioClip MonoToStereo(this AudioClip audioClip)
-        {
-            if (audioClip == null || audioClip.channels == 2) return audioClip;
-            if (audioClip.channels != 1) throw new Exception();
-            float[] data = new float[audioClip.samples], output = new float[audioClip.samples * 2];
-            audioClip.GetData(data, 0);
-            for (int i = 0; i < data.Length; i++)
-            {
-                output[2 * i] = data[i];
-                output[2 * i + 1] = data[i];
-            }
-
-            AudioClip clip = AudioClip.Create(audioClip.name, audioClip.samples, 2, audioClip.frequency, false);
-            clip.SetData(output, 0);
-            return clip;
-        }
-
         public static Sprite ByteArrayToSprite(byte[] data)
         {
             Texture2D texture;
@@ -494,6 +454,7 @@ namespace DRFV.Global
             {
                 Debug.LogError(e.Message);
             }
+
             texture = new Texture2D(0, 0);
             if (texture.LoadImage(data))
             {
@@ -501,13 +462,141 @@ namespace DRFV.Global
                     new Vector2(0.5f, 0.5f));
                 return sprite;
             }
+
             NotificationBarManager.Instance.Show("错误：不支持的图片格式");
             return SpritePlaceholder;
         }
-        
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool InRange(this float value, Single min, Single max)
-            => value >= min && value <= max;
+
+#if false
+        public static AnimationCurve GetAnimationCurveFromDumpedFile(string path)
+        {
+            WrapMode postWrapMode = WrapMode.ClampForever, preWrapMode = WrapMode.ClampForever;
+            bool keyPart = false;
+            List<string> keys = new List<string>();
+            List<Keyframe> keyframes = new List<Keyframe>();
+            using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
+            {
+                string line;
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    if (keyPart)
+                    {
+                        if (line != "") keys.Add(line);
+                        else
+                        {
+                            Keyframe keyframe = new Keyframe(0, 0);
+                            foreach (string key in keys)
+                            {
+                                string[] keyValuePair = key.Split(": ");
+                                if (keyValuePair.Length != 2) continue;
+                                switch (keyValuePair[0])
+                                {
+                                    case "time":
+                                        if (!float.TryParse(keyValuePair[1].Replace(",", ""), out float time))
+                                            time = 0f;
+                                        keyframe.time = time;
+                                        break;
+                                    case "value":
+                                        if (!float.TryParse(keyValuePair[1].Replace(",", ""), out float value))
+                                            value = 0f;
+                                        keyframe.value = value;
+                                        break;
+                                    case "inTangent":
+                                        if (!float.TryParse(keyValuePair[1].Replace(",", ""), out float inTangent))
+                                            inTangent = 0f;
+                                        keyframe.inTangent = inTangent;
+                                        break;
+                                    case "outTangent":
+                                        if (!float.TryParse(keyValuePair[1].Replace(",", ""), out float outTangent))
+                                            outTangent = 0f;
+                                        keyframe.outTangent = outTangent;
+                                        break;
+                                    case "inWeight":
+                                        if (!float.TryParse(keyValuePair[1].Replace(",", ""), out float inWeight))
+                                            inWeight = 0f;
+                                        keyframe.inWeight = inWeight;
+                                        break;
+                                    case "outWeight":
+                                        if (!float.TryParse(keyValuePair[1].Replace(",", ""), out float outWeight))
+                                            outWeight = 0f;
+                                        keyframe.outWeight = outWeight;
+                                        break;
+                                    case "weightedMode":
+                                        if (!Enum.TryParse(keyValuePair[1], true, out WeightedMode weightedMode))
+                                            weightedMode = WeightedMode.None;
+                                        keyframe.weightedMode = weightedMode;
+                                        break;
+                                }
+                            }
+
+                            keys.Clear();
+                            keyframes.Add(keyframe);
+                        }
+                    }
+
+                    if (line.StartsWith("postWrapMode: "))
+                    {
+                        string postWrapModeStr = line.Substring("postWrapMode: ".Length);
+                        if (!Enum.TryParse(postWrapModeStr, true, out postWrapMode))
+                        {
+                            postWrapMode = WrapMode.ClampForever;
+                        }
+                    }
+
+                    if (line.StartsWith("preWrapMode: "))
+                    {
+                        string preWrapModeStr = line.Substring("preWrapMode: ".Length);
+                        if (!Enum.TryParse(preWrapModeStr, true, out preWrapMode))
+                        {
+                            preWrapMode = WrapMode.ClampForever;
+                        }
+                    }
+
+                    if (line == "keys: ")
+                    {
+                        streamReader.ReadLine();
+                        keyPart = true;
+                    }
+                }
+            }
+
+            AnimationCurve animationCurve = new AnimationCurve(keyframes.ToArray())
+            {
+                postWrapMode = postWrapMode,
+                preWrapMode = preWrapMode
+            };
+            return animationCurve;
+        }
+
+        public static void DumpAnimationCurve(Stream stream, AnimationCurve animationCurve)
+        {
+            stream.WriteLine("postWrapMode: " + animationCurve.postWrapMode);
+            stream.WriteLine("preWrapMode: " + animationCurve.preWrapMode);
+            stream.WriteLine("keys: ");
+            stream.WriteLine();
+            Keyframe[] dumpTargetKeys = animationCurve.keys;
+            foreach (Keyframe key in dumpTargetKeys)
+            {
+                stream.WriteLine("time: " + key.time.ToString("0.00000"));
+                stream.WriteLine("value: " + key.value.ToString("0.00000"));
+                stream.WriteLine("inTangent: " + key.inTangent.ToString("0.00000"));
+                stream.WriteLine("outTangent: " + key.outTangent.ToString("0.00000"));
+                stream.WriteLine("inWeight: " + key.inWeight.ToString("0.00000"));
+                stream.WriteLine("outWeight: " + key.outWeight.ToString("0.00000"));
+                stream.WriteLine("weightedMode: " + key.weightedMode);
+                stream.WriteLine();
+            }
+        }
+
+        public static void WriteLine(this Stream stream)
+        {
+            stream.WriteLine("\n");
+        }
+
+        public static void WriteLine(this Stream stream, string str)
+        {
+            stream.Write(Encoding.UTF8.GetBytes(str + "\n"));
+        }
+#endif
     }
 }
