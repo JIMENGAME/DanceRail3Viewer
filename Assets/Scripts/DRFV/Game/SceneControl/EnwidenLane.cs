@@ -34,7 +34,7 @@ namespace DRFV.Game.SceneControl
                 keyframes[2 * i + 2] = new Keyframe(enwidenLaneAtrribute.up + enwidenLaneAtrribute.duration, enwidenLaneAtrribute.isOn ? 1 : 0);
             }
 
-            keyframes[^1] = new Keyframe(_theGameManager.BPMCurve.Evaluate(10000), list[^1].isOn ? 1 : 0);
+            keyframes[^1] = new Keyframe(_theGameManager.drbfile.CalculateDRBFileTime(10000), list[^1].isOn ? 1 : 0);
             Util.LinearKeyframe(keyframes);
             return new AnimationCurve(keyframes);
         }

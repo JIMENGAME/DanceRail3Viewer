@@ -244,8 +244,8 @@ namespace DRFV.Game
                 {
                     nsckey[ii] =
                         new Keyframe(
-                            gameManager.BPMCurve.Evaluate(_noteData.time - _noteData.nsc.data[ii].realValue),
-                            gameManager.BPMCurve.Evaluate(_noteData.time - _noteData.nsc.data[ii].value));
+                            gameManager.drbfile.CalculateDRBFileTime(_noteData.time - _noteData.nsc.data[ii].realValue),
+                            gameManager.drbfile.CalculateDRBFileTime(_noteData.time - _noteData.nsc.data[ii].value));
                 }
 
                 _noteData.maxtime = nsckey[0].time;

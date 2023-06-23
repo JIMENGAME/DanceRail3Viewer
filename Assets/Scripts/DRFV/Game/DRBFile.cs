@@ -1,5 +1,7 @@
+// #define USE_BPM_CURVE
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DRFV.Enums;
@@ -7,6 +9,7 @@ using DRFV.Game.HPBars;
 using DRFV.Global;
 using DRFV.inokana;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace DRFV.Game
 {
@@ -21,10 +24,12 @@ namespace DRFV.Game
         public List<NoteData> fakeNotes = new();
         public int noteWeightCount;
         public bool noPos;
-        public AnimationCurve BPMCurve = null, SCCurve = null;
+        private AnimationCurve BPMCurve = null;
+        public AnimationCurve SCCurve = null;
         public int TotalNotes => notes.Count;
         public float LastNoteTime { get; private set; }
         public float SingleHp { get; private set; }
+        private List<BPMCalculate> _bpmCalculates;
 
         private DRBFile()
         {
@@ -226,7 +231,7 @@ namespace DRFV.Game
                     {
                         //Notesデータ取得
                         NoteData note = NoteData.Parse(chartLines[i]);
-                        
+
                         if (note.isFake)
                         {
                             drbFile.fakeNotes.Add(note);
@@ -258,26 +263,36 @@ namespace DRFV.Game
 
         public void GenerateAttributesOnPlay(int tier)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+#if USE_BPM_CURVE
             GenerateBpmCurve();
+#else
+            GenerateBpmEvent();
+#endif
+
             GenerateSCCurve();
-            
-            
+
+
             SingleHp = CalculateSingleHp(TotalNotes, tier);
 
             foreach (var note in notes)
             {
                 //计算每个音符的位置
-                note.ms = BPMCurve.Evaluate(note.time);
-                note.dms = SCCurve.Evaluate(note.ms);
-            }
-
-            foreach (var note in fakeNotes)
-            {
-                //计算每个音符的位置
-                note.ms = BPMCurve.Evaluate(note.time);
+                note.ms = CalculateDRBFileTime(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
             }
             
+            foreach (var note in fakeNotes)
+            {
+                //计算每个音符的位置
+                note.ms = CalculateDRBFileTime(note.time);
+                note.dms = SCCurve.Evaluate(note.ms);
+            }
+            
+            stopwatch.Stop();
+            Debug.Log(stopwatch.Elapsed.TotalMilliseconds);
+
             List<float> timeList = new();
             timeList.AddRange(notes.Select(data => data.ms));
             timeList.AddRange(fakeNotes.Select(data => data.ms));
@@ -356,6 +371,57 @@ namespace DRFV.Game
             public float sci;
         }
 
+        private class BPMCalculate
+        {
+            public float startTime;
+            public float endTime;
+            public float value;
+
+            public BPMCalculate(float bpm, float startTime)
+            {
+                value = bpm;
+                this.startTime = startTime;
+            }
+        }
+
+        public float CalculateDRBFileTime(float time)
+        {
+#if USE_BPM_CURVE
+            return BPMCurve.Evaluate(time);
+#else
+            if (_bpmCalculates == null) return Single.NaN;
+            var realTime = 0f;
+            foreach (var i in _bpmCalculates)
+            {
+                if (time > i.endTime)
+                {
+                    realTime += (i.endTime - i.startTime) * (60f / i.value);
+                }
+                else if (time >= i.startTime)
+                {
+                    realTime += (time - i.startTime) * (60f / i.value);
+                    // break;
+                }
+            }
+
+            return realTime * 1000f * (beat * 4f);
+#endif
+        }
+
+        private void GenerateBpmEvent()
+        {
+            _bpmCalculates = new List<BPMCalculate>();
+            bpms.ToList().ForEach(bpm =>
+            {
+                _bpmCalculates.Add(new BPMCalculate(bpm.bpm, bpm.bpms));
+                if (_bpmCalculates.Count >= 2)
+                {
+                    _bpmCalculates[^2].endTime = _bpmCalculates[^1].startTime;
+                }
+            });
+            _bpmCalculates[^1].endTime = Single.PositiveInfinity;
+        }
+
         private void GenerateBpmCurve()
         {
             if (bpms.Count < 1) return;
@@ -394,7 +460,7 @@ namespace DRFV.Game
 
         private void GenerateSCCurve()
         {
-            if (BPMCurve == null) return;
+            // if (BPMCurve == null) return;
             if (scs.Count == 0)
             {
                 SCS sCNS = new SCS();
@@ -404,17 +470,17 @@ namespace DRFV.Game
             }
 
             float[] SCR = new float[scs.Count + 1];
-            SCR[0] = BPMCurve.Evaluate(scs[0].sci);
+            SCR[0] = CalculateDRBFileTime(scs[0].sci);
             for (int i = 1; i < scs.Count; i++)
             {
                 SCR[i] = SCR[i - 1] +
-                         (BPMCurve.Evaluate(scs[i].sci) - BPMCurve.Evaluate(scs[i - 1].sci)) *
+                         (CalculateDRBFileTime(scs[i].sci) - CalculateDRBFileTime(scs[i - 1].sci)) *
                          scs[i - 1].sc;
             }
 
             SCR[scs.Count] = SCR[scs.Count - 1] +
-                             (BPMCurve.Evaluate(10000) -
-                              BPMCurve.Evaluate(scs[^1].sci)) *
+                             (CalculateDRBFileTime(10000) -
+                              CalculateDRBFileTime(scs[^1].sci)) *
                              scs[^1].sc;
 
             Keyframe[] SCKeyframe = new Keyframe[scs.Count + 2];
@@ -424,16 +490,16 @@ namespace DRFV.Game
 
             for (int i = 0; i < scs.Count; i++)
             {
-                SCKeyframe[i + 1] = new Keyframe(BPMCurve.Evaluate(scs[i].sci), SCR[i]);
+                SCKeyframe[i + 1] = new Keyframe(CalculateDRBFileTime(scs[i].sci), SCR[i]);
             }
 
-            SCKeyframe[scs.Count + 1] = new Keyframe(BPMCurve.Evaluate(10000), SCR[scs.Count]);
+            SCKeyframe[scs.Count + 1] = new Keyframe(CalculateDRBFileTime(10000), SCR[scs.Count]);
 
             Util.LinearKeyframe(SCKeyframe);
 
             SCCurve = new AnimationCurve(SCKeyframe);
         }
-        
+
         private float CalculateSingleHp(int maxCombo, int tier)
         {
             float hpCoefficient = tier >= 14 ? 0.8f : 1;

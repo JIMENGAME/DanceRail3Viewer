@@ -211,8 +211,7 @@ namespace DRFV.Game
 
 
         // [HideInInspector]
-        public AnimationCurve BPMCurve, //ss to realtime s
-            SCCurve; //realtime ms to drawtime
+        public AnimationCurve  SCCurve;
 
         // [HideInInspector]
         public double Distance;
@@ -689,7 +688,6 @@ namespace DRFV.Game
             
             // if (A.Instance) A.Instance.Init(this);
 
-            BPMCurve = drbfile.BPMCurve;
             //SC
             SCCurve = drbfile.SCCurve;
             noteTotal = drbfile.notes.Count;
@@ -1459,7 +1457,7 @@ namespace DRFV.Game
                 GameObject questionObj = Instantiate(questionPrefab, canvasNormal);
                 questionObj.name = "Question" + j;
                 Question questionComp = questionObj.GetComponent<Question>();
-                questionComp.Init(this, BPMCurve.Evaluate(16 + j * 4), BPMCurve.Evaluate(16 + j * 4 + 3), question,
+                questionComp.Init(this, drbfile.CalculateDRBFileTime(16 + j * 4), drbfile.CalculateDRBFileTime(16 + j * 4 + 3), question,
                     choices);
                 j++;
             }
@@ -1561,7 +1559,7 @@ namespace DRFV.Game
 
             for (int i = CurrentSCn; i < drbfile.scs.Count; i++)
             {
-                if (progressManager.NowTime + 123.4f > BPMCurve.Evaluate(drbfile.scs[i].sci))
+                if (progressManager.NowTime + 123.4f > drbfile.CalculateDRBFileTime(drbfile.scs[i].sci))
                 {
                     if (CurrentSC != drbfile.scs[i].sc)
                     {
@@ -2046,7 +2044,7 @@ namespace DRFV.Game
             float time;
             try
             {
-                time = BPMCurve.Evaluate(float.Parse(inputJumpTo.text)) * bgmManager.Pitch;
+                time = drbfile.CalculateDRBFileTime(float.Parse(inputJumpTo.text)) * bgmManager.Pitch;
                 if (bgmManager.MainClip.length < time / 1000)
                 {
                     time = bgmManager.MainClip.length * 1000 - 1;

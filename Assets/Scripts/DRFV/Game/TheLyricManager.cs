@@ -15,7 +15,6 @@ namespace DRFV.Game
         public Text lyricText;
         public TheGameManager theGameManager;
 
-        private AnimationCurve _BPMCurve;
         private float[] _times;
         private string[] _lyrics;
         private int _idx;
@@ -24,7 +23,6 @@ namespace DRFV.Game
         public IEnumerator Init()
         {
             if (_inited || theGameManager.DebugMode) yield break;
-            _BPMCurve = theGameManager.BPMCurve;
             if (theGameManager.storyMode)
             {
                 TextAsset textAsset = Resources.Load<TextAsset>($"STORY/SONGS/lyric.{theGameManager.SongKeyword}.{theGameManager.SongHard}");
@@ -68,7 +66,7 @@ namespace DRFV.Game
                 int i = 0;
                 foreach (KeyValuePair<string, string> timeLyricPair in timeLyricPairs)
                 {
-                    _times[i] = _BPMCurve.Evaluate(float.Parse(timeLyricPair.Key));
+                    _times[i] = theGameManager.drbfile.CalculateDRBFileTime(float.Parse(timeLyricPair.Key));
                     _lyrics[i] = timeLyricPair.Value;
                     i++;
                 }
