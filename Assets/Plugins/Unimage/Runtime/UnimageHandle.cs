@@ -38,7 +38,7 @@ namespace Unimage
         {
             var messagePtr = new IntPtr(Interop.unimage_get_error_message(_handle));
             var message = Marshal.PtrToStringAnsi(messagePtr);
-            throw new Exception(message);
+            throw new UnimageException(message);
         }
 
         public unsafe void Load(byte[] data, int width, int height, UnimageFormat format)

@@ -28,6 +28,10 @@ namespace DRFV.Global
         public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif" };
         public static Sprite SpritePlaceholder { get; private set; }
         public static readonly Color SpritePlaceholderBGColor = new(1f, 130f / 255f, 1f);
+#if false
+        private static readonly AnimationCurve OneThirdWeightedCurve =
+            new(new Keyframe(0, 0, 0, 0, 1 / 3f, 1 / 3f), new Keyframe(1, 1, 0, 0, 1 / 3f, 1 / 3f));
+#endif
 
         ///
         ///         if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
@@ -440,31 +444,36 @@ namespace DRFV.Global
 
         public static Sprite ByteArrayToSprite(byte[] data)
         {
-            Texture2D texture;
+            Texture2D texture = LoadTexture2DFromByteArray(data);
+            if (texture == null)
+            {
+                NotificationBarManager.Instance.Show("错误：不支持的图片格式");
+                return SpritePlaceholder;
+            }
+
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f));
+            return sprite;
+        }
+
+        public static Texture2D LoadTexture2DFromByteArray(byte[] data)
+        {
             try
             {
-                UnimageProcessor unimage = new UnimageProcessor();
-                unimage.Load(data);
-                texture = unimage.GetTexture(false, true, false);
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(0.5f, 0.5f));
-                return sprite;
+                using UnimageProcessor unimageProcessor = new UnimageProcessor();
+                unimageProcessor.Load(data);
+                return unimageProcessor.GetTexture();
             }
-            catch (Exception e)
+            catch (UnimageException)
             {
-                Debug.LogError(e.Message);
-            }
+                Texture2D texture = new Texture2D(0, 0);
+                if (texture.LoadImage(data))
+                {
+                    return texture;
+                }
 
-            texture = new Texture2D(0, 0);
-            if (texture.LoadImage(data))
-            {
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(0.5f, 0.5f));
-                return sprite;
+                return null;
             }
-
-            NotificationBarManager.Instance.Show("错误：不支持的图片格式");
-            return SpritePlaceholder;
         }
 
         public static float ScoreToRate(float score, int hard, float speed)
@@ -490,15 +499,18 @@ namespace DRFV.Global
 
             return (score > 2400000f) ? (k + hard * speed) : (k * hard * speed);
         }
-        
+
         public static float SongRateEase(float x)
         {
             x = Mathf.Clamp01(x);
-            return -(Mathf.Cos(Mathf.PI * x) - 1) / 2;
-            // return x < 0.5f ? 4f * x * x * x : 1f - 4f * Mathf.Pow(1f - x, 3f);
+#if false
+            return OneThirdWeightedCurve.Evaluate(x);
+#else
+            return 3 * x * x - 2 * x * x * x;
+#endif
         }
 
-#if true
+#if false
         public static AnimationCurve GetAnimationCurveFromDumpedFile(string path)
         {
             WrapMode postWrapMode = WrapMode.ClampForever, preWrapMode = WrapMode.ClampForever;

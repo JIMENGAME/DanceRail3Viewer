@@ -1,7 +1,6 @@
-// #define USE_BPM_CURVE
+#define USE_BPM_CURVE
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DRFV.Enums;
@@ -45,7 +44,7 @@ namespace DRFV.Game
             {
                 BPM bpm = bpms[i];
                 chartLines.Add("#BPM [" + i + "]=" + Util.FloatToDRBDecimal(bpm.bpm));
-                chartLines.Add("#BPMS[" + i + "]=" + Util.FloatToDRBDecimal(bpm.bpms));
+                chartLines.Add("#BPMS[" + i + "]=" + Util.FloatToDRBDecimal(bpm.time));
             }
 
             chartLines.Add("#SCN=" + scs.Count + ";");
@@ -183,7 +182,7 @@ namespace DRFV.Game
                             BPM bpm = new BPM
                             {
                                 bpm = float.Parse(ss),
-                                bpms = float.Parse(ss2)
+                                time = float.Parse(ss2)
                             };
                             drbFile.bpms.Add(bpm);
                         }
@@ -254,7 +253,7 @@ namespace DRFV.Game
                 }
             }
 
-            drbFile.bpms.Sort((a, b) => Mathf.RoundToInt(a.bpms * 1000.0f - b.bpms * 1000.0f));
+            drbFile.bpms.Sort((a, b) => Mathf.RoundToInt(a.time * 1000.0f - b.time * 1000.0f));
             drbFile.scs.Sort((a, b) => Mathf.RoundToInt(a.sci * 1000.0f - b.sci * 1000.0f));
             drbFile.notes.Sort((a, b) => a.id - b.id);
 
@@ -263,14 +262,13 @@ namespace DRFV.Game
 
         public void GenerateAttributesOnPlay(int tier)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
 #if USE_BPM_CURVE
-            GenerateBpmCurve();
+            GenerateBpmCurve(notes.OrderByDescending(noteData => noteData.time).ToArray()[0].time);
 #else
             GenerateBpmEvent();
 #endif
-
             GenerateSCCurve();
 
 
@@ -282,16 +280,16 @@ namespace DRFV.Game
                 note.ms = CalculateDRBFileTime(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
             }
-            
+
             foreach (var note in fakeNotes)
             {
                 //计算每个音符的位置
                 note.ms = CalculateDRBFileTime(note.time);
                 note.dms = SCCurve.Evaluate(note.ms);
             }
-            
-            stopwatch.Stop();
-            Debug.Log(stopwatch.Elapsed.TotalMilliseconds);
+
+            // stopwatch.Stop();
+            // Debug.Log(stopwatch.Elapsed.TotalMilliseconds);
 
             List<float> timeList = new();
             timeList.AddRange(notes.Select(data => data.ms));
@@ -362,7 +360,7 @@ namespace DRFV.Game
         public struct BPM
         {
             public float bpm;
-            public float bpms;
+            public float time;
         }
 
         public struct SCS
@@ -404,10 +402,41 @@ namespace DRFV.Game
                 }
             }
 
-            return realTime * 1000f * (beat * 4f);
+            return realTime * 1000f * (beat * 4f) + offset * 1000.0f;
 #endif
         }
 
+#if USE_BPM_CURVE
+        private void GenerateBpmCurve(float endTime)
+        {
+            if (bpms.Count < 1) return;
+            Keyframe[] BPMKeyframe = new Keyframe[bpms.Count + 1];
+
+            BPMKeyframe[0] = new Keyframe(0.0f, offset * 1000.0f);
+            float[] BPM_REALTIME = new float[bpms.Count + 1];
+
+            BPM_REALTIME[0] = offset * 1000.0f;
+            for (int i = 1; i < bpms.Count; i++)
+            {
+                BPM_REALTIME[i] =
+                    (bpms[i].time - bpms[i - 1].time) * (4 * beat) *
+                    (60 / bpms[i - 1].bpm) * 1000.0f + BPM_REALTIME[i - 1];
+            }
+
+            BPM_REALTIME[bpms.Count] =
+                (endTime - bpms[^1].time) * (4 * beat) *
+                (60 / bpms[^1].bpm) * 1000.0f +
+                BPM_REALTIME[bpms.Count - 1];
+            for (int i = 1; i < bpms.Count; i++)
+            {
+                BPMKeyframe[i] = new Keyframe(bpms[i].time, BPM_REALTIME[i]);
+            }
+
+            BPMKeyframe[bpms.Count] = new Keyframe(endTime, BPM_REALTIME[bpms.Count]);
+            Util.LinearKeyframe(BPMKeyframe);
+            BPMCurve = new AnimationCurve(BPMKeyframe);
+        }
+#else
         private void GenerateBpmEvent()
         {
             _bpmCalculates = new List<BPMCalculate>();
@@ -421,43 +450,7 @@ namespace DRFV.Game
             });
             _bpmCalculates[^1].endTime = Single.PositiveInfinity;
         }
-
-        private void GenerateBpmCurve()
-        {
-            if (bpms.Count < 1) return;
-            Keyframe[] BPMKeyframe = new Keyframe[bpms.Count + 1];
-
-            BPMKeyframe[0] = new Keyframe(0.0f, offset * 1000.0f);
-            float[] BPM_REALTIME = new float[bpms.Count + 1];
-
-            for (int i = 0; i < bpms.Count; i++)
-            {
-                if (i == 0)
-                {
-                    BPM_REALTIME[i] = offset * 1000.0f;
-                }
-                else
-                {
-                    BPM_REALTIME[i] =
-                        (bpms[i].bpms - bpms[i - 1].bpms) *
-                        (60 / bpms[i - 1].bpm * 4 * beat) * 1000.0f + BPM_REALTIME[i - 1];
-                }
-            }
-
-            BPM_REALTIME[bpms.Count] =
-                (10000 - bpms[^1].bpms) *
-                (60 / bpms[^1].bpm * 4 * beat) * 1000.0f +
-                BPM_REALTIME[bpms.Count - 1];
-            for (int i = 1; i < bpms.Count; i++)
-            {
-                BPMKeyframe[i] = new Keyframe(bpms[i].bpms, BPM_REALTIME[i]);
-            }
-
-            BPMKeyframe[bpms.Count] = new Keyframe(10000, BPM_REALTIME[bpms.Count]);
-            Util.LinearKeyframe(BPMKeyframe);
-            BPMCurve = new AnimationCurve(BPMKeyframe);
-        }
-
+#endif
         private void GenerateSCCurve()
         {
             // if (BPMCurve == null) return;

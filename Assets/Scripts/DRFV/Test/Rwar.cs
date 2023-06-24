@@ -1,14 +1,14 @@
 #if UNITY_EDITOR
-using System;
 using System.Collections;
 using System.IO;
+using DG.Tweening;
+using DG.Tweening.Core;
+using DRFV.Data;
 using DRFV.Game;
 using DRFV.Game.HPBars;
 using DRFV.Global;
 using DRFV.inokana;
-using DRFV.Setting;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace DRFV.Test
@@ -31,15 +31,44 @@ namespace DRFV.Test
         {
             HpManager.Init(new HPBarDefault());
 
+            // _materials[0] = LoadCustomLongNote(ReadCustomNoteSprite(File.ReadAllBytes("E:/Users/Administrator/WebstormProjects/DanceRail3Viewer/Assets/Sprites/Game/notes/longnotes/longnote07.png")));
+
+            AutoOrderLimitedList<float> autoOrderLimitedList = new AutoOrderLimitedList<float>(80);
+            autoOrderLimitedList.Add(3f);
+            autoOrderLimitedList.Add(1f);
+            autoOrderLimitedList.Add(2f);
+            Debug.Log(string.Join(", ", autoOrderLimitedList));
+            
             DrawMesh();
             UpdateRate();
         }
 
-        public void UpdateRate()
+        private void UpdateRate()
         {
-            float original = StaticResources.Instance.ScoreToRate(score.value, (int) hard.value, 1.5f);
+            float original = Util.ScoreToRate(score.value, (int) hard.value, 1.5f);
             float codeOnly = Util.ScoreToRate(score.value, (int) hard.value, 1.5f);
-            tRate.text = $"分数：{Mathf.RoundToInt(score.value)}\n难度：{(int)hard.value}\n原始算法：{original:0.#####}\n纯代码算法：{codeOnly:0.#####}\n误差：{(original-codeOnly):0.#####}";
+            tRate.text = $"分数：{Mathf.RoundToInt(score.value)}\n难度：{(int)hard.value}\n原始算法：{original:0.#####}\n纯代码算法1：{codeOnly:0.#####}\n1误差：{(original-codeOnly):0.#####}";
+        }
+
+        private Sprite ReadCustomNoteSprite(byte[] file)
+        {
+            try
+            {
+                Texture2D texture2D = Util.LoadTexture2DFromByteArray(file);
+                if (texture2D.width != texture2D.height || texture2D.width % 100 != 0)
+                {
+                    throw new InvalidDataException();
+                }
+
+                int a = texture2D.width / 100 * 49;
+                return Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), Vector2.zero,
+                    texture2D.width, 1, SpriteMeshType.Tight, new Vector4(a, 0, a, 0));
+            }
+            catch (InvalidDataException)
+            {
+                Debug.Log("不合法的贴图");
+                return null;
+            }
         }
 
         private IEnumerator Qwq()

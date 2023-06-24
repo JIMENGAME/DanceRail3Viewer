@@ -129,18 +129,18 @@ namespace DRFV.LyricTest
                 else
                 {
                     BPM_REALTIME[i] =
-                        (drbfile.bpms[i].bpms - drbfile.bpms[i - 1].bpms) *
+                        (drbfile.bpms[i].time - drbfile.bpms[i - 1].time) *
                         (60 / drbfile.bpms[i - 1].bpm * 4 * drbfile.beat) * 1000.0f + BPM_REALTIME[i - 1];
                 }
             }
 
             BPM_REALTIME[drbfile.bpms.Count] =
-                (10000 - drbfile.bpms[drbfile.bpms.Count - 1].bpms) *
+                (10000 - drbfile.bpms[drbfile.bpms.Count - 1].time) *
                 (60 / drbfile.bpms[drbfile.bpms.Count - 1].bpm * 4 * drbfile.beat) * 1000.0f +
                 BPM_REALTIME[drbfile.bpms.Count - 1];
             for (int i = 1; i < drbfile.bpms.Count; i++)
             {
-                BPMKeyframe[i] = new Keyframe(drbfile.bpms[i].bpms, BPM_REALTIME[i]);
+                BPMKeyframe[i] = new Keyframe(drbfile.bpms[i].time, BPM_REALTIME[i]);
             }
 
             BPMKeyframe[drbfile.bpms.Count] = new Keyframe(10000, BPM_REALTIME[drbfile.bpms.Count]);

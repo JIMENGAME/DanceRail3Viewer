@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using DG.Tweening;
 using DRFV.Data;
 using DRFV.Enums;
@@ -25,7 +24,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using Debug = UnityEngine.Debug;
@@ -143,7 +141,13 @@ namespace DRFV.Game
         [SerializeField] // [SerializeField, HideInInspector] 
         Sprite[] SpriteNoteLight, SpriteNotesDark;
 
-        private Sprite[] SpriteNotes;
+        private Sprite[] SpriteNotes => gameSide switch
+        {
+            GameSide.DARK => SpriteNotesDark,
+            GameSide.LIGHT => SpriteNoteLight,
+            GameSide.COLORLESS => SpriteNoteLight,
+            _ => SpriteNotesDark
+        };
 
         [SerializeField] // [SerializeField, HideInInspector] 
         Sprite[] SpriteArrorLight, SpriteArrorDark;
@@ -211,7 +215,7 @@ namespace DRFV.Game
 
 
         // [HideInInspector]
-        public AnimationCurve  SCCurve;
+        public AnimationCurve SCCurve;
 
         // [HideInInspector]
         public double Distance;
@@ -472,18 +476,12 @@ namespace DRFV.Game
             comboBlue[0] = targetColors[2].r;
             comboBlue[1] = targetColors[2].g;
             comboBlue[2] = targetColors[2].b;
+
             StartCoroutine(StartA());
         }
 
         IEnumerator StartA()
         {
-            SpriteNotes = gameSide switch
-            {
-                GameSide.DARK => SpriteNotesDark,
-                GameSide.LIGHT => SpriteNoteLight,
-                GameSide.COLORLESS => SpriteNoteLight,
-                _ => SpriteNotesDark
-            };
             ReadSettings();
             AnimationGrades = new GameObject[AnimationGradesParent.childCount];
             for (int i = 0; i < AnimationGradesParent.childCount; i++)
@@ -685,7 +683,7 @@ namespace DRFV.Game
             }
 
             drbfile.GenerateAttributesOnPlay(SongHard);
-            
+
             // if (A.Instance) A.Instance.Init(this);
 
             //SC
@@ -1457,7 +1455,8 @@ namespace DRFV.Game
                 GameObject questionObj = Instantiate(questionPrefab, canvasNormal);
                 questionObj.name = "Question" + j;
                 Question questionComp = questionObj.GetComponent<Question>();
-                questionComp.Init(this, drbfile.CalculateDRBFileTime(16 + j * 4), drbfile.CalculateDRBFileTime(16 + j * 4 + 3), question,
+                questionComp.Init(this, drbfile.CalculateDRBFileTime(16 + j * 4),
+                    drbfile.CalculateDRBFileTime(16 + j * 4 + 3), question,
                     choices);
                 j++;
             }
@@ -2140,19 +2139,15 @@ namespace DRFV.Game
 
         private void OnApplicationPause(bool focus)
         {
-#if UNITY_EDITOR
-#else
-        if (inited && !isPause) Pause();
-#endif
+            if (inited && !isPause) Pause();
         }
 
+#if !UNITY_EDITOR
         private void OnApplicationFocus(bool focus)
         {
-#if UNITY_EDITOR
-#else
-        if (inited && !isPause) Pause();
-#endif
+            if (inited && !isPause) Pause();
         }
+#endif
 
         public GameObject changeSpeed;
         public Text speedLabel;
