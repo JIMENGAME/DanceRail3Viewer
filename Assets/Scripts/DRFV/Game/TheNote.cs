@@ -470,7 +470,7 @@ namespace DRFV.Game
                                 if (isWaitForPF &&
                                     gameManager.progressManager.NowTime > _noteData.ms + gameManager.PJms)
                                 {
-                                    gameManager.AccMSList.Add((float)(100.0 - (Mathf.Abs(WaitForSec) > 10.0
+                                    gameManager.AccMSList.Add((float)(gameManager.GDms - (Mathf.Abs(WaitForSec) > 10.0
                                         ? Mathf.Abs(WaitForSec) - 10.0
                                         : 0.0)));
                                     gameManager.Judge(WaitForSec, _noteData.kind, _noteData.isFake,
@@ -498,7 +498,7 @@ namespace DRFV.Game
                                     }
                                     else //(gameManager.Progress >= ms - gameManager.PJms)
                                     {
-                                        gameManager.AccMSList.Add((float)(100.0 -
+                                        gameManager.AccMSList.Add((float)(gameManager.GDms -
                                                                           (Mathf.Abs((float)gameManager.progressManager
                                                                               .NowTime - _noteData.ms) > 10.0
                                                                               ? Mathf.Abs(
@@ -717,11 +717,11 @@ namespace DRFV.Game
 
 #if true
             float randomms = Random.Range(-gameManager.PJms * 0.9f, gameManager.PJms * 0.9f);
-            if (_noteData.kind == NoteKind.TAP && !_noteData.isFake) gameManager.AccMSList.Add(100.0f - Mathf.Abs(randomms));
+            if (_noteData.kind == NoteKind.TAP && !_noteData.isFake) gameManager.AccMSList.Add(gameManager.GDms - Mathf.Abs(randomms));
             gameManager.Judge(_noteData.kind != NoteKind.TAP || _noteData.isFake ? 0 : randomms, _noteData.kind, _noteData.isFake,
                 new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 #else
-            if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(100.0f);
+            if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(gameManager.GDms);
             gameManager.Judge(0, _noteData.kind,
                 new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 #endif

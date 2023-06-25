@@ -47,4 +47,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/coinshop.unity
     guid: 83ff72d4ae845814aaefcf0c5b4184b8
+  - enabled: 0
+    path: Assets/Scenes/debug/test.unity
+    guid: 85669b7904d24ae47b38111eabbef94c
+  - enabled: 0
+    path: Assets/Scenes/debug/resultDebug.unity
+    guid: 8e626871d2bbd494cadb03428647e213
   m_configObjects: {}

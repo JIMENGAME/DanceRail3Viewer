@@ -1758,7 +1758,7 @@ namespace DRFV.Game
                 resultDataContainer.MISS = miss;
                 resultDataContainer.FAST = fast;
                 resultDataContainer.SLOW = slow;
-                resultDataContainer.SCORE = Mathf.RoundToInt(Score);
+                resultDataContainer.SCORE = Score;
                 resultDataContainer.MAXCOMBO = MaxCombo;
                 resultDataContainer.md5 = md5;
                 resultDataContainer.bgColor = EndBgColor;
@@ -2529,13 +2529,13 @@ namespace DRFV.Game
                     Score = 3000000.0f * (PerfectJ * 1.0f + Perfect * 0.99f + good / 3.0f) / noteTotal;
                     MaxScore = 3000000.0f -
                                3000000.0f * (Perfect * 0.01f + good / 3.0f * 2.0f + miss * 1.0f) / noteTotal;
-                    Accuracy = AccMSList.Count > 0 ? AccMSList.Average() : 0.0f;
+                    Accuracy = AccMSList.Count > 0 ? AccMSList.Average() / GDms * 100f : 0.0f;
                     break;
                 case SCORE_TYPE.ARCAEA:
                     Score = 10000000.0f * (PerfectJ + Perfect + good * 0.5f) / noteTotal + PerfectJ;
                     MaxScore = 10000000.0f - 10000000.0f * (good * 0.5f + miss) / noteTotal +
                                (noteTotal - Perfect - good - miss);
-                    Accuracy = AccMSList.Count > 0 ? AccMSList.Average() : 0.0f;
+                    Accuracy = AccMSList.Count > 0 ? AccMSList.Average() / GDms * 100f : 0.0f;
                     break;
                 case SCORE_TYPE.PHIGROS:
                     Score = 900000.0f * (PerfectJ + Perfect + good * 0.65f) / noteTotal +
@@ -2544,7 +2544,7 @@ namespace DRFV.Game
                                100000.0f * (PerfectJ + Perfect + good + miss - MaxCombo) / noteTotal;
                     Accuracy = 100.0f * (PerfectJ + Perfect + good + miss == 0
                         ? 0.0f
-                        : (PerfectJ + Perfect + good * 0.65f) / (PerfectJ + Perfect + good + miss));
+                        : (PerfectJ + Perfect + good * 0.65f) / (PerfectJ + Perfect + good + miss)) / GDms * 100f;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

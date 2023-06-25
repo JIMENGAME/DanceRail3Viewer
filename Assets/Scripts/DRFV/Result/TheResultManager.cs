@@ -21,52 +21,52 @@ namespace DRFV.Result
 {
     public class TheResultManager : MonoBehaviour
     {
-        public TextMeshProUGUI score;
-        public TextMeshProUGUI Tier;
-        public Image TierBackground;
+        [SerializeField] private TextMeshProUGUI score;
+        [SerializeField] private TextMeshProUGUI Tier;
+        [SerializeField] private Image TierBackground;
 
-        public TextMeshProUGUI PerfectJ;
-        public TextMeshProUGUI Perfect;
-        public TextMeshProUGUI Good;
-        public TextMeshProUGUI Miss;
-        public TextMeshProUGUI Fast;
-        public TextMeshProUGUI Slow;
-        public TextMeshProUGUI MaxCombo;
-        public TextMeshProUGUI scoreDelta;
-        public GameObject tNewScore;
-        public GameObject skillCheckIndicator;
-        public GameObject mirrorIndicator;
-        public GameObject hardIndicator;
-        public GameObject easyIndicator;
-        public GameObject hardbarIndicator;
-        public GameObject judgeRangeFixInficator;
-        public GameObject noModImage;
+        [SerializeField] private TextMeshProUGUI PerfectJ;
+        [SerializeField] private TextMeshProUGUI Perfect;
+        [SerializeField] private TextMeshProUGUI Good;
+        [SerializeField] private TextMeshProUGUI Miss;
+        [SerializeField] private TextMeshProUGUI Fast;
+        [SerializeField] private TextMeshProUGUI Slow;
+        [SerializeField] private TextMeshProUGUI MaxCombo;
+        [SerializeField] private TextMeshProUGUI scoreDelta;
+        [SerializeField] private GameObject tNewScore;
+        [SerializeField] private GameObject skillCheckIndicator;
+        [SerializeField] private GameObject mirrorIndicator;
+        [SerializeField] private GameObject hardIndicator;
+        [SerializeField] private GameObject easyIndicator;
+        [SerializeField] private GameObject hardbarIndicator;
+        [SerializeField] private GameObject judgeRangeFixInficator;
+        [SerializeField] private GameObject noModImage;
 
-        public Text endType;
-        public TrueShadow endTypeShadow;
+        [SerializeField] private Text endType;
+        [SerializeField] private TrueShadow endTypeShadow;
 
-        public Image CoverBackground;
-        public Image Cover;
-        public Text Title;
+        [SerializeField] private Image CoverBackground;
+        [SerializeField] private Image Cover;
+        [SerializeField] private Text Title;
 
-        public Text Artist;
+        [SerializeField] private Text Artist;
 
-        public Text HPAcc;
+        [SerializeField] private Text HPAcc;
 
-        public Text SongSpeed;
+        [SerializeField] private Text SongSpeed;
 
-        public Text JudgeInput;
+        [SerializeField] private Text JudgeInput;
 
-        public GameObject AccDetailsPanel;
-        public MSDetailsDrawer MSDetailsDrawer;
+        [SerializeField] private GameObject AccDetailsPanel;
+        [SerializeField] private MSDetailsDrawer MSDetailsDrawer;
 
-        public TextMeshProUGUI TMPRank;
+        [SerializeField] private TextMeshProUGUI TMPRank;
 
-        public TMP_ColorGradient[] TCGRank;
-        public TMP_ColorGradient TCGError;
+        [SerializeField] private TMP_ColorGradient[] TCGRank;
+        [SerializeField] private TMP_ColorGradient TCGError;
 
-        public float accAnimTimeStart, accAnimTimeEnd;
-        public Ease accAnimEase;
+        [SerializeField] private float accAnimTimeStart, accAnimTimeEnd;
+        [SerializeField] private Ease accAnimEase;
 
         private static Color orange = new(1f, 0.5f, 0.5f),
             greyShadow = new(0.9f, 0.9f, 0.9f, 0.6f),
@@ -104,10 +104,10 @@ namespace DRFV.Result
             bool enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
                                        Math.Abs(songSpeed - 1.0f) > 0.1f;
             bool isHadouTest = songDataContainer.GetContainerType() == SongDataContainerType.HADOU_TEST;
-            int realScore = currentSettings.ScoreType != SCORE_TYPE.ORIGINAL
-                ? Mathf.RoundToInt((3000000.0f *
+            float realScore = currentSettings.ScoreType != SCORE_TYPE.ORIGINAL
+                ? (3000000.0f *
                     (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
-                     resultDataContainer.GOOD / 3f) / resultDataContainer.noteTotal))
+                     resultDataContainer.GOOD / 3f) / resultDataContainer.noteTotal)
                 : resultDataContainer.SCORE;
             int thisScore = Mathf.RoundToInt(realScore);
             bool isValid =
@@ -225,7 +225,7 @@ namespace DRFV.Result
 
             Title.text = songDataContainer.songData.songName;
             Artist.text = songDataContainer.songData.songArtist;
-            score.text = Util.ParseScore(resultDataContainer.SCORE);
+            score.text = Util.ParseScore(thisScore);
             PerfectJ.text = resultDataContainer.PERFECT_J + "";
             Perfect.text = resultDataContainer.PERFECT + "";
             Good.text = resultDataContainer.GOOD + "";
@@ -300,6 +300,13 @@ namespace DRFV.Result
             JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(isHadouTest ? -1 : currentSettings.NoteJudgeRange).displayName;
             MSDetailsDrawer.Init();
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
+            StartCoroutine(PopRate(realScore, songDataContainer.selectedDiff, songSpeed));
+        }
+
+        private IEnumerator PopRate(float score, int hard, float songSpeed)
+        {
+            yield return new WaitWhile(FadeManager.Instance.isFading);
+            NotificationBarManager.Instance.Show($"本次游玩Rate：{Util.ScoreToRate(score, hard, songSpeed):0.#####}");
         }
 
         private bool accIsAnimating = false;

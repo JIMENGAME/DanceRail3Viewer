@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Random = System.Random;
 
 namespace DRFV.Global
 {
@@ -48,5 +49,10 @@ namespace DRFV.Global
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool InRange(this float value, Single min, Single max)
             => value >= min && value <= max;
+        
+        public static bool NextBool(this Random random)
+        {
+            return random.Next(0, 100) < 50;
+        }
     }
 }

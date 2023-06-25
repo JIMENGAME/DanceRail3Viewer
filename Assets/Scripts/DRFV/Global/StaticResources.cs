@@ -22,8 +22,8 @@ namespace DRFV.Global
         {
             DontDestroyOnLoad(gameObject);
             Util.Init();
-            dataPath = GetDataPath();
-            cachePath = GetCachePath();
+            dataPath = GetDataPath().Replace("\\", "");
+            cachePath = GetCachePath().Replace("\\", "");
             if (!Directory.Exists(dataPath))
             {
                 Directory.CreateDirectory(dataPath);
@@ -83,8 +83,7 @@ namespace DRFV.Global
                         result = sr.ReadLine();
                     }
 
-                    result = result.Replace("\\", "/");
-                    if (!result.EndsWith("/")) result += "/";
+                    if (!result.EndsWith("/") && !result.EndsWith("\\")) result += "/";
                     return result;
                 case RuntimePlatform.WindowsPlayer:
                 case RuntimePlatform.LinuxEditor:

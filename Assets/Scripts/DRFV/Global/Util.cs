@@ -462,7 +462,7 @@ namespace DRFV.Global
             {
                 using UnimageProcessor unimageProcessor = new UnimageProcessor();
                 unimageProcessor.Load(data);
-                return unimageProcessor.GetTexture();
+                return unimageProcessor.GetTexture(noLongerReadable:false);
             }
             catch (UnimageException)
             {
@@ -498,16 +498,16 @@ namespace DRFV.Global
             };
 
             return (score > 2400000f) ? (k + hard * speed) : (k * hard * speed);
-        }
-
-        public static float SongRateEase(float x)
-        {
-            x = Mathf.Clamp01(x);
+            
+            static float SongRateEase(float x)
+            {
+                x = Mathf.Clamp01(x);
 #if false
             return OneThirdWeightedCurve.Evaluate(x);
 #else
-            return 3 * x * x - 2 * x * x * x;
+                return 3 * x * x - 2 * x * x * x;
 #endif
+            }
         }
 
 #if false

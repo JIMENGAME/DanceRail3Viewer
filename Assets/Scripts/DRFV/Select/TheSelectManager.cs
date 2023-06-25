@@ -529,7 +529,7 @@ namespace DRFV.Select
             public string songName
             {
                 get => _songName;
-                set => _songName = FromBase64(value);
+                set => _songName = Util.FromBase64(value);
             }
 
             private string _songArtist;
@@ -538,7 +538,7 @@ namespace DRFV.Select
             public string songArtist
             {
                 get => _songArtist;
-                set => _songArtist = FromBase64(value);
+                set => _songArtist = Util.FromBase64(value);
             }
 
             [JsonProperty("bpm")] public string bpm;
@@ -547,12 +547,6 @@ namespace DRFV.Select
             public Sprite cover;
 
             [JsonProperty("preview")] public float preview;
-
-
-            private string FromBase64(string value)
-            {
-                return Encoding.UTF8.GetString(Convert.FromBase64String(value));
-            }
         }
 
         public void QueueBy(int i)

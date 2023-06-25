@@ -72,13 +72,7 @@ namespace DRFV.inokana
         {
             IntoScene("download");
         }
-        
-        [MenuItem("Scene Tools/Into Test")]
-        private static void IntoTest()
-        {
-            IntoScene("test");
-        }
-        
+
         [MenuItem("Scene Tools/Into Video")]
         private static void IntoVideo()
         {
@@ -101,6 +95,18 @@ namespace DRFV.inokana
         private static void IntoCoinShop()
         {
             IntoScene("coinshop");
+        }
+        
+        [MenuItem("Scene Tools/Debug/Into Test")]
+        private static void IntoTest()
+        {
+            IntoScene("debug/test");
+        }
+        
+        [MenuItem("Scene Tools/Debug/Into Result Debug")]
+        private static void IntoResultDebug()
+        {
+            IntoScene("debug/resultDebug");
         }
 
         private static void IntoScene(string name)

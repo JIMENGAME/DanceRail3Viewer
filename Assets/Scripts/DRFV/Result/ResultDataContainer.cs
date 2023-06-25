@@ -6,7 +6,7 @@ namespace DRFV.Result
 {
     public class ResultDataContainer : MonoBehaviour
     {
-        public int SCORE = 0;
+        public float SCORE = 0;
         public int MAXCOMBO = 0;
         public int PERFECT_J = 0;
         public int PERFECT = 0;
