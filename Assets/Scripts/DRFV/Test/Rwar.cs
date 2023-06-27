@@ -1,9 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections;
 using System.IO;
-using DG.Tweening;
-using DG.Tweening.Core;
-using DRFV.Data;
 using DRFV.Game;
 using DRFV.Game.HPBars;
 using DRFV.Global;
@@ -33,12 +30,6 @@ namespace DRFV.Test
 
             // _materials[0] = LoadCustomLongNote(ReadCustomNoteSprite(File.ReadAllBytes("E:/Users/Administrator/WebstormProjects/DanceRail3Viewer/Assets/Sprites/Game/notes/longnotes/longnote07.png")));
 
-            AutoOrderLimitedList<float> autoOrderLimitedList = new AutoOrderLimitedList<float>(80);
-            autoOrderLimitedList.Add(3f);
-            autoOrderLimitedList.Add(1f);
-            autoOrderLimitedList.Add(2f);
-            Debug.Log(string.Join(", ", autoOrderLimitedList));
-            
             DrawMesh();
             UpdateRate();
         }
