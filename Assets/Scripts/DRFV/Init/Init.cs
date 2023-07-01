@@ -5,6 +5,7 @@ using DG.Tweening;
 using DRFV.Data;
 using DRFV.Global.Managers;
 using DRFV.Language;
+using DRFV.Pool;
 using DRFV.Setting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -41,6 +42,8 @@ namespace DRFV.Init
             Camera.main.backgroundColor = RuntimeSettingsManager.Instance.isAprilFool ? MaskColor : CameraColor;
             if (RuntimeSettingsManager.Instance.isAprilFool) music.clip = aprilFoolClip;
             FadeManager.Instance.JumpScene(SceneManager.GetActiveScene().name);
+            OBSManager.Instance.Init();
+            PoolManager.Instance.RefreshSetting();
             StartCoroutine(LoadEntry());
         }
 
@@ -117,6 +120,7 @@ namespace DRFV.Init
             PlayerPrefs.DeleteKey("AutoplayHint");
             PlayerPrefs.Save();
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
         }
 
         public void Update()

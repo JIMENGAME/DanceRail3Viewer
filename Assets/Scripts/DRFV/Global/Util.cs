@@ -475,7 +475,7 @@ namespace DRFV.Global
                 return null;
             }
         }
-
+        
         public static float ScoreToRate(float score, int hard, float speed)
         {
             score = Mathf.Clamp(score, 0f, 3000000f);
@@ -498,15 +498,11 @@ namespace DRFV.Global
             };
 
             return (score > 2400000f) ? (k + hard * speed) : (k * hard * speed);
-            
+
             static float SongRateEase(float x)
             {
                 x = Mathf.Clamp01(x);
-#if false
-            return OneThirdWeightedCurve.Evaluate(x);
-#else
                 return 3 * x * x - 2 * x * x * x;
-#endif
             }
         }
 

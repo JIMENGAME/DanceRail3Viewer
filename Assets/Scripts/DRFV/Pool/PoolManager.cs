@@ -32,11 +32,6 @@ namespace DRFV.Pool
             pool.Clear();
         }
 
-        protected override void OnAwake()
-        {
-            RefreshSetting();
-        }
-
         public void RefreshSetting()
         {
             usePool = GlobalSettings.CurrentSettings.UseMemoryCache;

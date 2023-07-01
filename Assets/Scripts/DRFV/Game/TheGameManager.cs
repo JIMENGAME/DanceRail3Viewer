@@ -612,6 +612,7 @@ namespace DRFV.Game
                 Debug.LogError(e);
                 NotificationBarManager.Instance.Show($"错误：读取谱面时出错");
                 GlobalSettings.CurrentSettings = currentSettings;
+                GlobalSettings.Save();
                 FadeManager.Instance.Back();
                 yield break;
             }
@@ -1768,6 +1769,7 @@ namespace DRFV.Game
                 resultDataContainer.msDetails = msDetailsList;
                 DontDestroyOnLoad(go);
                 GlobalSettings.CurrentSettings = currentSettings;
+                GlobalSettings.Save();
                 FadeManager.Instance.JumpScene("result");
             }
         }
@@ -1776,6 +1778,7 @@ namespace DRFV.Game
         {
             CheckDataContainers.CleanSongDataContainer();
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
             FadeManager.Instance.Back();
         }
 
@@ -1850,6 +1853,7 @@ namespace DRFV.Game
             storyChallengeContainer.ratingPlus = ratingPlus;
             DontDestroyOnLoad(storyChallengeContainer);
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
             FadeManager.Instance.JumpScene("game");
         }
 
@@ -1895,6 +1899,7 @@ namespace DRFV.Game
                 hards = new[] { 11 }
             }, "axiumcrisis", GameSide.DARK, 20, "Future", Util.GetTierColor(16));
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
             FadeManager.Instance.JumpScene("game");
         }
 
@@ -2184,6 +2189,7 @@ namespace DRFV.Game
         {
             if (!pauseable || bgmManager.Time <= 0) return;
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
             FadeManager.Instance.JumpScene("game");
         }
 

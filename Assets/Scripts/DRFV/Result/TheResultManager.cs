@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using DG.Tweening;
+using DRFV.Data;
 using DRFV.Enums;
 using DRFV.Global;
 using DRFV.Global.Managers;
@@ -77,16 +80,19 @@ namespace DRFV.Result
 #if UNITY_EDITOR
         private bool debugMode = false;
 #endif
+        private GlobalSettings _globalSettings;
 
         // Start is called before the first frame update
         void Start()
         {
-            GlobalSettings currentSettings = GlobalSettings.CurrentSettings;
+            _globalSettings = GlobalSettings.CurrentSettings;
+            float originalRate = _globalSettings.PlayerRating.GetRate();
             AccountInfo.Instance.UpdateAccountPanel();
             SongDataContainer songDataContainer = GameObject.FindWithTag("SongData").GetComponent<SongDataContainer>();
             ResultDataContainer resultDataContainer =
                 GameObject.FindWithTag("ResultData").GetComponent<ResultDataContainer>();
 #if UNITY_EDITOR
+            if (resultDataContainer.endType == EndType.AUTO_PLAY) resultDataContainer.endType = EndType.ALL_PERFECT;
             if (songDataContainer.songData == null)
             {
                 songDataContainer.songData = new TheSelectManager.SongData
@@ -99,12 +105,12 @@ namespace DRFV.Result
                 Util.Init();
             }
 #endif
-            float songSpeed = Util.TransformSongSpeed(currentSettings.SongSpeed);
-            BarType hpBarType = (BarType) currentSettings.HPBarType;
-            bool enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
+            float songSpeed = Util.TransformSongSpeed(_globalSettings.SongSpeed);
+            BarType hpBarType = (BarType) _globalSettings.HPBarType;
+            bool enableJudgeRangeFix = _globalSettings.enableJudgeRangeFix &&
                                        Math.Abs(songSpeed - 1.0f) > 0.1f;
             bool isHadouTest = songDataContainer.GetContainerType() == SongDataContainerType.HADOU_TEST;
-            float realScore = currentSettings.ScoreType != SCORE_TYPE.ORIGINAL
+            float realScore = _globalSettings.ScoreType != SCORE_TYPE.ORIGINAL
                 ? (3000000.0f *
                     (resultDataContainer.PERFECT_J + resultDataContainer.PERFECT * 0.99f +
                      resultDataContainer.GOOD / 3f) / resultDataContainer.noteTotal)
@@ -133,8 +139,8 @@ namespace DRFV.Result
                 tNewScore.SetActive(false);
             }
             else if (resultDataContainer.endType != EndType.AUTO_PLAY &&
-                     !currentSettings.SkillCheckMode &&
-                     hpBarType != BarType.EASY && (isHadouTest || currentSettings.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit()))
+                     !_globalSettings.SkillCheckMode &&
+                     hpBarType != BarType.EASY && (isHadouTest || _globalSettings.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit()))
             {
                 string key = "SongScore_" +
                              resultDataContainer.md5;
@@ -151,7 +157,7 @@ namespace DRFV.Result
                     resultDataOld = new ResultData();
                 }
 
-                if (currentSettings.ScoreType != SCORE_TYPE.ORIGINAL)
+                if (_globalSettings.ScoreType != SCORE_TYPE.ORIGINAL)
                 {
                     scoreDelta.text = "Non-origin score";
                     tNewScore.SetActive(false);
@@ -163,29 +169,34 @@ namespace DRFV.Result
                                       Util.ParseScore(thisScore - resultDataOld.score, null, true);
                     tNewScore.SetActive(newRecord);
                 }
+                
+                ResultData resultData = new ResultData
+                {
+                    score = thisScore,
+                    endType = resultDataContainer.endType switch
+                    {
+                        EndType.FAILED => "fd",
+                        EndType.COMPLETED => "cp",
+                        EndType.FULL_COMBO => "fc",
+                        EndType.ALL_PERFECT => resultDataContainer.PERFECT == 0 ? "apj" : "ap",
+                        _ => throw new ArgumentOutOfRangeException()
+                    },
+                    perfectJ = resultDataContainer.PERFECT_J,
+                    perfect = resultDataContainer.PERFECT,
+                    good = resultDataContainer.GOOD,
+                    miss = resultDataContainer.MISS,
+                    fast = resultDataContainer.FAST,
+                    slow = resultDataContainer.SLOW,
+                    hp = MathF.Round(resultDataContainer.hp, 2, MidpointRounding.AwayFromZero),
+                    acc = MathF.Round(resultDataContainer.Accuracy, 2, MidpointRounding.AwayFromZero),
+                    rate = Util.ScoreToRate(realScore, songDataContainer.selectedDiff, songSpeed)
+                };
+                _globalSettings.PlayerRating.PopResult(resultData);
+                GlobalSettings.CurrentSettings = _globalSettings;
+                GlobalSettings.Save();
 
                 if (newRecord)
                 {
-                    ResultData resultData = new ResultData
-                    {
-                        score = thisScore,
-                        endType = resultDataContainer.endType switch
-                        {
-                            EndType.FAILED => "fd",
-                            EndType.COMPLETED => "cp",
-                            EndType.FULL_COMBO => "fc",
-                            EndType.ALL_PERFECT => resultDataContainer.PERFECT == 0 ? "apj" : "ap",
-                            _ => throw new ArgumentOutOfRangeException()
-                        },
-                        perfectJ = resultDataContainer.PERFECT_J,
-                        perfect = resultDataContainer.PERFECT,
-                        good = resultDataContainer.GOOD,
-                        miss = resultDataContainer.MISS,
-                        fast = resultDataContainer.FAST,
-                        slow = resultDataContainer.SLOW,
-                        hp = MathF.Round(resultDataContainer.hp, 2, MidpointRounding.AwayFromZero),
-                        acc = MathF.Round(resultDataContainer.Accuracy, 2, MidpointRounding.AwayFromZero)
-                    };
                     string resultStr = JsonConvert.SerializeObject(resultData, Formatting.None);
                     if (!isHadouTest)
                         UploadScore(key, resultStr);
@@ -282,31 +293,35 @@ namespace DRFV.Result
                 }
 
             bool isNoMod = true;
-            isNoMod &= !currentSettings.SkillCheckMode;
-            isNoMod &= !currentSettings.IsMirror;
-            isNoMod &= !currentSettings.HardMode;
+            isNoMod &= !_globalSettings.SkillCheckMode;
+            isNoMod &= !_globalSettings.IsMirror;
+            isNoMod &= !_globalSettings.HardMode;
             isNoMod &= hpBarType != BarType.EASY;
             isNoMod &= hpBarType != BarType.HARD;
             noModImage.SetActive(isNoMod);
-            skillCheckIndicator.SetActive(currentSettings.SkillCheckMode);
-            mirrorIndicator.SetActive(currentSettings.IsMirror);
-            hardIndicator.SetActive(currentSettings.HardMode);
+            skillCheckIndicator.SetActive(_globalSettings.SkillCheckMode);
+            mirrorIndicator.SetActive(_globalSettings.IsMirror);
+            hardIndicator.SetActive(_globalSettings.HardMode);
             easyIndicator.SetActive(hpBarType == BarType.EASY);
             hardbarIndicator.SetActive(hpBarType == BarType.HARD);
             judgeRangeFixInficator.SetActive(enableJudgeRangeFix);
             HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "   " + "ACC: " +
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
             SongSpeed.text = $"SPEED: {songSpeed:N1}x";
-            JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(isHadouTest ? -1 : currentSettings.NoteJudgeRange).displayName;
+            JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(isHadouTest ? -1 : _globalSettings.NoteJudgeRange).displayName;
             MSDetailsDrawer.Init();
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
-            StartCoroutine(PopRate(realScore, songDataContainer.selectedDiff, songSpeed));
+            StartCoroutine(PopRate(Util.ScoreToRate(realScore, songDataContainer.selectedDiff, songSpeed), originalRate));
         }
 
-        private IEnumerator PopRate(float score, int hard, float songSpeed)
+        private IEnumerator PopRate(float newSongRate, float originalRate)
         {
             yield return new WaitWhile(FadeManager.Instance.isFading);
-            NotificationBarManager.Instance.Show($"本次游玩Rate：{Util.ScoreToRate(score, hard, songSpeed):0.#####}");
+            NotificationBarManager.Instance.Show($"本次游玩Rate：{newSongRate:0.#####}");
+            yield return new WaitWhile(() => NotificationBarManager.Instance.IsDisplaying);
+            float newRate = _globalSettings.PlayerRating.GetRate();
+            float playerRate = MathF.Round(MathF.Round(newRate, 2) - MathF.Round(originalRate, 2), 2);
+            NotificationBarManager.Instance.Show($"玩家现Rate：{newRate:0.00} ({(playerRate < 0 ? "" : "+")}{playerRate:0.00})");
         }
 
         private bool accIsAnimating = false;
@@ -401,28 +416,6 @@ namespace DRFV.Result
             if (Input.GetKeyDown(KeyCode.R)) Start();
         }
 #endif
-    }
-
-    public class ResultData
-    {
-        [JsonProperty("score")] public int score;
-        [JsonProperty("type")] public string endType;
-        [JsonProperty("perfectj")] public int perfectJ;
-        [JsonProperty("perfect")] public int perfect;
-        [JsonProperty("good")] public int good;
-        [JsonProperty("miss")] public int miss;
-        [JsonProperty("fast")] public int fast;
-        [JsonProperty("slow")] public int slow;
-        [JsonProperty("hp")] public float hp;
-        [JsonProperty("acc")] public float acc;
-
-        public ResultData()
-        {
-            score = 0;
-            endType = "cp";
-            acc = perfectJ = perfect = good = miss = fast = slow = 0;
-            hp = 114.514f;
-        }
     }
     //
     // public enum Grade

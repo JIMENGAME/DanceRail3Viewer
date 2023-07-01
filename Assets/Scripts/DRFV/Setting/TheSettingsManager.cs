@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using DRFV.Data;
 using DRFV.Global;
 using DRFV.Global.Components;
 using DRFV.Global.Managers;
@@ -9,7 +10,6 @@ using DRFV.JsonData;
 using DRFV.Language;
 using DRFV.Login;
 using DRFV.Pool;
-using DRFV.Result;
 using Newtonsoft.Json;
 using SimpleFileBrowser;
 using UnityEngine;
@@ -205,6 +205,7 @@ namespace DRFV.Setting
             currentSettings.selectedNoteSFX =
                 noteSfxDropdown.value == 0 ? "" : noteSfxDropdown.options[noteSfxDropdown.value].text;
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
         }
 
         public void Back()
@@ -220,6 +221,7 @@ namespace DRFV.Setting
                 SaveVersion = 0
             };
             GlobalSettings.CurrentSettings = settings;
+            GlobalSettings.Save();
             FadeManager.Instance.JumpScene("settings");
         }
 
@@ -303,6 +305,7 @@ namespace DRFV.Setting
 
                     PlayerPrefs.Save();
                     GlobalSettings.CurrentSettings = players.Settings;
+                    GlobalSettings.Save();
                     _settingLanguage.SetScoreIOStatus("settings.score.status.import.success");
                 }
                 catch (Exception)

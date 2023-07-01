@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using DG.Tweening;
+using DRFV.Data;
 using DRFV.Enums;
 using DRFV.Game;
 using DRFV.Global;
@@ -284,6 +285,7 @@ namespace DRFV.Select
         private void BackToMain()
         {
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
             SaveLastSelectedSong();
             FadeManager.Instance.Back();
         }
@@ -688,6 +690,7 @@ namespace DRFV.Select
             DontDestroyOnLoad(go);
 
             GlobalSettings.CurrentSettings = currentSettings;
+            GlobalSettings.Save();
             SaveLastSelectedSong();
             FadeManager.Instance.LoadScene("game");
         }

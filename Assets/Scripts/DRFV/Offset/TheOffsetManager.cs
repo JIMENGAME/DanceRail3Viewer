@@ -140,6 +140,7 @@ namespace DRFV.Offset
             GlobalSettings a = GlobalSettings.CurrentSettings;
             a.Offset = NoteOffset;
             GlobalSettings.CurrentSettings = a;
+            GlobalSettings.Save();
             FadeManager.Instance.Back();
         }
 

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using DRFV.Data;
 using UnityEngine;
 using Random = System.Random;
 
@@ -53,6 +55,16 @@ namespace DRFV.Global
         public static bool NextBool(this Random random)
         {
             return random.Next(0, 100) < 50;
+        }
+
+        public static IEnumerable<T> DeepClone<T>(this IEnumerable<T> list) where T : class, IDeepCloneable<T>
+        {
+            return list.Select(t => t.DeepClone()).ToList();
+        }
+
+        public static bool ContainSameSong(this List<ResultData> list, ResultData resultData)
+        {
+            return list.Any(data => data.keyword == resultData.keyword);
         }
     }
 }

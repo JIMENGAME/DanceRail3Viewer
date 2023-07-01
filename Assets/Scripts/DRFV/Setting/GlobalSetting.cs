@@ -1,3 +1,4 @@
+using DRFV.Data;
 using DRFV.Enums;
 using DRFV.Global;
 using DRFV.Select;
@@ -8,21 +9,23 @@ namespace DRFV.Setting
 {
     public class GlobalSettings
     {
+        private static GlobalSettings _globalSettingsBuffer;
         [JsonIgnore]
         public static GlobalSettings CurrentSettings
         {
             get
             {
-                if (!PlayerPrefs.HasKey("Global_Settings")) return new GlobalSettings();
+                if (!PlayerPrefs.HasKey("Global_Settings"))
+                {
+                    _globalSettingsBuffer = new GlobalSettings();
+                    Save();
+                    return _globalSettingsBuffer;
+                }
+                if (_globalSettingsBuffer != null) return _globalSettingsBuffer;
                 var str = PlayerPrefs.GetString("Global_Settings");
-                return JsonConvert.DeserializeObject<GlobalSettings>(str);
+                return _globalSettingsBuffer = JsonConvert.DeserializeObject<GlobalSettings>(str);
             }
-            set
-            {
-                var str = JsonConvert.SerializeObject(value, Formatting.None);
-                PlayerPrefs.SetString("Global_Settings", str);
-                PlayerPrefs.Save();
-            }
+            set => _globalSettingsBuffer = value;
         }
 
         public int SaveVersion;
@@ -35,7 +38,6 @@ namespace DRFV.Setting
         public int FreeFlickAlpha;
         public int FlickAlpha;
         private int _fps;
-
         public int MaxFPS
         {
             get => _fps;
@@ -96,6 +98,7 @@ namespace DRFV.Setting
         public bool enableJudgeRangeFix;
         public bool enableSCFix;
         public int GameModeDance; // 0: 4k, 1: 6k
+        public PlayerRating PlayerRating;
 
         public GlobalSettings()
         {
@@ -134,6 +137,14 @@ namespace DRFV.Setting
             enableJudgeRangeFix = false;
             enableSCFix = false;
             GameModeDance = 0;
+            PlayerRating = new PlayerRating();
+        }
+
+        public static void Save()
+        {
+            var str = JsonConvert.SerializeObject(_globalSettingsBuffer, Formatting.None);
+            PlayerPrefs.SetString("Global_Settings", str);
+            PlayerPrefs.Save();
         }
     }
 

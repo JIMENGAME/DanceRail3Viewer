@@ -10,6 +10,8 @@ namespace DRFV.Setting
         [SerializeField] private Slider Slider;
         
         public int Value => (int)Slider.value;
+        
+        private void Awake() {}
 
         public void AddOrMinusValue(int delta)
         {

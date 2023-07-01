@@ -10,7 +10,7 @@ namespace DRFV.Global.Managers
         public bool isActive;
         private OBSWebsocket obs = new();
 
-        protected override void OnAwake()
+        public void Init()
         {
             if (GlobalSettings.CurrentSettings.OBSRecord) EnableRecordMode();
         }
