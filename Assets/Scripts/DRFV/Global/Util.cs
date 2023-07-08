@@ -9,6 +9,7 @@ using DRFV.Enums;
 using DRFV.JsonData;
 using DRFV.Game;
 using DRFV.inokana;
+using DRFV.Result;
 using DRFV.Select;
 using DRFV.Setting;
 using Newtonsoft.Json;
@@ -335,30 +336,30 @@ namespace DRFV.Global
             return noteJudgeRanges.Length;
         }
 
-        public static int ScoreToRank(int score)
+        public static Grade ScoreToRank(int score)
         {
             return score switch
             {
-                < 0 => -1,
-                > 3000000 => -1,
-                < 2000000 => 0, // F
-                < 2100000 => 1, // D
-                < 2200000 => 2, // C
-                < 2300000 => 3, // B
-                < 2400000 => 4, // B+
-                < 2450000 => 5, // A
-                < 2500000 => 6, // A+
-                < 2550000 => 7, // AA
-                < 2600000 => 8, // AA+
-                < 2650000 => 9, // AAA
-                < 2700000 => 10, // AAA+
-                < 2750000 => 11, // S
-                < 2800000 => 12, // S+
-                < 2850000 => 13, // SS
-                < 2900000 => 14, // SS+
-                < 2950000 => 15, // SSS
-                < 3000000 => 16, // SSS+
-                _ => 17 // APJ
+                < 0 => Grade.ERR,
+                > 3000000 =>  Grade.ERR,
+                < 2000000 => Grade.F, // F
+                < 2100000 => Grade.D, // D
+                < 2200000 => Grade.C, // C
+                < 2300000 => Grade.B, // B
+                < 2400000 => Grade.B_Plus,
+                < 2450000 => Grade.A,
+                < 2500000 => Grade.A_Plus,
+                < 2550000 => Grade.AA,
+                < 2600000 => Grade.AA_Plus,
+                < 2650000 => Grade.AAA,
+                < 2700000 => Grade.AAA_Plus,
+                < 2750000 => Grade.S,
+                < 2800000 => Grade.S_Plus,
+                < 2850000 => Grade.SS,
+                < 2900000 => Grade.SS_Plus,
+                < 2950000 => Grade.SSS,
+                < 3000000 => Grade.SSS_Plus,
+                _ => Grade.APJ
             };
         }
 

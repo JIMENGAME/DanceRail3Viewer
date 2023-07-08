@@ -120,10 +120,10 @@ namespace DRFV.Result
                 resultDataContainer.PERFECT_J + resultDataContainer.PERFECT + resultDataContainer.GOOD +
                 resultDataContainer.MISS ==
                 resultDataContainer.noteTotal;
-            int rank = Util.ScoreToRank(thisScore);
-            bool scoreError = rank < 0;
-            TMPRank.colorGradientPreset = rank > 0 ? TCGRank[rank] : TCGError;
-            TMPRank.text = RankToRankText(rank);
+            Grade rank = Util.ScoreToRank(thisScore);
+            bool scoreError = rank == Grade.ERR;
+            TMPRank.colorGradientPreset = rank > 0 ? TCGRank[(int) rank] : TCGError;
+            TMPRank.text = RankToRankText((int)rank);
             if (!isValid || scoreError)
             {
                 if (!isValid)
@@ -236,7 +236,7 @@ namespace DRFV.Result
 
             Title.text = songDataContainer.songData.songName;
             Artist.text = songDataContainer.songData.songArtist;
-            score.text = Util.ParseScore(thisScore);
+            score.text = Util.ParseScore(Mathf.RoundToInt(resultDataContainer.SCORE));
             PerfectJ.text = resultDataContainer.PERFECT_J + "";
             Perfect.text = resultDataContainer.PERFECT + "";
             Good.text = resultDataContainer.GOOD + "";
@@ -318,10 +318,10 @@ namespace DRFV.Result
         {
             yield return new WaitWhile(FadeManager.Instance.isFading);
             NotificationBarManager.Instance.Show($"本次游玩Rate：{newSongRate:0.#####}");
-            yield return new WaitWhile(() => NotificationBarManager.Instance.IsDisplaying);
-            float newRate = _globalSettings.PlayerRating.GetRate();
-            float playerRate = MathF.Round(MathF.Round(newRate, 2) - MathF.Round(originalRate, 2), 2);
-            NotificationBarManager.Instance.Show($"玩家现Rate：{newRate:0.00} ({(playerRate < 0 ? "" : "+")}{playerRate:0.00})");
+            // yield return new WaitWhile(() => NotificationBarManager.Instance.IsDisplaying);
+            // float newRate = _globalSettings.PlayerRating.GetRate();
+            // float playerRate = MathF.Round(MathF.Round(newRate, 2) - MathF.Round(originalRate, 2), 2);
+            // NotificationBarManager.Instance.Show($"玩家现Rate：{newRate:0.00} ({(playerRate < 0 ? "" : "+")}{playerRate:0.00})");
         }
 
         private bool accIsAnimating = false;
@@ -417,26 +417,27 @@ namespace DRFV.Result
         }
 #endif
     }
-    //
-    // public enum Grade
-    // {
-    //     F = 0,
-    //     D = 1,
-    //     C = 2,
-    //     B = 3,
-    //     B_Plus = 4,
-    //     A = 5,
-    //     A_Plus = 6,
-    //     AA = 7,
-    //     AA_Plus = 8,
-    //     AAA = 9,
-    //     AAA_Plus = 10,
-    //     S = 11,
-    //     S_Plus = 12,
-    //     SS = 13,
-    //     SS_Plus = 14,
-    //     SSS = 15,
-    //     SSS_Plus = 16,
-    //     APJ = 17
-    // }
+    
+    public enum Grade
+    {
+        ERR = -1,
+        F = 0,
+        D = 1,
+        C = 2,
+        B = 3,
+        B_Plus = 4,
+        A = 5,
+        A_Plus = 6,
+        AA = 7,
+        AA_Plus = 8,
+        AAA = 9,
+        AAA_Plus = 10,
+        S = 11,
+        S_Plus = 12,
+        SS = 13,
+        SS_Plus = 14,
+        SSS = 15,
+        SSS_Plus = 16,
+        APJ = 17
+    }
 }

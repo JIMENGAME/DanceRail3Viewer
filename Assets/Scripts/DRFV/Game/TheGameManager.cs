@@ -104,6 +104,8 @@ namespace DRFV.Game
         public int miss;
         public int fast;
         public int slow;
+        private int PassedNotes;
+        private int JudgedNotes => PerfectJ + Perfect + good + miss;
 
         private AudioClip originalBGM;
         private bool saveAudio;
@@ -251,8 +253,6 @@ namespace DRFV.Game
 
         public bool hadouTest;
 
-        private SCORE_TYPE scoreType;
-
         private bool hasTextBeforeStart;
 
         public Text lyricText;
@@ -268,6 +268,15 @@ namespace DRFV.Game
         private bool enableJudgeRangeFix;
 
         private float lastNoteTime;
+
+        private void Awake()
+        {
+            if (!objCombo[0]) return;
+            _topBarValue = objCombo[0].GetComponent<Text>();
+            _topBarValueRed = objCombo[1].GetComponent<Text>();
+            _topBarValueBlue = objCombo[2].GetComponent<Text>();
+            _topBarLabel = objCombo[3].GetComponent<Text>();
+        }
 
         void Start()
         {
@@ -343,6 +352,8 @@ namespace DRFV.Game
                 GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
                 GameEffectTap = currentSettings.GameEffectTap;
                 playerGameComboDisplay = currentSettings.ComboDisp;
+                if (currentSettings.ScoreType != SCORE_TYPE.ARCAEA && playerGameComboDisplay == GameComboDisplay.LAGRANGE)
+                    playerGameComboDisplay = GameComboDisplay.COMBO;
                 gameSubJudgeDisplay = currentSettings.SmallJudgeDisp;
                 FCAPIndicator = currentSettings.FCAPIndicator;
                 saveAudio = songDataContainer.saveAudio;
@@ -822,49 +833,62 @@ namespace DRFV.Game
             //Score Combo表示
             if (playerGameComboDisplay == GameComboDisplay.COMBO)
             {
-                objCombo[0].GetComponent<Text>().color = objCombo[3].GetComponent<Text>().color =
+                _topBarValue.color = _topBarLabel.color =
                     new Color(comboWhite[0], comboWhite[1], comboWhite[2], 0.0f);
-                objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 0.0f);
-                objCombo[2].GetComponent<Text>().color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 0.0f);
+                _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 0.0f);
+                _topBarValueBlue.color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 0.0f);
             }
             else if (FCAPIndicator)
             {
-                objCombo[3].GetComponent<Text>().color =
-                    objCombo[0].GetComponent<Text>().color = new Color(1.0f, 0.94f, 0.196f, 1.0f);
-                objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 0.0f);
-                objCombo[2].GetComponent<Text>().color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 0.0f);
+                _topBarLabel.color =
+                    _topBarValue.color = new Color(1.0f, 0.94f, 0.196f, 1.0f);
+                _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 0.0f);
+                _topBarValueBlue.color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 0.0f);
             }
             else
             {
-                objCombo[0].GetComponent<Text>().color = objCombo[3].GetComponent<Text>().color =
+                _topBarValue.color = _topBarLabel.color =
                     new Color(comboWhite[0], comboWhite[1], comboWhite[2], 1.0f);
-                objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
-                objCombo[2].GetComponent<Text>().color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 1.0f);
+                _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
+                _topBarValueBlue.color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 1.0f);
             }
 
-            if (playerGameComboDisplay == GameComboDisplay.SCORE)
+            switch (playerGameComboDisplay)
             {
-                objCombo[0].GetComponent<Text>().text = "0";
-                objCombo[1].GetComponent<Text>().text = "0";
-                objCombo[2].GetComponent<Text>().text = "0";
-                objCombo[3].GetComponent<Text>().text = "SCORE";
-            }
-
-            if (playerGameComboDisplay == GameComboDisplay.MSCORE)
-            {
-                string score = Util.ParseScore(Mathf.RoundToInt(MaxScore));
-                objCombo[0].GetComponent<Text>().text = score;
-                objCombo[1].GetComponent<Text>().text = score;
-                objCombo[2].GetComponent<Text>().text = score;
-                objCombo[3].GetComponent<Text>().text = "- SCORE";
-            }
-
-            if (playerGameComboDisplay == GameComboDisplay.ACCURACY)
-            {
-                objCombo[0].GetComponent<Text>().text = "0.00%";
-                objCombo[1].GetComponent<Text>().text = "0.00%";
-                objCombo[2].GetComponent<Text>().text = "0.00%";
-                objCombo[3].GetComponent<Text>().text = "ACCURACY";
+                case GameComboDisplay.NONE:
+                case GameComboDisplay.COMBO:
+                    _topBarValue.text = "";
+                    _topBarValueRed.text = "";
+                    _topBarValueBlue.text = "";
+                    _topBarLabel.text = "";
+                    break;
+                case GameComboDisplay.SCORE:
+                    _topBarValue.text = "0";
+                    _topBarValueRed.text = "0";
+                    _topBarValueBlue.text = "0";
+                    _topBarLabel.text = "SCORE";
+                    break;
+                case GameComboDisplay.MSCORE:
+                    string score = Util.ParseScore(Mathf.RoundToInt(MaxScore));
+                    _topBarValue.text = score;
+                    _topBarValueRed.text = score;
+                    _topBarValueBlue.text = score;
+                    _topBarLabel.text = "- SCORE";
+                    break;
+                case GameComboDisplay.ACCURACY:
+                    _topBarValue.text = "0.00%";
+                    _topBarValueRed.text = "0.00%";
+                    _topBarValueBlue.text = "0.00%";
+                    _topBarLabel.text = "ACCURACY";
+                    break;
+                case GameComboDisplay.LAGRANGE:
+                    _topBarValue.text = "PM  +000,000";
+                    _topBarValueRed.text = "PM  +000,000";
+                    _topBarValueBlue.text = "PM  +000,000";
+                    _topBarLabel.text = "PACE";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             StartCoroutine(Init());
@@ -1491,7 +1515,7 @@ namespace DRFV.Game
         {
             if (!inited || ended) return;
 
-            if (progressManager.NowTime > lastNoteTime && PerfectJ + Perfect + good + miss == noteTotal)
+            if (progressManager.NowTime > lastNoteTime && JudgedNotes == noteTotal)
             {
                 StartEndEvent();
                 return;
@@ -2141,13 +2165,13 @@ namespace DRFV.Game
             bgmManager.UnPause();
             pauseUI.SetActive(false);
         }
-
-        private void OnApplicationPause(bool focus)
+#if !UNITY_EDITOR
+        private void OnApplicationPause(bool pause)
         {
             if (inited && !isPause) Pause();
         }
 
-#if !UNITY_EDITOR
+
         private void OnApplicationFocus(bool focus)
         {
             if (inited && !isPause) Pause();
@@ -2336,9 +2360,8 @@ namespace DRFV.Game
 
         void SCORE_INIT()
         {
-            scoreType = GlobalSettings.CurrentSettings.ScoreType;
             Score = 0;
-            LiLunZhi = MaxScore = scoreType switch
+            LiLunZhi = MaxScore = currentSettings.ScoreType switch
             {
                 SCORE_TYPE.ORIGINAL => 3000000,
                 SCORE_TYPE.ARCAEA => 10000000 + noteTotal,
@@ -2353,6 +2376,7 @@ namespace DRFV.Game
             miss = 0;
             fast = 0;
             slow = 0;
+            PassedNotes = 0;
             AccMSList.Clear();
             msDetailsList.Clear();
         }
@@ -2362,6 +2386,7 @@ namespace DRFV.Game
             if (isFake) return;
             msDetailsList.Add(0f);
             PerfectJ++;
+            PassedNotes++;
             AddCombo();
             hpManager.InCreaseHp(hpManager.HpBar.PerfectJHP(kind, drbfile.noteWeightCount, this));
             // if (A.Instance) A.Instance.Judge(JudgeType.PERFECT_J, noteMs);
@@ -2380,6 +2405,7 @@ namespace DRFV.Game
             int displayMS = isFake ? 0 : (int)realMS;
             JudgeType judgeType;
 
+            PassedNotes++;
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)
             {
@@ -2529,7 +2555,7 @@ namespace DRFV.Game
         void ReflashCombo()
         {
             //表示物反応
-            switch (scoreType)
+            switch (currentSettings.ScoreType)
             {
                 case SCORE_TYPE.ORIGINAL:
                     Score = 3000000.0f * (PerfectJ * 1.0f + Perfect * 0.99f + good / 3.0f) / noteTotal;
@@ -2547,17 +2573,17 @@ namespace DRFV.Game
                     Score = 900000.0f * (PerfectJ + Perfect + good * 0.65f) / noteTotal +
                             MaxCombo * 100000f / noteTotal;
                     MaxScore = 1000000.0f - 900000.0f * (miss + good * 0.35f) / noteTotal -
-                               100000.0f * (PerfectJ + Perfect + good + miss - MaxCombo) / noteTotal;
-                    Accuracy = 100.0f * (PerfectJ + Perfect + good + miss == 0
+                               100000.0f * (JudgedNotes - MaxCombo) / noteTotal;
+                    Accuracy = 100.0f * (JudgedNotes == 0
                         ? 0.0f
-                        : (PerfectJ + Perfect + good * 0.65f) / (PerfectJ + Perfect + good + miss)) / GDms * 100f;
+                        : (PerfectJ + Perfect + good * 0.65f) / JudgedNotes) / GDms * 100f;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
 
-            if (textScore) textScore.text = Util.ParseScore(Mathf.RoundToInt(Score), scoreType);
+            if (textScore) textScore.text = Util.ParseScore(Mathf.RoundToInt(Score), currentSettings.ScoreType);
             if (textMaxcombo) textMaxcombo.text = MaxCombo + "";
             if (textPerfect) textPerfect.text = PerfectJ + "";
             if (textPerfect2) textPerfect2.text = Perfect + "";
@@ -2570,43 +2596,43 @@ namespace DRFV.Game
                 if (playerGameComboDisplay == GameComboDisplay.NONE ||
                     playerGameComboDisplay == GameComboDisplay.COMBO && Combo <= 2)
                 {
-                    objCombo[0].GetComponent<Text>().color = objCombo[3].GetComponent<Text>().color =
+                    _topBarValue.color = _topBarLabel.color =
                         new Color(comboWhite[0], comboWhite[1], comboWhite[2], 0.0f);
-                    objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 0.0f);
-                    objCombo[2].GetComponent<Text>().color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 0.0f);
+                    _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 0.0f);
+                    _topBarValueBlue.color = new Color(comboBlue[0], comboBlue[1], comboBlue[2], 0.0f);
                 }
                 else
                 {
                     if (miss > 0 || !FCAPIndicator)
                     {
-                        objCombo[0].GetComponent<Text>().color = objCombo[3].GetComponent<Text>().color =
+                        _topBarValue.color = _topBarLabel.color =
                             new Color(comboWhite[0], comboWhite[1], comboWhite[2], 1.0f);
-                        objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
-                        objCombo[2].GetComponent<Text>().color =
+                        _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
+                        _topBarValueBlue.color =
                             new Color(comboBlue[0], comboBlue[1], comboBlue[2], 1.0f);
                     }
                     else if (good > 0)
                     {
-                        objCombo[3].GetComponent<Text>().color =
-                            objCombo[0].GetComponent<Text>().color = new Color(0f, 1.0f, 2f / 15f, 1.0f);
-                        objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
-                        objCombo[2].GetComponent<Text>().color =
+                        _topBarLabel.color =
+                            _topBarValue.color = new Color(0f, 1.0f, 2f / 15f, 1.0f);
+                        _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
+                        _topBarValueBlue.color =
                             new Color(comboBlue[0], comboBlue[1], comboBlue[2], 1.0f);
                     }
                     else if (Perfect > 0)
                     {
-                        objCombo[3].GetComponent<Text>().color =
-                            objCombo[0].GetComponent<Text>().color = new Color(1.0f, 0.5f, 0.196f, 1.0f);
-                        objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
-                        objCombo[2].GetComponent<Text>().color =
+                        _topBarLabel.color =
+                            _topBarValue.color = new Color(1.0f, 0.5f, 0.196f, 1.0f);
+                        _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
+                        _topBarValueBlue.color =
                             new Color(comboBlue[0], comboBlue[1], comboBlue[2], 1.0f);
                     }
                     else
                     {
-                        objCombo[3].GetComponent<Text>().color =
-                            objCombo[0].GetComponent<Text>().color = new Color(1.0f, 0.94f, 0.196f, 1.0f);
-                        objCombo[1].GetComponent<Text>().color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
-                        objCombo[2].GetComponent<Text>().color =
+                        _topBarLabel.color =
+                            _topBarValue.color = new Color(1.0f, 0.94f, 0.196f, 1.0f);
+                        _topBarValueRed.color = new Color(comboRed[0], comboRed[1], comboRed[2], 1.0f);
+                        _topBarValueBlue.color =
                             new Color(comboBlue[0], comboBlue[1], comboBlue[2], 1.0f);
                     }
 
@@ -2621,16 +2647,20 @@ namespace DRFV.Game
                     }
                     else if (playerGameComboDisplay == GameComboDisplay.MSCORE)
                     {
-                        disp = scoreType == SCORE_TYPE.PHIGROS ? "N/A" : Mathf.RoundToInt(MaxScore) + "";
+                        disp = Mathf.RoundToInt(MaxScore) + "";
                     }
                     else if (playerGameComboDisplay == GameComboDisplay.ACCURACY)
                     {
                         disp = Accuracy.ToString("0.00") + "%";
                     }
+                    else if (playerGameComboDisplay == GameComboDisplay.LAGRANGE)
+                    {
+                        disp = ParseLagrangePace();
+                    }
 
-                    objCombo[0].GetComponent<Text>().text = disp;
-                    objCombo[1].GetComponent<Text>().text = disp;
-                    objCombo[2].GetComponent<Text>().text = disp;
+                    _topBarValue.text = disp;
+                    _topBarValueRed.text = disp;
+                    _topBarValueBlue.text = disp;
 
                     objCombo[0].transform.localScale = new Vector3(
                         Mathf.Min(2f, objCombo[0].transform.localScale.x + 0.1f),
@@ -2734,6 +2764,10 @@ namespace DRFV.Game
         public VideoPlayer VideoPlayer;
         public Image VideoMask;
         public GlobalSettings currentSettings;
+        private Text _topBarValue;
+        private Text _topBarValueRed;
+        private Text _topBarValueBlue;
+        private Text _topBarLabel;
 
         public void DoSCUp()
         {
@@ -2866,6 +2900,31 @@ namespace DRFV.Game
             }
 
             return testifyAnomaly;
+        }
+
+        private string ParseLagrangePace()
+        {
+            float maxScoreNow = 10000000f * PassedNotes / drbfile.TotalNotes;
+            float scoreK = Score / maxScoreNow;
+            if (good + miss == 0)
+            {
+                return $"PM +{Util.ParseScore(PerfectJ, 6, true)}";
+            }
+
+            string rank;
+            float basicScoreK;
+            (rank, basicScoreK) = scoreK switch
+            {
+                >= 1.0f => ("PM", 1.0f),
+                >= 0.99f => ("EX+", 0.99f),
+                >= 0.965f => ("EX", 0.98f),
+                >= 0.935f => ("AA", 0.95f),
+                >= 0.905f => ("A", 0.92f),
+                >= 0.875f => ("B", 0.89f),
+                _ => ("C", 0.86f)
+            };
+            float deltaScore = Score - basicScoreK * maxScoreNow;
+            return $"{rank}  {(deltaScore < 0 ? "" : "+")}{Util.ParseScore(Mathf.FloorToInt(deltaScore), 6, true)}";
         }
     }
 

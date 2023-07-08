@@ -15,7 +15,8 @@ namespace DRFV.Enums
         COMBO = 1,
         SCORE = 2,
         MSCORE = 3,
-        ACCURACY = 4
+        ACCURACY = 4,
+        LAGRANGE = 5
     }
     public enum GameSubJudgeDisplay
     {
