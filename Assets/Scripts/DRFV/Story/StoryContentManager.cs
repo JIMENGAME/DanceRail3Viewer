@@ -83,7 +83,7 @@ namespace DRFV.Story
             {
                 if (unlocks == null)
                 {
-                    unlocks = JObject.Parse(Resources.Load<TextAsset>("STORY/unlocks").text);
+                    unlocks = JObject.Parse(ExternalResources.LoadText("STORY/unlocks").text);
                 }
 
                 JObject jObject = unlocks[unlock].ToObject<JObject>();
@@ -117,7 +117,7 @@ namespace DRFV.Story
 
         private void UpdateText()
         {
-            TextAsset storyTextAsset = Resources.Load<TextAsset>($"STORY/STORIES/{chapter}-{section}.{selectedPage}");
+            TextAsset storyTextAsset = ExternalResources.Load<TextAsset>($"STORY/STORIES/{chapter}-{section}.{selectedPage}");
             tStory.text = storyTextAsset == null ? "如果你看到这串文字说明出bug了，试试再点一次SECTION" : storyTextAsset.text;
             float preferredHeight = tStory.preferredHeight;
             rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, preferredHeight + 20);
@@ -248,10 +248,10 @@ namespace DRFV.Story
                 ratingPlus = jo["rating_plus"].ToObject<bool>();
             }
 
-            storyChallengeContainer.music = Resources.Load<AudioClip>(
+            storyChallengeContainer.music = ExternalResources.LoadAudioClip(
                 $"STORY/SONGS/{storyChallengeContainer.songData.keyword}{(hasOverride ? $".{storyChallengeContainer.songData.hards[0]}" : "")}");
             storyChallengeContainer.songData.cover =
-                Resources.Load<Sprite>("STORY/SONGS/" + storyChallengeContainer.songData.keyword);
+                ExternalResources.LoadSprite("STORY/SONGS/" + storyChallengeContainer.songData.keyword);
             storyChallengeContainer.isComputer = Application.platform switch
             {
                 RuntimePlatform.WindowsEditor => true,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -431,6 +432,7 @@ namespace DRFV.Global
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FullGC()
         {
             GC.Collect();
@@ -500,6 +502,7 @@ namespace DRFV.Global
 
             return (score > 2400000f) ? (k + hard * speed) : (k * hard * speed);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static float SongRateEase(float x)
             {
                 x = Mathf.Clamp01(x);

@@ -25,10 +25,10 @@ namespace DRFV.Game
             if (_inited || theGameManager.DebugMode) yield break;
             if (theGameManager.storyMode)
             {
-                TextAsset textAsset = Resources.Load<TextAsset>($"STORY/SONGS/lyric.{theGameManager.SongKeyword}.{theGameManager.SongHard}");
+                TextAsset textAsset = ExternalResources.LoadText($"STORY/SONGS/lyric.{theGameManager.SongKeyword}.{theGameManager.SongHard}");
                 if (textAsset == null)
                 {
-                    textAsset = Resources.Load<TextAsset>($"STORY/SONGS/lyric.{theGameManager.SongKeyword}");
+                    textAsset = ExternalResources.LoadText($"STORY/SONGS/lyric.{theGameManager.SongKeyword}");
                     if (textAsset == null) yield break;
                 }
                 SetLyric(JObject.Parse(textAsset.text));

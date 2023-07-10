@@ -49,9 +49,18 @@ namespace DRFV.video
             StoryChallengeContainer storyChallengeContainer = songDataObject.GetComponent<StoryChallengeContainer>();
             if (!storyChallengeContainer) FadeManager.Instance.Back();
             key = $"story_video_{storyChallengeContainer.songData.keyword}";
+#if false
+            videoPlayer.source = VideoSource.VideoClip;
             videoPlayer.clip = Resources.Load<VideoClip>($"STORY/VIDEOS/{storyChallengeContainer.songData.keyword}");
-            audioSource.clip = Resources.Load<AudioClip>($"STORY/VIDEOS/{storyChallengeContainer.songData.keyword}");
-            Sprite coverSpr = Resources.Load<Sprite>($"STORY/SONGS/{storyChallengeContainer.songData.keyword}");
+            videoPlayer.url = "";
+#else
+            videoPlayer.source = VideoSource.Url;
+            videoPlayer.clip = null;
+            videoPlayer.url = ExternalResources.GetVideoClipPath($"STORY/VIDEOS/{storyChallengeContainer.songData.keyword}");
+#endif
+            audioSource.clip =
+                ExternalResources.LoadAudioClip($"STORY/VIDEOS/{storyChallengeContainer.songData.keyword}");
+            Sprite coverSpr = ExternalResources.LoadSprite($"STORY/SONGS/{storyChallengeContainer.songData.keyword}");
             if (coverSpr)
             {
                 cover.sprite = coverSpr;
@@ -76,15 +85,21 @@ namespace DRFV.video
             timeToShow = storyChallengeContainer.timeToVideoShow * 1000f;
             timeToEnter = storyChallengeContainer.timeToEnter * 1000f;
             videoPlayer.targetTexture.Release();
+            videoPlayer.renderMode = VideoRenderMode.APIOnly;
             _stopwatch.Reset();
             videoPlayer.errorReceived += (_, _) => FadeManager.Instance.JumpScene("game");
-            videoPlayer.prepareCompleted += _ => { StartCoroutine(StartPlay()); };
-            RectTransform rectTransform = videoPlayer.GetComponent<RectTransform>();
-            int width = videoPlayer.targetTexture.width = (int)videoPlayer.width;
-            int height = videoPlayer.targetTexture.height = (int)videoPlayer.height;
-            rectTransform.sizeDelta = Screen.width * 1f / Screen.height < width * 1f / height
-                ? new Vector2(Screen.width, height * 1f * Screen.width / width)
-                : new Vector2(width * 1f * Screen.height / height, Screen.height);
+            videoPlayer.prepareCompleted += source =>
+            {
+                StartCoroutine(StartPlay());
+                RectTransform rectTransform = source.GetComponent<RectTransform>();
+                videoPlayer.targetTexture.Release();
+                int width = source.targetTexture.width = (int)source.width;
+                int height = source.targetTexture.height = (int)source.height;
+                videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+                rectTransform.sizeDelta = Screen.width * 1f / Screen.height < width * 1f / height
+                    ? new Vector2(Screen.width, height * 1f * Screen.width / width)
+                    : new Vector2(width * 1f * Screen.height / height, Screen.height);
+            };
             videoPlayer.Prepare();
         }
 
@@ -137,7 +152,8 @@ namespace DRFV.video
         {
             while (!enter)
             {
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButton(0) && !IsOutScreen(Input.mousePosition)) EnterGame();
+                if (Input.GetKeyDown(KeyCode.Space) ||
+                    Input.GetMouseButton(0) && !IsOutScreen(Input.mousePosition)) EnterGame();
                 yield return null;
             }
         }

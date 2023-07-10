@@ -6,6 +6,5 @@ namespace DRFV.Global.Managers
     {
         public bool isAprilFool;
         public bool hadouTest;
-        public bool removedStory;
     }
 }

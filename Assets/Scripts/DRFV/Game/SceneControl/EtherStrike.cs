@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using DRFV.Game.HPBars;
 using DRFV.Game;
+using DRFV.Global;
 using DRFV.Setting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +25,7 @@ namespace DRFV.Game.SceneControl
             }
 
             _theGameManager = theGameManager;
-            anomaly = Resources.Load<AudioClip>("STORY/SONGS/etherstrike_anomaly");
+            anomaly = ExternalResources.LoadAudioClip("STORY/SONGS/etherstrike_anomaly");
             StartCoroutine(Qwq());
         }
 

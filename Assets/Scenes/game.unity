@@ -5670,7 +5670,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: f4c50fc04466d36409191eaa2e324302, type: 3}
   m_Color: {r: 0.31, g: 0.31, b: 0.31, a: 1}
   m_FlipX: 0
@@ -10158,21 +10158,6 @@ MonoBehaviour:
   AnimationGradesParent: {fileID: 55093857}
   AnimationGrades: []
   SkillDamage: 1
-  BPMCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.35833335
-      value: 0.23349056
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   SCCurve:
     serializedVersion: 2
     m_Curve: []
@@ -10702,7 +10687,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: f4c50fc04466d36409191eaa2e324302, type: 3}
   m_Color: {r: 0.31, g: 0.31, b: 0.31, a: 1}
   m_FlipX: 0
@@ -13506,12 +13491,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   theGameManager: {fileID: 822921281}
-  BPMCurve:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   SCs: []
   inited: 0
 --- !u!4 &1137278789

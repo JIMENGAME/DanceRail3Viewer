@@ -593,7 +593,7 @@ namespace DRFV.Game
             }
             else if (storyMode)
             {
-                s = Resources.Load<TextAsset>("STORY/SONGS/" + SongKeyword + "." + SongHard).text.Trim()
+                s = ExternalResources.LoadText("STORY/SONGS/" + SongKeyword + "." + SongHard).text.Trim()
                     .Replace("\r", "")
                     .Replace("\t", "");
             }
@@ -773,7 +773,7 @@ namespace DRFV.Game
                 var drbFile =
                     DRBFile.Parse(
                         storyMode
-                            ? Resources.Load<TextAsset>($"STORY/SONGS/custom_mover.{SongKeyword}.{SongHard}").text
+                            ? ExternalResources.LoadText($"STORY/SONGS/custom_mover.{SongKeyword}.{SongHard}").text
                             : File.ReadAllText(path));
                 drbFile.GenerateAttributesOnPlay(SongHard);
 
@@ -792,7 +792,7 @@ namespace DRFV.Game
                 var drbFile =
                     DRBFile.Parse(
                         storyMode
-                            ? Resources.Load<TextAsset>($"STORY/SONGS/custom_height.{SongKeyword}.{SongHard}").text
+                            ? ExternalResources.LoadText($"STORY/SONGS/custom_height.{SongKeyword}.{SongHard}").text
                             : File.ReadAllText(path));
                 drbFile.GenerateAttributesOnPlay(SongHard);
 
@@ -920,7 +920,7 @@ namespace DRFV.Game
             stopwatch.Start();
             float[] _times;
             string[] _lyrics;
-            TextAsset textAsset = Resources.Load<TextAsset>($"STORY/SONGS/text_before_start.{SongKeyword}.{SongHard}");
+            TextAsset textAsset = ExternalResources.LoadText($"STORY/SONGS/text_before_start.{SongKeyword}.{SongHard}");
             if (!textAsset) yield break;
             try
             {
@@ -1857,9 +1857,9 @@ namespace DRFV.Game
             StoryChallengeContainer storyChallengeContainer = go.AddComponent<StoryChallengeContainer>();
             storyChallengeContainer.songData = songData;
             storyChallengeContainer.music =
-                Resources.Load<AudioClip>($"STORY/SONGS/{storyChallengeContainer.songData.keyword}");
+                ExternalResources.LoadAudioClip($"STORY/SONGS/{storyChallengeContainer.songData.keyword}");
             storyChallengeContainer.songData.cover =
-                Resources.Load<Sprite>("STORY/SONGS/" + storyChallengeContainer.songData.keyword);
+                ExternalResources.LoadSprite("STORY/SONGS/" + storyChallengeContainer.songData.keyword);
             storyChallengeContainer.isComputer = Application.platform switch
             {
                 RuntimePlatform.WindowsEditor => true,

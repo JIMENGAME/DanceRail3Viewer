@@ -43,6 +43,11 @@ namespace DRFV.Global
             {
                 Directory.CreateDirectory(dataPath + "settings/note_sfx");
             }
+            
+            if (!Directory.Exists(dataPath + "resources"))
+            {
+                Directory.CreateDirectory(dataPath + "resources");
+            }
 
             if (!Directory.Exists(cachePath))
             {

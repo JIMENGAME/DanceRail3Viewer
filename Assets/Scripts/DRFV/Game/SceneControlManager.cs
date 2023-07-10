@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using DRFV.Game.SceneControl;
 using DRFV.Global;
-using DRFV.Game;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -25,9 +24,18 @@ namespace DRFV.Game
         {
             if (theGameManager.DebugMode || theGameManager.storyMode)
             {
-                TextAsset textAsset =
-                    Resources.Load<TextAsset>(
-                        $"{(theGameManager.DebugMode ? "DEBUG" : "STORY/SONGS")}/{theGameManager.SongKeyword}.{theGameManager.SongHard}.scenecontrol");
+                TextAsset textAsset;
+                if (theGameManager.DebugMode)
+                {
+                    textAsset =
+                        Resources.Load<TextAsset>(
+                            $"DEBUG/{theGameManager.SongKeyword}.{theGameManager.SongHard}.scenecontrol");
+                }
+                else
+                {
+                    textAsset = ExternalResources.LoadText(
+                        $"STORY/SONGS/{theGameManager.SongKeyword}.{theGameManager.SongHard}.scenecontrol");
+                }
                 if (textAsset)
                 {
                     yield return ScenecontrolListReadin(JObject.Parse(textAsset.text));
@@ -263,7 +271,6 @@ namespace DRFV.Game
                     // }
                     GameObject go = new GameObject("EnwidenLaneManager");
                     go.transform.position = Vector3.zero;
-                    go.transform.SetParent(gameObject.transform, false);
                     EnwidenLane enwidenLaneSc = go.AddComponent<EnwidenLane>();
                     enwidenLaneSc.Init(theGameManager, enwidenLane.ToArray());
                 }

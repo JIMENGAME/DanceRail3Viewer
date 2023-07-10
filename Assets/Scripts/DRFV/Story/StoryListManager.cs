@@ -38,7 +38,7 @@ namespace DRFV.Story
             panel.anchoredPosition = Vector2.zero;
             AccountInfo.Instance.UpdateAccountPanel();
 
-            storyListJo = JArray.Parse(Resources.Load<TextAsset>("STORY/storylist").text);
+            storyListJo = JArray.Parse(ExternalResources.LoadText("STORY/storylist").text);
             if (storyListJo.Count == 0)
             {
                 Back();
