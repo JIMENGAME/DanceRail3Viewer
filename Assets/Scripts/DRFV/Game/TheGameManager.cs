@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DG.Tweening;
+using DRFV.Dankai;
 using DRFV.Data;
 using DRFV.Enums;
 using DRFV.Game.HPBars;
@@ -70,8 +71,9 @@ namespace DRFV.Game
 
         public GameObject BeforeGameBackground;
 
-        private GameObject songDataObject;
+        private GameObject dankaiDataGameObject;
         public SongDataContainer songDataContainer;
+        public DankaiDataContainer dankaiDataContainer;
 
         public GameObject autoPlayHint;
         public Text ProgramInfoTitle;
@@ -110,6 +112,7 @@ namespace DRFV.Game
         private AudioClip originalBGM;
         private bool saveAudio;
         public bool DebugMode;
+        public bool IsDankai;
         public bool ShowNoteId;
 
         public ProgressManager progressManager;
@@ -317,9 +320,11 @@ namespace DRFV.Game
 
         private IEnumerator ApplySettings()
         {
-            songDataObject = GameObject.FindWithTag("SongData");
+            dankaiDataGameObject = GameObject.FindWithTag("DankaiData");
+            GameObject songDataObject = GameObject.FindWithTag("SongData");
+            IsDankai = dankaiDataGameObject != null;
 #if UNITY_EDITOR
-            DebugMode = songDataObject == null;
+            DebugMode = !IsDankai && songDataObject == null;
 #endif
             currentSettings = GlobalSettings.CurrentSettings;
             if (DebugMode)
@@ -334,9 +339,15 @@ namespace DRFV.Game
 
                 hasVideo = !String.IsNullOrEmpty(VideoPlayer.url) || VideoPlayer.clip != null;
             }
-            else if (songDataObject != null)
+            else if (IsDankai || songDataObject != null)
             {
-                songDataContainer = songDataObject.GetComponent<SongDataContainer>();
+                if (IsDankai)
+                {
+                    dankaiDataContainer = dankaiDataGameObject.GetComponent<DankaiDataContainer>();
+                    songDataContainer = dankaiDataContainer.songs[dankaiDataContainer.nowId];
+                }
+                else songDataContainer = songDataObject.GetComponent<SongDataContainer>();
+
                 SongKeyword = songDataContainer.songData.keyword;
                 SongHard = songDataContainer.selectedDiff;
                 SongTitle = songDataContainer.songData.songName;
@@ -352,7 +363,8 @@ namespace DRFV.Game
                 GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
                 GameEffectTap = currentSettings.GameEffectTap;
                 playerGameComboDisplay = currentSettings.ComboDisp;
-                if (currentSettings.ScoreType != SCORE_TYPE.ARCAEA && playerGameComboDisplay == GameComboDisplay.LAGRANGE)
+                if (currentSettings.ScoreType != SCORE_TYPE.ARCAEA &&
+                    playerGameComboDisplay == GameComboDisplay.LAGRANGE)
                     playerGameComboDisplay = GameComboDisplay.COMBO;
                 gameSubJudgeDisplay = currentSettings.SmallJudgeDisp;
                 FCAPIndicator = currentSettings.FCAPIndicator;
@@ -391,6 +403,19 @@ namespace DRFV.Game
                     currentSettings.HardMode = true;
                 else if (barType == BarType.EASY)
                     currentSettings.HardMode = false;
+                if (IsDankai)
+                {
+                    hasCustomMover = false;
+                    hasCustomHeight = false;
+                    isHard = true;
+                    barType = BarType.DEFAULT;
+#if !UNITY_EDITOR
+                    GameAuto = false;
+#endif
+                    GameMirror = false;
+                    skillcheck = true;
+                }
+
                 if (songDataContainer.GetContainerType() == SongDataContainerType.STORY)
                 {
                     StoryChallengeContainer storyChallengeContainer = (StoryChallengeContainer)songDataContainer;
@@ -524,7 +549,12 @@ namespace DRFV.Game
                     BarType.HARD => new HPBarHard(hpManager),
                     _ => new HPBarDefault()
                 });
-
+            if (IsDankai)
+            {
+                hpManager.HPMAX = dankaiDataContainer.hpMax;
+                hpManager.HpNow = dankaiDataContainer.hpNow;
+            }
+            
             //曲データ表示
             if (textSongTitle)
             {
@@ -581,8 +611,7 @@ namespace DRFV.Game
                 uwr.downloadHandler = new DownloadHandlerBuffer();
                 uwr.SetRequestHeader("User-Agent", Encoding.UTF8.GetString(HadouTestUA));
                 yield return uwr.SendWebRequest();
-                if (uwr.result == UnityWebRequest.Result.ConnectionError ||
-                    uwr.result == UnityWebRequest.Result.ProtocolError)
+                if (uwr.result != UnityWebRequest.Result.Success)
                 {
                     NotificationBarManager.Instance.Show("谱找不到");
                     FadeManager.Instance.Back();
@@ -594,6 +623,12 @@ namespace DRFV.Game
             else if (storyMode)
             {
                 s = ExternalResources.LoadText("STORY/SONGS/" + SongKeyword + "." + SongHard).text.Trim()
+                    .Replace("\r", "")
+                    .Replace("\t", "");
+            }
+            else if (IsDankai)
+            {
+                s = Resources.Load<TextAsset>("DANKAI/SONGS/" + SongKeyword + "." + SongHard).text.Trim()
                     .Replace("\r", "")
                     .Replace("\t", "");
             }
@@ -1736,6 +1771,23 @@ namespace DRFV.Game
                 return;
             }
 
+            if (IsDankai)
+            {
+                dankaiDataContainer.nowId++;
+                dankaiDataContainer.results.Add(new()
+                {
+                    pj = PerfectJ,
+                    p = Perfect,
+                    g = good,
+                    m = miss
+                });
+                if (dankaiDataContainer.IsFinished)
+                {
+                    FadeManager.Instance.JumpScene("dankaiResult");
+                    return;
+                }
+                FadeManager.Instance.JumpScene("game");
+            }
             if (storyMode)
             {
                 switch (SongKeyword)
@@ -1801,6 +1853,7 @@ namespace DRFV.Game
         void QuitGame()
         {
             CheckDataContainers.CleanSongDataContainer();
+            CheckDataContainers.CleanDankaiDataContainer();
             GlobalSettings.CurrentSettings = currentSettings;
             GlobalSettings.Save();
             FadeManager.Instance.Back();
@@ -2185,7 +2238,7 @@ namespace DRFV.Game
 
         public void Pause()
         {
-            if (!pauseable || bgmManager.Time <= 0) return;
+            if (!pauseable || bgmManager.Time <= 0 || IsDankai) return;
             isPause = true;
             bgmManager.Pause();
             VideoPlayer.Pause();

@@ -22,14 +22,26 @@ namespace DRFV.Game
 
         public IEnumerator Init()
         {
-            if (_inited || theGameManager.DebugMode) yield break;
+            if (_inited || theGameManager.DebugMode || theGameManager.IsDankai)
+            {
+                Destroy(gameObject);
+                yield break;
+            }
+
             if (theGameManager.storyMode)
             {
                 TextAsset textAsset = ExternalResources.LoadText($"STORY/SONGS/lyric.{theGameManager.SongKeyword}.{theGameManager.SongHard}");
                 if (textAsset == null)
                 {
                     textAsset = ExternalResources.LoadText($"STORY/SONGS/lyric.{theGameManager.SongKeyword}");
-                    if (textAsset == null) yield break;
+                    if (textAsset != null)
+                    {
+                    }
+                    else
+                    {
+                        Destroy(gameObject);
+                        yield break;
+                    }
                 }
                 SetLyric(JObject.Parse(textAsset.text));
             }
@@ -41,7 +53,11 @@ namespace DRFV.Game
                 {
                     filePath = StaticResources.Instance.dataPath + "songs/" +
                                theGameManager.SongKeyword + "/lyric.json";
-                    if (!File.Exists(filePath)) yield break;
+                    if (!File.Exists(filePath))
+                    {
+                        Destroy(gameObject);
+                        yield break;
+                    }
                 }
                 SetLyric(Util.ReadJson(filePath));
             }

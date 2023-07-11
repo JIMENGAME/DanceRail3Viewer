@@ -53,4 +53,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/debug/resultDebug.unity
     guid: 8e626871d2bbd494cadb03428647e213
+  - enabled: 1
+    path: Assets/Scenes/dankai.unity
+    guid: 3612284429093b4479b7dafbf60e9e3c
+  - enabled: 1
+    path: Assets/Scenes/dankaiResult.unity
+    guid: 6b7f646de6b6994469304e9df0dffbf2
   m_configObjects: {}

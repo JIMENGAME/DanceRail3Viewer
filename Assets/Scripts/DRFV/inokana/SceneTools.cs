@@ -96,6 +96,18 @@ namespace DRFV.inokana
         {
             IntoScene("coinshop");
         }
+
+        [MenuItem("Scene Tools/Into Dankai")]
+        private static void IntoDankai()
+        {
+            IntoScene("dankai");
+        }
+        
+        [MenuItem("Scene Tools/Into Dankai Result")]
+        private static void IntoDankaiResult()
+        {
+            IntoScene("dankaiResult");
+        }
         
         [MenuItem("Scene Tools/Debug/Into Test")]
         private static void IntoTest()

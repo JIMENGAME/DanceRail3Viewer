@@ -22,7 +22,11 @@ namespace DRFV.Game
 
         public IEnumerator Init()
         {
-            if (theGameManager.DebugMode || theGameManager.storyMode)
+            if (theGameManager.IsDankai)
+            {
+                DestroySelf();
+            }
+            else if (theGameManager.DebugMode || theGameManager.storyMode)
             {
                 TextAsset textAsset;
                 if (theGameManager.DebugMode)
@@ -36,6 +40,7 @@ namespace DRFV.Game
                     textAsset = ExternalResources.LoadText(
                         $"STORY/SONGS/{theGameManager.SongKeyword}.{theGameManager.SongHard}.scenecontrol");
                 }
+
                 if (textAsset)
                 {
                     yield return ScenecontrolListReadin(JObject.Parse(textAsset.text));
@@ -47,7 +52,8 @@ namespace DRFV.Game
             }
             else
             {
-                string filePath = Path.GetFullPath(StaticResources.Instance.dataPath + "songs/" + theGameManager.SongKeyword + "/scenecontrol." +
+                string filePath = Path.GetFullPath(StaticResources.Instance.dataPath + "songs/" +
+                                                   theGameManager.SongKeyword + "/scenecontrol." +
                                                    theGameManager.SongHard +
                                                    ".json");
                 if (File.Exists(filePath))
@@ -120,9 +126,11 @@ namespace DRFV.Game
                             go.transform.position = Vector3.zero;
                             go.transform.SetParent(gameObject.transform, false);
                             SongName sc = go.AddComponent<SongName>();
-                            sc.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
+                            sc.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
                                 scenecontrol["value"].ToObject<string>());
-                            float time = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            float time =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCSongNames.Contains(time))
                             {
                                 SCSongNames.Add(time);
@@ -135,9 +143,11 @@ namespace DRFV.Game
                             go1.transform.position = Vector3.zero;
                             go1.transform.SetParent(gameObject.transform, false);
                             SongArtist sc1 = go1.AddComponent<SongArtist>();
-                            sc1.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
+                            sc1.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
                                 scenecontrol["value"].ToObject<string>());
-                            float time1 = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            float time1 =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCSongArtists.Contains(time1))
                             {
                                 SCSongArtists.Add(time1);
@@ -150,9 +160,11 @@ namespace DRFV.Game
                             go2.transform.position = Vector3.zero;
                             go2.transform.SetParent(gameObject.transform, false);
                             SongHard sc2 = go2.AddComponent<SongHard>();
-                            sc2.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
+                            sc2.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
                                 scenecontrol["value"].ToObject<int>());
-                            float time2 = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            float time2 =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCSongHards.Contains(time2))
                             {
                                 SCSongHards.Add(time2);
@@ -165,9 +177,11 @@ namespace DRFV.Game
                             go3.transform.position = Vector3.zero;
                             go3.transform.SetParent(gameObject.transform, false);
                             SongCover sc3 = go3.AddComponent<SongCover>();
-                            sc3.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
+                            sc3.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
                                 images[scenecontrol["value"].ToObject<string>()]);
-                            float time3 = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            float time3 =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCSongCovers.Contains(time3))
                             {
                                 SCSongCovers.Add(time3);
@@ -180,11 +194,13 @@ namespace DRFV.Game
                             go4.transform.position = Vector3.zero;
                             go4.transform.SetParent(gameObject.transform, false);
                             HPChange sc4 = go4.AddComponent<HPChange>();
-                            sc4.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
+                            sc4.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
                                 scenecontrol["value"].ToObject<float>() *
                                 (scenecontrol["setting"].ToObject<string>().Equals("down") ? -1f : 1f),
                                 scenecontrol["setting"].ToObject<string>().Equals("set"));
-                            float time4 = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            float time4 =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCHPChanges.Contains(time4))
                             {
                                 SCHPChanges.Add(time4);
@@ -197,9 +213,11 @@ namespace DRFV.Game
                             go5.transform.position = Vector3.zero;
                             go5.transform.SetParent(gameObject.transform, false);
                             HPMax sc5 = go5.AddComponent<HPMax>();
-                            sc5.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
+                            sc5.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()),
                                 scenecontrol["value"].ToObject<float>());
-                            float time5 = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            float time5 =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCHPMaxes.Contains(time5))
                             {
                                 SCHPMaxes.Add(time5);
@@ -212,8 +230,10 @@ namespace DRFV.Game
                             go6.transform.position = Vector3.zero;
                             go6.transform.SetParent(gameObject.transform, false);
                             HPRefill sc6 = go6.AddComponent<HPRefill>();
-                            sc6.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()));
-                            float time6 = theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
+                            sc6.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()));
+                            float time6 =
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>());
                             if (!SCHPRefills.Contains(time6))
                             {
                                 SCHPRefills.Add(time6);
@@ -240,7 +260,8 @@ namespace DRFV.Game
                             go8.transform.position = Vector3.zero;
                             go8.transform.SetParent(gameObject.transform, false);
                             AxiumCrisis axiumCrisis = go8.AddComponent<AxiumCrisis>();
-                            axiumCrisis.Init(theGameManager, theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()));
+                            axiumCrisis.Init(theGameManager,
+                                theGameManager.drbfile.CalculateDRBFileTime(scenecontrol["time"].ToObject<float>()));
                             SCs.Add(axiumCrisis);
                             break;
                         case "enwidenlanes":
@@ -285,7 +306,7 @@ namespace DRFV.Game
                 //     throw new ArgumentException("Check out at least two scenecontrol with the same time and the same type");
 
                 this.SCs = SCs.ToArray();
-                
+
                 if (this.SCs.Length == 0) DestroySelf();
 
                 //Gc();

@@ -30,5 +30,10 @@ namespace DRFV.Global
                 Object.Destroy(go);
             }
         }
+
+        public static void CleanDankaiDataContainer()
+        {
+            
+        }
     }
 }

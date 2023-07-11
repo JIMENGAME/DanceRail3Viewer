@@ -14,6 +14,7 @@ TagManager:
   - EnwidenLaneRight
   - HanteiLine1
   - HanteiLine2
+  - DankaiData
   layers:
   - Default
   - TransparentFX

@@ -8,6 +8,7 @@ namespace DRFV.Select
         public const int ORIGINAL = 0;
         public const int STORY = 1;
         public const int HADOU_TEST = 2;
+        public const int DANKAI = 0;
     }
     public class SongDataContainer : MonoBehaviour
     {

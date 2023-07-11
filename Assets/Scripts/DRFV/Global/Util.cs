@@ -510,6 +510,8 @@ namespace DRFV.Global
             }
         }
 
+        public delegate bool BooleanDelegate();
+
 #if false
         public static AnimationCurve GetAnimationCurveFromDumpedFile(string path)
         {

@@ -3,17 +3,12 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using Object = UnityEngine.Object;
 
 namespace DRFV.Global
 {
     public class ExternalResources
     {
         private static readonly string[] TextFileSuffixes = {".txt", ".json", ".drb" };
-        public static T Load<T>(string path) where T : Object
-        {
-            return Resources.Load<T>(path);
-        }
 
         public static string GetVideoClipPath(string path)
         {

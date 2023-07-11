@@ -117,7 +117,7 @@ namespace DRFV.Story
 
         private void UpdateText()
         {
-            TextAsset storyTextAsset = ExternalResources.Load<TextAsset>($"STORY/STORIES/{chapter}-{section}.{selectedPage}");
+            TextAsset storyTextAsset = ExternalResources.LoadText($"STORY/STORIES/{chapter}-{section}.{selectedPage}");
             tStory.text = storyTextAsset == null ? "如果你看到这串文字说明出bug了，试试再点一次SECTION" : storyTextAsset.text;
             float preferredHeight = tStory.preferredHeight;
             rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, preferredHeight + 20);

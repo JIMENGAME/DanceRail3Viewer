@@ -1,0 +1,59 @@
+{
+    "12": [
+        {
+            "hp": 200,
+            "songs": [
+                {
+                    "keyword": "senbonzakura",
+                    "tier": 14
+                },
+                {
+                    "keyword": "vigorbattle",
+                    "tier": 15
+                },
+                {
+                    "keyword": "cala",
+                    "tier": 15
+                },
+                {
+                    "keyword": "redbreast",
+                    "tier": 16
+                }
+            ]
+        },
+        {
+            "hp": 200,
+            "songs": [
+                {
+                    "keyword": "daydream",
+                    "tier": 14
+                },
+                {
+                    "keyword": "circulatory",
+                    "tier": 15
+                },
+                {
+                    "keyword": "cala",
+                    "tier": 16
+                },
+                {
+                    "keyword": "lc",
+                    "tier": 15
+                }
+            ]
+        },
+        {
+            "hp": 50,
+            "songs": [
+                {
+                    "keyword": "away",
+                    "tier": 16
+                },
+                {
+                    "keyword": "b2t5",
+                    "tier": 16
+                }
+            ]
+        }
+    ]
+}

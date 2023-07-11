@@ -8,13 +8,12 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Ubuntu
   fontNames:
   - Ubuntu
   fallbackFontReferences:
   - {fileID: 12800000, guid: c0425a615edbfd248836f3e59352aaab, type: 3}
-  - {fileID: 12800000, guid: 3c9ed481c3def8c43bb9c61e1370d2c3, type: 3}
   - {fileID: 12800000, guid: 203081854b7d9e342aac0b2bc2e86c67, type: 3}
+  - {fileID: 12800000, guid: 3c9ed481c3def8c43bb9c61e1370d2c3, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
