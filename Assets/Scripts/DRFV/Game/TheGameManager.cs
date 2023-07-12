@@ -2247,7 +2247,7 @@ namespace DRFV.Game
 
         public void Pause()
         {
-            if (!pauseable || bgmManager.Time <= 0 || IsDankai) return;
+            if (!pauseable || bgmManager.Time <= 0) return;
             isPause = true;
             bgmManager.Pause();
             VideoPlayer.Pause();
@@ -2273,7 +2273,7 @@ namespace DRFV.Game
 
         public void Retry()
         {
-            if (!pauseable || bgmManager.Time <= 0) return;
+            if (!pauseable || bgmManager.Time <= 0 || IsDankai) return;
             GlobalSettings.CurrentSettings = currentSettings;
             GlobalSettings.Save();
             FadeManager.Instance.JumpScene("game");
