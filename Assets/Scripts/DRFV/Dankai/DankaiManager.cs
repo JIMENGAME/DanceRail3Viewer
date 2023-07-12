@@ -38,6 +38,7 @@ namespace DRFV.Dankai
                 DankaiData[] dankaiData = _dankaiList[selectedDankai.ToString()];
                 for (var j = 0; j < dankaiData.Length; j++)
                 {
+                    if (dankaiData[j] == null) continue;
                     GameObject instantiate = Instantiate(dankaiButtonPrefab, dankaiButtonPanel);
                     instantiate.GetComponent<DankaiButton>().Init(selectedDankai, j, this);
                 }
