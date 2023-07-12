@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using DRFV.Dankai;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class DankaiButton : MonoBehaviour

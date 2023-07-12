@@ -6,6 +6,7 @@ namespace DRFV.Dankai
 {
     public class DankaiDataContainer : MonoBehaviour
     {
+        public string skill;
         public int nowId = 0;
         public float hpMax = 0;
         public float hpNow = 0;
@@ -16,6 +17,7 @@ namespace DRFV.Dankai
 
     public class DankaiResultData
     {
+        public float score;
         public int pj, p, g, m;
     }
 }

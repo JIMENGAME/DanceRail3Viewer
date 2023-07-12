@@ -272,6 +272,8 @@ namespace DRFV.Game
 
         private float lastNoteTime;
 
+        private SCORE_TYPE _scoreType;
+
         private void Awake()
         {
             if (!objCombo[0]) return;
@@ -359,11 +361,12 @@ namespace DRFV.Game
                 GameMirror = currentSettings.IsMirror;
                 isHard = currentSettings.HardMode;
                 skillcheck = currentSettings.SkillCheckMode;
+                _scoreType = currentSettings.ScoreType;
                 GameEffectParamEQLevel = currentSettings.GameEffectParamEQLevel;
                 GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
                 GameEffectTap = currentSettings.GameEffectTap;
                 playerGameComboDisplay = currentSettings.ComboDisp;
-                if (currentSettings.ScoreType != SCORE_TYPE.ARCAEA &&
+                if (_scoreType != SCORE_TYPE.ARCAEA &&
                     playerGameComboDisplay == GameComboDisplay.LAGRANGE)
                     playerGameComboDisplay = GameComboDisplay.COMBO;
                 gameSubJudgeDisplay = currentSettings.SmallJudgeDisp;
@@ -409,11 +412,16 @@ namespace DRFV.Game
                     hasCustomHeight = false;
                     isHard = true;
                     barType = BarType.DEFAULT;
+                    _scoreType = SCORE_TYPE.ORIGINAL;
+                    if (playerGameComboDisplay == GameComboDisplay.LAGRANGE) playerGameComboDisplay = GameComboDisplay.COMBO;
 #if !UNITY_EDITOR
                     GameAuto = false;
 #endif
                     GameMirror = false;
                     skillcheck = true;
+                    // VideoPlayer.playbackSpeed = bgmManager.Pitch = 1.0f;
+                    // enableJudgeRangeFix = false;
+                    // RealNoteSpeed = NoteSpeed;
                 }
 
                 if (songDataContainer.GetContainerType() == SongDataContainerType.STORY)
@@ -582,7 +590,7 @@ namespace DRFV.Game
             }
 
 
-            if (!DebugMode && !storyMode && !hadouTest) hasVideo = ReadVideo();
+            if (!DebugMode && !storyMode && !hadouTest && !IsDankai) hasVideo = ReadVideo();
             background.SetActive(!hasVideo);
             VideoPlayer.transform.parent.gameObject.SetActive(hasVideo);
             if (hasVideo)
@@ -1776,6 +1784,7 @@ namespace DRFV.Game
                 dankaiDataContainer.nowId++;
                 dankaiDataContainer.results.Add(new()
                 {
+                    score = Score,
                     pj = PerfectJ,
                     p = Perfect,
                     g = good,
@@ -2414,7 +2423,7 @@ namespace DRFV.Game
         void SCORE_INIT()
         {
             Score = 0;
-            LiLunZhi = MaxScore = currentSettings.ScoreType switch
+            LiLunZhi = MaxScore = _scoreType switch
             {
                 SCORE_TYPE.ORIGINAL => 3000000,
                 SCORE_TYPE.ARCAEA => 10000000 + noteTotal,
@@ -2608,7 +2617,7 @@ namespace DRFV.Game
         void ReflashCombo()
         {
             //表示物反応
-            switch (currentSettings.ScoreType)
+            switch (_scoreType)
             {
                 case SCORE_TYPE.ORIGINAL:
                     Score = 3000000.0f * (PerfectJ * 1.0f + Perfect * 0.99f + good / 3.0f) / noteTotal;
@@ -2636,7 +2645,7 @@ namespace DRFV.Game
             }
 
 
-            if (textScore) textScore.text = Util.ParseScore(Mathf.RoundToInt(Score), currentSettings.ScoreType);
+            if (textScore) textScore.text = Util.ParseScore(Mathf.RoundToInt(Score), _scoreType);
             if (textMaxcombo) textMaxcombo.text = MaxCombo + "";
             if (textPerfect) textPerfect.text = PerfectJ + "";
             if (textPerfect2) textPerfect2.text = Perfect + "";

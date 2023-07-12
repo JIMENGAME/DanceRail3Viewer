@@ -4,36 +4,32 @@ namespace DRFV.Global
 {
     public static class CheckDataContainers
     {
-        public static void CleanSongDataContainer()
+        private static void Clean(string tag)
         {
-            GameObject[] gos = GameObject.FindGameObjectsWithTag("SongData");
+            GameObject[] gos = GameObject.FindGameObjectsWithTag(tag);
             foreach (GameObject go in gos)
             {
                 Object.Destroy(go);
             }
+        }
+        public static void CleanSongDataContainer()
+        {
+            Clean("SongData");
         }
     
         public static void CleanResultDataContainer()
         {
-            GameObject[] gos = GameObject.FindGameObjectsWithTag("ResultData");
-            foreach (GameObject go in gos)
-            {
-                Object.Destroy(go);
-            }
+            Clean("ResultData");
         }
     
         public static void CleanStoryDataContainer()
         {
-            GameObject[] gos = GameObject.FindGameObjectsWithTag("StoryData");
-            foreach (GameObject go in gos)
-            {
-                Object.Destroy(go);
-            }
+            Clean("StoryData");
         }
 
         public static void CleanDankaiDataContainer()
         {
-            
+            Clean("DankaiData");
         }
     }
 }

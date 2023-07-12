@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DRFV.Global.Managers;
+using DRFV.Login;
 using DRFV.Select;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -20,6 +23,7 @@ namespace DRFV.Dankai
         // Start is called before the first frame update
         void Start()
         {
+            AccountInfo.Instance.UpdateAccountPanel();
             _dankaiList = JsonConvert.DeserializeObject<Dictionary<string, DankaiData[]>>(Resources.Load<TextAsset>("DANKAI/dankailist").text);
             if (!_dankaiList.ContainsKey(selectedDankai.ToString()))
             {
@@ -64,6 +68,7 @@ namespace DRFV.Dankai
                 tag = "DankaiData"
             };
             DankaiDataContainer dankaiDataContainer = mainObj.AddComponent<DankaiDataContainer>();
+            dankaiDataContainer.skill = $"{selectedDankai}-{selectedId + 1}";
             dankaiDataContainer.hpNow = dankaiDataContainer.hpMax = _dankaiData.hp;
             dankaiDataContainer.songs = new SongDataContainer[_dankaiData.songs.Count];
             for (var i = 0; i < _dankaiData.songs.Count; i++)
@@ -81,7 +86,7 @@ namespace DRFV.Dankai
                 {
                     keyword = song.keyword,
                     songName = songDatas[song.keyword].name,
-                    songArtist = songDatas[song.keyword].artist,
+                    songArtist = Convert.ToBase64String(Encoding.UTF8.GetBytes($"Skill Check Stage {selectedDankai}-{i + 1}")),
                     cover = Resources.Load<Sprite>("DANKAI/SONGS/" + song.keyword),
                     hards = new[] { song.tier }
                 };
