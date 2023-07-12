@@ -30,6 +30,10 @@ namespace DRFV.Dankai
             tScore.text = Util.ParseScore(Mathf.RoundToInt(dankaiResultData.score), SCORE_TYPE.ORIGINAL);
             tDetail.text =
                 $"<color=#FF7>{dankaiResultData.pj}</color>/<color=#F97>{dankaiResultData.p}</color>/<color=#7F7>{dankaiResultData.g}</color>/<color=#F77>{dankaiResultData.m}</color>";
+            if (tTitle.preferredWidth > 400f)
+            {
+                tTitle.transform.localScale = new Vector2(400f / tTitle.preferredWidth, 1f);
+            }
         }
     }
 }

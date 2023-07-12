@@ -13,6 +13,7 @@ namespace DRFV.Dankai
 {
     public class DankaiManager : MonoBehaviour
     {
+        private const int MaxDankai = 14;
         private Dictionary<string, DankaiData[]> _dankaiList = new Dictionary<string, DankaiData[]>();
         private object loo = new();
         private int selectedDankai = 12;
@@ -30,11 +31,16 @@ namespace DRFV.Dankai
                 FadeManager.Instance.Back();
                 return;
             }
-            DankaiData[] dankaiData = _dankaiList[selectedDankai.ToString()];
-            for (var i = 0; i < dankaiData.Length; i++)
+
+            for (int i = 1; i <= MaxDankai; i++)
             {
-                GameObject instantiate = Instantiate(dankaiButtonPrefab, dankaiButtonPanel);
-                instantiate.GetComponent<DankaiButton>().Init(selectedDankai, i, this);
+                if (!_dankaiList.ContainsKey(i.ToString())) continue;
+                DankaiData[] dankaiData = _dankaiList[selectedDankai.ToString()];
+                for (var j = 0; j < dankaiData.Length; j++)
+                {
+                    GameObject instantiate = Instantiate(dankaiButtonPrefab, dankaiButtonPanel);
+                    instantiate.GetComponent<DankaiButton>().Init(selectedDankai, j, this);
+                }
             }
 
             RefreshSelectedDankaiUI();
@@ -62,7 +68,7 @@ namespace DRFV.Dankai
         public void EnterDankai()
         {
             DankaiData _dankaiData = _dankaiList[selectedDankai.ToString()][selectedId];
-            Dictionary<string,SongData> songDatas = JsonConvert.DeserializeObject<Dictionary<string, SongData>>(Resources.Load<TextAsset>("DANKAI/songlist").text);
+            Dictionary<string,string> songDatas = JsonConvert.DeserializeObject<Dictionary<string, string>>(Resources.Load<TextAsset>("DANKAI/songlist").text);
             GameObject mainObj = new GameObject("DankaiDataContainer")
             {
                 tag = "DankaiData"
@@ -85,7 +91,7 @@ namespace DRFV.Dankai
                 dankaiDataContainer.songs[i].songData = new TheSelectManager.SongData()
                 {
                     keyword = song.keyword,
-                    songName = songDatas[song.keyword].name,
+                    songName = songDatas[song.keyword],
                     songArtist = Convert.ToBase64String(Encoding.UTF8.GetBytes($"Skill Check Stage {selectedDankai}-{i + 1}")),
                     cover = Resources.Load<Sprite>("DANKAI/SONGS/" + song.keyword),
                     hards = new[] { song.tier }
@@ -117,11 +123,5 @@ namespace DRFV.Dankai
     {
         public string keyword;
         public int tier;
-    }
-
-    public class SongData
-    {
-        public string name;
-        public string artist;
     }
 }
