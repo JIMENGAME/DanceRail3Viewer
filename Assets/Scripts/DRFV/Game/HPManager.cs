@@ -127,7 +127,7 @@ namespace DRFV.Game
 
         private void UpdateHp()
         {
-            if (HpNow <= 0 && !isCheap && HpBar.isCheap)
+            if (HpNow <= 0 && !isCheap && HpBar.isCheapable)
             {
                 isCheap = true;
             }

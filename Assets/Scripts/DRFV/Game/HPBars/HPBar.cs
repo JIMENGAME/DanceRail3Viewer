@@ -8,7 +8,7 @@ namespace DRFV.Game.HPBars
     {
         public float HpInit { get; protected set; } 
         public float HpMax { get; protected set;}
-        public bool isCheap = true;
+        public bool isCheapable = true;
         public Color barColorLight { get; protected set; }
         public Color barColorDark { get; protected set; }
 

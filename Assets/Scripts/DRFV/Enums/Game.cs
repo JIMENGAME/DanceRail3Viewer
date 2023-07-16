@@ -28,7 +28,8 @@ namespace DRFV.Enums
     {
         DEFAULT = 0,
         EASY = 1,
-        HARD = 2
+        HARD = 2,
+        DANKAI = 3
     }
     public enum NoteKind
     {

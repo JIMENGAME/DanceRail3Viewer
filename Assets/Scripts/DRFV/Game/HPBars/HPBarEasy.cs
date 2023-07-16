@@ -10,7 +10,7 @@ namespace DRFV.Game.HPBars
         {
             HpInit = 0f;
             HpMax = 100f;
-            isCheap = false;
+            isCheapable = false;
             barColorLight = new Color(0f, 0.3f, 0f, 1f);
             barColorDark = Color.green;
         }

@@ -411,9 +411,10 @@ namespace DRFV.Game
                     hasCustomMover = false;
                     hasCustomHeight = false;
                     isHard = true;
-                    barType = BarType.DEFAULT;
+                    barType = BarType.DANKAI;
                     _scoreType = SCORE_TYPE.ORIGINAL;
-                    if (playerGameComboDisplay == GameComboDisplay.LAGRANGE) playerGameComboDisplay = GameComboDisplay.COMBO;
+                    if (playerGameComboDisplay == GameComboDisplay.LAGRANGE)
+                        playerGameComboDisplay = GameComboDisplay.COMBO;
 #if !UNITY_EDITOR
                     GameAuto = false;
 #endif
@@ -555,14 +556,10 @@ namespace DRFV.Game
                     BarType.DEFAULT => new HPBarDefault(),
                     BarType.EASY => new HPBarEasy(),
                     BarType.HARD => new HPBarHard(hpManager),
+                    BarType.DANKAI => new HPBarDefault(dankaiDataContainer.hpMax, dankaiDataContainer.hpNow),
                     _ => new HPBarDefault()
                 });
-            if (IsDankai)
-            {
-                hpManager.HPMAX = dankaiDataContainer.hpMax;
-                hpManager.HpNow = dankaiDataContainer.hpNow;
-            }
-            
+
             //曲データ表示
             if (textSongTitle)
             {
@@ -1795,9 +1792,11 @@ namespace DRFV.Game
                     FadeManager.Instance.JumpScene("dankaiResult");
                     return;
                 }
+                dankaiDataContainer.hpNow = hpManager.HpNow;
+
                 FadeManager.Instance.JumpScene("game");
             }
-            if (storyMode)
+            else if (storyMode)
             {
                 switch (SongKeyword)
                 {

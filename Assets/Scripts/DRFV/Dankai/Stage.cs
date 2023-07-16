@@ -25,7 +25,7 @@ namespace DRFV.Dankai
                 < 26 => 5,
                 _ => 1
             };
-            iTier.sprite = Resources.Load<Sprite>($"GENERAL/tierwaku0{wakuId}");
+            iTier.sprite = Resources.Load<Sprite>($"GENERAL/tier_waku0{wakuId}");
             tTitle.text = songDataContainer.songData.songName;
             tScore.text = Util.ParseScore(Mathf.RoundToInt(dankaiResultData.score), SCORE_TYPE.ORIGINAL);
             tDetail.text =

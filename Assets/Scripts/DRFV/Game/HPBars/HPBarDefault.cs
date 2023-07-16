@@ -6,10 +6,10 @@ namespace DRFV.Game.HPBars
 {
     public class HPBarDefault : HPBar
     {
-        public HPBarDefault()
+        public HPBarDefault(float? max = null, float? init = null)
         {
-            HpInit = 100f;
-            HpMax = 100f;
+            HpInit = init ?? 100f;
+            HpMax = max ?? 100f;
             barColorLight = new Color(0f, 0.3f, 0f, 1f);
             barColorDark = Color.green;
         }
