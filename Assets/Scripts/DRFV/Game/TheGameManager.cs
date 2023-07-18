@@ -896,11 +896,16 @@ namespace DRFV.Game
             switch (playerGameComboDisplay)
             {
                 case GameComboDisplay.NONE:
-                case GameComboDisplay.COMBO:
                     _topBarValue.text = "";
                     _topBarValueRed.text = "";
                     _topBarValueBlue.text = "";
                     _topBarLabel.text = "";
+                    break;
+                case GameComboDisplay.COMBO:
+                    _topBarValue.text = "";
+                    _topBarValueRed.text = "";
+                    _topBarValueBlue.text = "";
+                    _topBarLabel.text = "COMBO";
                     break;
                 case GameComboDisplay.SCORE:
                     _topBarValue.text = "0";
