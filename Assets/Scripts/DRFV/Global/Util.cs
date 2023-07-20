@@ -445,7 +445,7 @@ namespace DRFV.Global
             GC.Collect();
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data)
+        public static Sprite ByteArrayToSprite(byte[] data, bool yongUnityZiDaiDouDi)
         {
             Texture2D texture = LoadTexture2DFromByteArray(data);
             if (texture == null)
@@ -459,7 +459,7 @@ namespace DRFV.Global
             return sprite;
         }
 
-        public static Texture2D LoadTexture2DFromByteArray(byte[] data)
+        public static Texture2D LoadTexture2DFromByteArray(byte[] data, bool yongUnityZiDaiDouDi)
         {
             try
             {
