@@ -445,9 +445,9 @@ namespace DRFV.Global
             GC.Collect();
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data, bool yongUnityZiDaiDouDi)
+        public static Sprite ByteArrayToSprite(byte[] data, bool yongUnityZiDaiDouDi = true)
         {
-            Texture2D texture = LoadTexture2DFromByteArray(data);
+            Texture2D texture = LoadTexture2DFromByteArray(data, yongUnityZiDaiDouDi);
             if (texture == null)
             {
                 NotificationBarManager.Instance.Show("错误：不支持的图片格式");
@@ -469,10 +469,13 @@ namespace DRFV.Global
             }
             catch (UnimageException)
             {
-                Texture2D texture = new Texture2D(0, 0);
-                if (texture.LoadImage(data))
+                if (yongUnityZiDaiDouDi)
                 {
-                    return texture;
+                    Texture2D texture = new Texture2D(0, 0);
+                    if (texture.LoadImage(data))
+                    {
+                        return texture;
+                    }
                 }
 
                 return null;
