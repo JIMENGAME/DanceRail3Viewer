@@ -298,6 +298,7 @@ namespace DRFV.Result
             isNoMod &= !_globalSettings.HardMode;
             isNoMod &= hpBarType != BarType.EASY;
             isNoMod &= hpBarType != BarType.HARD;
+            isNoMod &= !enableJudgeRangeFix;
             noModImage.SetActive(isNoMod);
             skillCheckIndicator.SetActive(_globalSettings.SkillCheckMode);
             mirrorIndicator.SetActive(_globalSettings.IsMirror);

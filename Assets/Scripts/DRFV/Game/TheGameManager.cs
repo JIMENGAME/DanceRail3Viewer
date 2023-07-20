@@ -377,7 +377,7 @@ namespace DRFV.Game
                 barType = (BarType)currentSettings.HPBarType;
                 gameSide = (GameSide)currentSettings.GameSide;
                 NoteJudgeRange aaa = Util.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
-                bool songspeedDiff = Math.Abs(songSpeed - 1.0f) > 0.1f;
+                bool songspeedDiff = Math.Abs(songSpeed - 1.0f) > 0.05f;
                 enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
                                       songspeedDiff;
                 RealNoteSpeed = songspeedDiff && currentSettings.enableSCFix ? NoteSpeed / songSpeed : NoteSpeed;
