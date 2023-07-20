@@ -38,7 +38,7 @@ public class UnimageDebug : MonoBehaviour
             byte[] data = new byte[fileStream.Length];
             if (fileStream.Read(data) != data.Length) throw new ArgumentException();
             fileStream.Close();
-            images[i].sprite = Util.ByteArrayToSprite(data, false);
+            images[i].sprite = Util.ByteArrayToSprite(data);
         }
     }
 }
