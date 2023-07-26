@@ -1792,7 +1792,7 @@ namespace DRFV.Game
                     g = good,
                     m = miss
                 });
-                if (dankaiDataContainer.IsFinished)
+                if (dankaiDataContainer.results.Count == dankaiDataContainer.songs.Length)
                 {
                     FadeManager.Instance.JumpScene("dankaiResult");
                     return;

@@ -11,7 +11,6 @@ namespace DRFV.Dankai
         public float hpMax = 0;
         public float hpNow = 0;
         public SongDataContainer[] songs;
-        public bool IsFinished => nowId == songs.Length;
         public List<DankaiResultData> results = new List<DankaiResultData>();
     }
 
