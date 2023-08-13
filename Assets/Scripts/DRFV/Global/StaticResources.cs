@@ -22,8 +22,7 @@ namespace DRFV.Global
         {
             DontDestroyOnLoad(gameObject);
             Util.Init();
-            dataPath = GetDataPath().Replace("\\", "");
-            cachePath = GetCachePath().Replace("\\", "");
+            InitPaths();
             if (!Directory.Exists(dataPath))
             {
                 Directory.CreateDirectory(dataPath);
@@ -77,7 +76,7 @@ namespace DRFV.Global
 
         }
 
-        private string GetDataPath()
+        private void InitPaths()
         {
             switch (Application.platform)
             {
@@ -85,42 +84,29 @@ namespace DRFV.Global
                     string result;
                     using (StreamReader sr = new StreamReader(Application.dataPath + "/../Debug_DataPath.txt"))
                     {
-                        result = sr.ReadLine();
+                        result = sr.ReadLine().Replace("\\", "/");
                     }
 
-                    if (!result.EndsWith("/") && !result.EndsWith("\\")) result += "/";
-                    return result;
+                    if (!result.EndsWith("/")) result += "/";
+                    dataPath = result;
+                    cachePath = dataPath + "cache/";
+                    break;
                 case RuntimePlatform.WindowsPlayer:
                 case RuntimePlatform.LinuxEditor:
                 case RuntimePlatform.LinuxPlayer:
-                    return Application.dataPath + "/../";
+                    dataPath = Application.dataPath + "/../";
+                    cachePath = dataPath + "cache/";
+                    break;
                 case RuntimePlatform.OSXEditor:
                 case RuntimePlatform.OSXPlayer:
                 case RuntimePlatform.IPhonePlayer:
-                    return Application.persistentDataPath + "/";
+                    dataPath = Application.persistentDataPath + "/";
+                    cachePath = Application.temporaryCachePath + "/";
+                    break;
                 case RuntimePlatform.Android:
-                    return "/storage/emulated/0/DR3Viewer/";
-                default:
-                    Application.Quit();
-                    throw new ArgumentException("Unsupported System");
-            }
-        }
-
-        private string GetCachePath()
-        {
-            switch (Application.platform)
-            {
-                case RuntimePlatform.WindowsEditor:
-                case RuntimePlatform.WindowsPlayer:
-                case RuntimePlatform.LinuxEditor:
-                case RuntimePlatform.LinuxPlayer:
-                    return dataPath + "cache/";
-                case RuntimePlatform.IPhonePlayer:
-                case RuntimePlatform.OSXEditor:
-                case RuntimePlatform.OSXPlayer:
-                    return Application.temporaryCachePath + "/";
-                case RuntimePlatform.Android:
-                    return dataPath + ".cache/";
+                    dataPath =  Path.Combine(Path.GetFullPath(Application.persistentDataPath + "/../../../.."), "DR3Viewer");
+                    cachePath = dataPath + ".cache/";
+                    break;
                 default:
                     Application.Quit();
                     throw new ArgumentException("Unsupported System");

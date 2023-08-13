@@ -59,7 +59,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/dankaiResult.unity
     guid: 6b7f646de6b6994469304e9df0dffbf2
-  - enabled: 1
-    path: Assets/Scenes/unimage.unity
-    guid: 3a8730b095d3e6747895ab22ac738eb1
   m_configObjects: {}

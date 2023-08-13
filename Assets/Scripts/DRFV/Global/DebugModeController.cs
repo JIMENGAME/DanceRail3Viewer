@@ -27,10 +27,10 @@ namespace DRFV.Global
                 }
             }
         }
-
-        protected override void OnAwake()
-        {
-            DebugMode = true;
-        }
+        //
+        // protected override void OnAwake()
+        // {
+        //     DebugMode = true;
+        // }
     }
 }
