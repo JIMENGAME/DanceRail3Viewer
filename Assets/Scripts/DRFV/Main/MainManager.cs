@@ -11,6 +11,8 @@ namespace DRFV.Main
     {
         public Text version;
 
+        public AudioSource bgmManager;
+
         public GameObject[] disableInOffline;
 
         public GameObject InputWindowPrefab;
@@ -24,6 +26,7 @@ namespace DRFV.Main
             {
                 o.SetActive(false);
             }
+            bgmManager.PlayScheduled(AudioSettings.dspTime + 0.3);
         }
 
         public void LoadScene(string name)
