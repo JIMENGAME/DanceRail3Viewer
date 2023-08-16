@@ -104,7 +104,7 @@ namespace DRFV.Global
                     cachePath = Application.temporaryCachePath + "/";
                     break;
                 case RuntimePlatform.Android:
-                    dataPath =  Path.Combine(Path.GetFullPath(Application.persistentDataPath + "/../../../.."), "DR3Viewer");
+                    dataPath =  Path.Combine(Path.GetFullPath(Application.persistentDataPath + "/../../../.."), "DR3Viewer") + "/";
                     cachePath = dataPath + ".cache/";
                     break;
                 default:
