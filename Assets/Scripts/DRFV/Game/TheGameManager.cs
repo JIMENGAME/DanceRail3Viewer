@@ -1393,7 +1393,7 @@ namespace DRFV.Game
                 }
             }
 
-            AudioClip noteFx = AudioClip.Create("Aren't you?", finalSamplesCount, originalBGM.channels,
+            AudioClip noteFx = AudioClip.Create("And you?", finalSamplesCount, originalBGM.channels,
                 originalBGM.frequency, false);
             noteFx.SetData(f_fx, 0);
             bgmManager.NoteFxClip = noteFx;

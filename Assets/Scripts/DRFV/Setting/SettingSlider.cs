@@ -10,15 +10,18 @@ namespace DRFV.Setting
         [SerializeField] private Slider Slider;
         
         public int Value => (int)Slider.value;
-        
-        private void Awake() {}
+
+        private void Awake()
+        {
+            Slider.onValueChanged.AddListener(SetValue);
+        }
 
         public void AddOrMinusValue(int delta)
         {
             SetValue(Slider.value + delta);
         }
 
-        public void UpdateValue()
+        private void UpdateValue()
         {
             tValue.text = ParseValue(Slider.value);
         }
