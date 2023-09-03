@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using DRFV.inokana;
 using DRFV.Setting;
 using UnityEngine;
@@ -43,6 +44,7 @@ namespace DRFV.Global.Managers
         public void JumpScene(string SceneName)
         {
             if (flag) return;
+            flag = true;
             
             if (scenesStack.Count == 0)
             {
@@ -68,6 +70,7 @@ namespace DRFV.Global.Managers
         public void LoadScene(string SceneName)
         {
             if (flag) return;
+            flag = true;
             if (scenesStack.Count == 0)
                 throw stackIsEmptyException;
 
@@ -81,6 +84,7 @@ namespace DRFV.Global.Managers
         public void Back()
         {
             if (flag) return;
+            flag = true;
             if (scenesStack.Count == 1)
                 return;
 
@@ -92,6 +96,7 @@ namespace DRFV.Global.Managers
         private void DoScene(string SceneName)
         {
             if (flag) return;
+            flag = true;
             blocksize = new Vector2(Screen.width / (float)width, Screen.height / (float)height);
             StartCoroutine(ShowFade(SceneName));
         }
@@ -101,7 +106,6 @@ namespace DRFV.Global.Managers
         private IEnumerator ShowFade(string SceneName)
         {
             Resources.UnloadUnusedAssets();
-            flag = true;
             if (mask) mask.SetActive(flag);
             int timer = 0;
             while (true)
@@ -125,7 +129,7 @@ namespace DRFV.Global.Managers
                 else
                     break;
             }
-
+            DOTween.KillAll();
             yield return null;
             SceneManager.LoadScene(SceneName);
             yield return null;
