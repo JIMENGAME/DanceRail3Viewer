@@ -44,7 +44,6 @@ namespace DRFV.Global.Managers
         public void JumpScene(string SceneName)
         {
             if (flag) return;
-            flag = true;
             
             if (scenesStack.Count == 0)
             {
@@ -70,7 +69,6 @@ namespace DRFV.Global.Managers
         public void LoadScene(string SceneName)
         {
             if (flag) return;
-            flag = true;
             if (scenesStack.Count == 0)
                 throw stackIsEmptyException;
 
@@ -84,7 +82,6 @@ namespace DRFV.Global.Managers
         public void Back()
         {
             if (flag) return;
-            flag = true;
             if (scenesStack.Count == 1)
                 return;
 
@@ -96,7 +93,6 @@ namespace DRFV.Global.Managers
         private void DoScene(string SceneName)
         {
             if (flag) return;
-            flag = true;
             blocksize = new Vector2(Screen.width / (float)width, Screen.height / (float)height);
             StartCoroutine(ShowFade(SceneName));
         }
@@ -108,6 +104,7 @@ namespace DRFV.Global.Managers
             Resources.UnloadUnusedAssets();
             if (mask) mask.SetActive(flag);
             int timer = 0;
+            flag = true;
             while (true)
             {
                 for (int index1 = 0; index1 < width; ++index1)
