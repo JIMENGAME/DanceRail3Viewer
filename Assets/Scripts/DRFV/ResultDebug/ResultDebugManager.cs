@@ -8,6 +8,7 @@ using DRFV.Enums;
 using DRFV.Game;
 using DRFV.Global;
 using DRFV.Global.Managers;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using DRFV.JsonData;
 using DRFV.Result;
@@ -154,7 +155,7 @@ public class ResultDebugManager : MonoBehaviour
         else while (resultDataContainer.hp is <= 0 or > 100)
             resultDataContainer.hp = (float) (Random.NextDouble() * 100.0);
         List<float> randomHitResult = new(), randomAcc = new();
-        NoteJudgeRange noteJudgeRange = Util.GetNoteJudgeRange(GlobalSettings.CurrentSettings.NoteJudgeRange);
+        NoteJudgeRange noteJudgeRange = GameUtil.GetNoteJudgeRange(GlobalSettings.CurrentSettings.NoteJudgeRange);
         foreach (bool b in isGoodable)
         {
             if (Random.NextBool() && miss > 0)

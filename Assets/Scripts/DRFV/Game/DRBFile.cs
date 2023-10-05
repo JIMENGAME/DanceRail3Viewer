@@ -6,6 +6,7 @@ using System.Text;
 using DRFV.Enums;
 using DRFV.Game.HPBars;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -43,15 +44,15 @@ namespace DRFV.Game
             for (int i = 0; i < bpms.Count; i++)
             {
                 BPM bpm = bpms[i];
-                chartLines.Add("#BPM [" + i + "]=" + Util.FloatToDRBDecimal(bpm.bpm));
-                chartLines.Add("#BPMS[" + i + "]=" + Util.FloatToDRBDecimal(bpm.time));
+                chartLines.Add("#BPM [" + i + "]=" + GameUtil.FloatToDRBDecimal(bpm.bpm));
+                chartLines.Add("#BPMS[" + i + "]=" + GameUtil.FloatToDRBDecimal(bpm.time));
             }
 
             chartLines.Add("#SCN=" + scs.Count + ";");
             for (int i = 0; i < scs.Count; i++)
             {
                 SCS sc = scs[i];
-                chartLines.Add("#SC [" + i + "]=" + Util.FloatToDRBDecimal(sc.sc));
+                chartLines.Add("#SC [" + i + "]=" + GameUtil.FloatToDRBDecimal(sc.sc));
                 chartLines.Add("#SCI[" + i + "]=" + sc.sci.ToString("0.000"));
             }
 
@@ -581,8 +582,8 @@ namespace DRFV.Game
             List<string> list = new List<string>();
             list.Add(((int)kind).ToString());
             list.Add(time.ToString("0.00000"));
-            list.Add(Util.FloatToDRBDecimal(pos));
-            list.Add(Util.FloatToDRBDecimal(width));
+            list.Add(GameUtil.FloatToDRBDecimal(pos));
+            list.Add(GameUtil.FloatToDRBDecimal(width));
             list.Add(mode == NoteAppearMode.Jump ? (this.IsTail() ? "0" : "1") : nsc.ToString());
             if (mode != NoteAppearMode.None)
             {
@@ -659,7 +660,7 @@ namespace DRFV.Game
             {
                 return type switch
                 {
-                    NoteSCType.SINGLE => Util.FloatToDRBDecimal(value),
+                    NoteSCType.SINGLE => GameUtil.FloatToDRBDecimal(value),
                     NoteSCType.MULTI => String.Join(";", data),
                     _ => throw new ArgumentOutOfRangeException()
                 };
@@ -695,7 +696,7 @@ namespace DRFV.Game
 
                 public override string ToString()
                 {
-                    return $"{Util.FloatToDRBDecimal(realValue)}:{Util.FloatToDRBDecimal(value)}";
+                    return $"{GameUtil.FloatToDRBDecimal(realValue)}:{GameUtil.FloatToDRBDecimal(value)}";
                 }
             }
         }

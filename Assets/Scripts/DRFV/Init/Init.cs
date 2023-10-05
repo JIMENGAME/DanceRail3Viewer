@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using DRFV.Global.Managers;
+using DRFV.Global.Utilities;
 using DRFV.Language;
 using DRFV.Pool;
 using DRFV.Setting;
@@ -47,13 +48,8 @@ namespace DRFV.Init
 
         IEnumerator LoadEntry()
         {
+            MoveOldSettingsStructToNew();
             GlobalSettings currentSettings = GlobalSettings.CurrentSettings;
-            if (currentSettings.SaveVersion < 0)
-            {
-                MoveOldSettingsStructToNew();
-                currentSettings = GlobalSettings.CurrentSettings;
-            }
-
 #if !UNITY_EDITOR
             Application.targetFrameRate = currentSettings.MaxFPS;
 #else
@@ -71,52 +67,60 @@ namespace DRFV.Init
         private void MoveOldSettingsStructToNew()
         {
             GlobalSettings currentSettings = GlobalSettings.CurrentSettings;
-            currentSettings.SaveVersion = 0;
-            currentSettings.TapSize = PlayerPrefs.GetInt("TapSize", 2);
-            currentSettings.FreeFlickSize = PlayerPrefs.GetInt("FreeFlickSize", 3);
-            currentSettings.FlickSize = PlayerPrefs.GetInt("FlickSize", 3);
-            currentSettings.TapAlpha = PlayerPrefs.GetInt("TapAlpha", 3);
-            currentSettings.FreeFlickAlpha = PlayerPrefs.GetInt("FreeFlickAlpha", 3);
-            currentSettings.FlickAlpha = PlayerPrefs.GetInt("FlickAlpha", 3);
-            currentSettings.MaxFPS = PlayerPrefs.GetInt("MaxFPS", 60);
-            currentSettings.GameEffectParamEQLevel = PlayerPrefs.GetInt("ParamEQ", 10);
-            currentSettings.GameEffectGaterLevel = PlayerPrefs.GetInt("Gater", 10);
-            currentSettings.GameEffectTap = PlayerPrefs.GetInt("TapEffect", 10);
-            currentSettings.FCAPIndicator = PlayerPrefs.GetInt("FCAPIndicator", 0) == 1;
-            currentSettings.Offset = PlayerPrefs.GetFloat("noteOffset", 0);
-            currentSettings.OBSRecord = PlayerPrefs.GetInt("OBSRecord", 0) == 1;
-            currentSettings.SongSpeed = PlayerPrefs.GetInt("SongSpeed", 0);
-            currentSettings.NoteSpeed = PlayerPrefs.GetInt("noteSpeed", 12);
-            currentSettings.HPBarType = PlayerPrefs.GetInt("HPBarType", 0);
-            currentSettings.NoteJudgeRange = PlayerPrefs.GetInt("JudgeTime", 2);
-            currentSettings.IsAuto = PlayerPrefs.GetInt("isAuto", 1) == 1;
-            currentSettings.IsMirror = PlayerPrefs.GetInt("isMirror", 0) == 1;
-            currentSettings.SkillCheckMode = PlayerPrefs.GetInt("SkillCheck", 0) == 1;
-            currentSettings.HardMode = PlayerPrefs.GetInt("HardMode", 0) == 1;
-            currentSettings.AutoplayHint = PlayerPrefs.GetInt("AutoplayHint", 1);
-            PlayerPrefs.DeleteKey("TapSize");
-            PlayerPrefs.DeleteKey("FreeFlickSize");
-            PlayerPrefs.DeleteKey("FlickSize");
-            PlayerPrefs.DeleteKey("TapAlpha");
-            PlayerPrefs.DeleteKey("FreeFlickAlpha");
-            PlayerPrefs.DeleteKey("FlickAlpha");
-            PlayerPrefs.DeleteKey("MaxFPS");
-            PlayerPrefs.DeleteKey("ParamEQ");
-            PlayerPrefs.DeleteKey("Gater");
-            PlayerPrefs.DeleteKey("TapEffect");
-            PlayerPrefs.DeleteKey("FCAPIndicator");
-            PlayerPrefs.DeleteKey("noteOffset");
-            PlayerPrefs.DeleteKey("OBSRecord");
-            PlayerPrefs.DeleteKey("SongSpeed");
-            PlayerPrefs.DeleteKey("noteSpeed");
-            PlayerPrefs.DeleteKey("HPBarType");
-            PlayerPrefs.DeleteKey("JudgeTime");
-            PlayerPrefs.DeleteKey("isAuto");
-            PlayerPrefs.DeleteKey("isMirror");
-            PlayerPrefs.DeleteKey("SkillCheck");
-            PlayerPrefs.DeleteKey("HardMode");
-            PlayerPrefs.DeleteKey("AutoplayHint");
-            PlayerPrefs.Save();
+            if (currentSettings.SaveVersion < 0)
+            {
+                currentSettings.SaveVersion = 0;
+                currentSettings.TapSize = PlayerPrefs.GetInt("TapSize", 2);
+                currentSettings.FreeFlickSize = PlayerPrefs.GetInt("FreeFlickSize", 3);
+                currentSettings.FlickSize = PlayerPrefs.GetInt("FlickSize", 3);
+                currentSettings.TapAlpha = PlayerPrefs.GetInt("TapAlpha", 3);
+                currentSettings.FreeFlickAlpha = PlayerPrefs.GetInt("FreeFlickAlpha", 3);
+                currentSettings.FlickAlpha = PlayerPrefs.GetInt("FlickAlpha", 3);
+                currentSettings.MaxFPS = PlayerPrefs.GetInt("MaxFPS", 60);
+                currentSettings.GameEffectParamEQLevel = PlayerPrefs.GetInt("ParamEQ", 10);
+                currentSettings.GameEffectGaterLevel = PlayerPrefs.GetInt("Gater", 10);
+                currentSettings.GameEffectTap = PlayerPrefs.GetInt("TapEffect", 10);
+                currentSettings.FCAPIndicator = PlayerPrefs.GetInt("FCAPIndicator", 0) == 1;
+                currentSettings.Offset = PlayerPrefs.GetFloat("noteOffset", 0);
+                currentSettings.OBSRecord = PlayerPrefs.GetInt("OBSRecord", 0) == 1;
+                currentSettings.SongSpeed = PlayerPrefs.GetInt("SongSpeed", 0);
+                currentSettings.NoteSpeed = PlayerPrefs.GetInt("noteSpeed", 12);
+                currentSettings.HPBarType = PlayerPrefs.GetInt("HPBarType", 0);
+                currentSettings.NoteJudgeRange = PlayerPrefs.GetInt("JudgeTime", 2);
+                currentSettings.IsAuto = PlayerPrefs.GetInt("isAuto", 1) == 1;
+                currentSettings.IsMirror = PlayerPrefs.GetInt("isMirror", 0) == 1;
+                currentSettings.SkillCheckMode = PlayerPrefs.GetInt("SkillCheck", 0) == 1;
+                currentSettings.HardMode = PlayerPrefs.GetInt("HardMode", 0) == 1;
+                currentSettings.AutoplayHint = PlayerPrefs.GetInt("AutoplayHint", 1);
+                PlayerPrefs.DeleteKey("TapSize");
+                PlayerPrefs.DeleteKey("FreeFlickSize");
+                PlayerPrefs.DeleteKey("FlickSize");
+                PlayerPrefs.DeleteKey("TapAlpha");
+                PlayerPrefs.DeleteKey("FreeFlickAlpha");
+                PlayerPrefs.DeleteKey("FlickAlpha");
+                PlayerPrefs.DeleteKey("MaxFPS");
+                PlayerPrefs.DeleteKey("ParamEQ");
+                PlayerPrefs.DeleteKey("Gater");
+                PlayerPrefs.DeleteKey("TapEffect");
+                PlayerPrefs.DeleteKey("FCAPIndicator");
+                PlayerPrefs.DeleteKey("noteOffset");
+                PlayerPrefs.DeleteKey("OBSRecord");
+                PlayerPrefs.DeleteKey("SongSpeed");
+                PlayerPrefs.DeleteKey("noteSpeed");
+                PlayerPrefs.DeleteKey("HPBarType");
+                PlayerPrefs.DeleteKey("JudgeTime");
+                PlayerPrefs.DeleteKey("isAuto");
+                PlayerPrefs.DeleteKey("isMirror");
+                PlayerPrefs.DeleteKey("SkillCheck");
+                PlayerPrefs.DeleteKey("HardMode");
+                PlayerPrefs.DeleteKey("AutoplayHint");
+                PlayerPrefs.Save();
+            }
+            if (currentSettings.SaveVersion < 1)
+            {
+                currentSettings.SaveVersion++;
+                if (currentSettings.NoteJudgeRange >= 2) currentSettings.NoteJudgeRange++;
+            }
             GlobalSettings.CurrentSettings = currentSettings;
             GlobalSettings.Save();
         }

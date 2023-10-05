@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.Main;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -47,6 +48,8 @@ namespace DRFV.Login
                     PasswordInput.text = "00000000";
                 }
             }
+
+            Offline();
             // Debug.Log(ConvertToByteArray("dancerail"));
             // Debug.Log(ConvertToByteArray("lucario"));
             // Debug.Log($"{(byte) 0x1f} {(byte) 0x1e} {(byte) 0x33}");
@@ -242,7 +245,8 @@ namespace DRFV.Login
             }
         }
 
-        private void AddInputFieldClickEvent(InputField inputField, UnityAction<BaseEventData> selectEvent) //可以在Awake中调用
+        private void
+            AddInputFieldClickEvent(InputField inputField, UnityAction<BaseEventData> selectEvent) //可以在Awake中调用
         {
             var eventTrigger = inputField.gameObject.GetComponent<EventTrigger>();
             if (eventTrigger == null)

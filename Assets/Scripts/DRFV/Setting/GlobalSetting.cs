@@ -1,6 +1,7 @@
 using DRFV.Data;
 using DRFV.Enums;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.Select;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -125,7 +126,7 @@ namespace DRFV.Setting
             HPBarType = 0;
             OBSRecord = false;
             GameSide = 1;
-            NoteJudgeRange = 2;
+            NoteJudgeRange = GameUtil.NoteJudgeRangeLimit;
             IsAuto = true;
             IsMirror = false;
             SkillCheckMode = false;

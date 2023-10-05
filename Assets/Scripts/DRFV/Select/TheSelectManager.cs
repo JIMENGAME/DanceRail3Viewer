@@ -11,6 +11,7 @@ using DRFV.Enums;
 using DRFV.Game;
 using DRFV.Global;
 using DRFV.Global.Managers;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using DRFV.JsonData;
 using DRFV.Language;
@@ -81,14 +82,11 @@ namespace DRFV.Select
 #endif
             HPBarTypeDropdown.value = currentSettings.HPBarType;
             SongSpeedDropdown.value = currentSettings.SongSpeed;
-            int noteJudgeRangeCount = Util.GetNoteJudgeRangeCount();
-            while (JudgeTimeDropdown.options.Count < noteJudgeRangeCount)
-            {
-                JudgeTimeDropdown.options.Add(new Dropdown.OptionData());
-            }
+            int noteJudgeRangeCount = GameUtil.NoteJudgeRangeCount;
+            JudgeTimeDropdown.ClearOptions();
             for (int i = 0; i < noteJudgeRangeCount; i++)
             {
-                JudgeTimeDropdown.options[i].text = Util.GetNoteJudgeRange(i).displayName;
+                JudgeTimeDropdown.options.Add(new Dropdown.OptionData(GameUtil.GetNoteJudgeRange(i).displayName));
             }
             JudgeTimeDropdown.value = currentSettings.NoteJudgeRange;
             atSelect = true;

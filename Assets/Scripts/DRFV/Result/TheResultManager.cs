@@ -8,6 +8,7 @@ using DRFV.Data;
 using DRFV.Enums;
 using DRFV.Global;
 using DRFV.Global.Managers;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using DRFV.Login;
 using DRFV.Select;
@@ -140,7 +141,7 @@ namespace DRFV.Result
             }
             else if (resultDataContainer.endType != EndType.AUTO_PLAY &&
                      !_globalSettings.SkillCheckMode &&
-                     hpBarType != BarType.EASY && (isHadouTest || _globalSettings.NoteJudgeRange >= Util.GetNoteJudgeRangeLimit()))
+                     hpBarType != BarType.EASY && (isHadouTest || _globalSettings.NoteJudgeRange >= GameUtil.NoteJudgeRangeLimit))
             {
                 string key = "SongScore_" +
                              resultDataContainer.md5;
@@ -164,9 +165,9 @@ namespace DRFV.Result
                 }
                 else
                 {
-                    scoreDelta.text = Util.ParseScore(resultDataOld.score, null, true) + "  " +
+                    scoreDelta.text = GameUtil.ParseScore(resultDataOld.score, null, true) + "  " +
                                       (resultDataOld.score <= thisScore ? "+" : "") +
-                                      Util.ParseScore(thisScore - resultDataOld.score, null, true);
+                                      GameUtil.ParseScore(thisScore - resultDataOld.score, null, true);
                     tNewScore.SetActive(newRecord);
                 }
                 
@@ -236,7 +237,7 @@ namespace DRFV.Result
 
             Title.text = songDataContainer.songData.songName;
             Artist.text = songDataContainer.songData.songArtist;
-            score.text = Util.ParseScore(Mathf.RoundToInt(resultDataContainer.SCORE));
+            score.text = GameUtil.ParseScore(Mathf.RoundToInt(resultDataContainer.SCORE));
             PerfectJ.text = resultDataContainer.PERFECT_J + "";
             Perfect.text = resultDataContainer.PERFECT + "";
             Good.text = resultDataContainer.GOOD + "";
@@ -309,7 +310,7 @@ namespace DRFV.Result
             HPAcc.text = "HP: " + resultDataContainer.hp.ToString("0.00") + "%" + "   " + "ACC: " +
                          resultDataContainer.Accuracy.ToString("0.00") + "%";
             SongSpeed.text = $"SPEED: {songSpeed:N1}x";
-            JudgeInput.text = "JUDGE: " + Util.GetNoteJudgeRange(isHadouTest ? -1 : _globalSettings.NoteJudgeRange).displayName;
+            JudgeInput.text = "JUDGE: " + GameUtil.GetNoteJudgeRange(isHadouTest ? -1 : _globalSettings.NoteJudgeRange).displayName;
             MSDetailsDrawer.Init();
             if (OBSManager.Instance.isActive) StartCoroutine(StopOBS());
             StartCoroutine(PopRate(Util.ScoreToRate(realScore, songDataContainer.selectedDiff, songSpeed), originalRate));

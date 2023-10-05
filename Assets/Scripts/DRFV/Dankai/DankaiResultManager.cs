@@ -1,5 +1,6 @@
 using DRFV.Global;
 using DRFV.Global.Managers;
+using DRFV.Global.Utilities;
 using DRFV.Login;
 using DRFV.Setting;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace DRFV.Dankai
             }
             tTitle.text = $"技能检定 {(m == 0 ? "超级" : "")}成功！";
             tSkill.text = dankaiDataContainer.skill;
-            tScore.text = Util.ParseScore(Mathf.RoundToInt(score), SCORE_TYPE.ORIGINAL);
+            tScore.text = GameUtil.ParseScore(Mathf.RoundToInt(score), SCORE_TYPE.ORIGINAL);
             tDetail.text = $"<color=#FF7>{pj}</color>/<color=#F97>{p}</color>/<color=#7F7>{g}</color>/<color=#F77>{m}</color>";
             tSpeed.text = $"SPEED: {Util.TransformSongSpeed(GlobalSettings.CurrentSettings.SongSpeed):N1}x";
             GridLayoutGroup gridLayoutGroup = dankaiStageParent.GetComponent<GridLayoutGroup>();

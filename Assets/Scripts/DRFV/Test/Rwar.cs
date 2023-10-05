@@ -4,6 +4,7 @@ using System.IO;
 using DRFV.Game;
 using DRFV.Game.HPBars;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using UnityEngine;
 using UnityEngine.UI;

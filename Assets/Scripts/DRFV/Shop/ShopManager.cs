@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using DG.Tweening;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.Login;
 using Newtonsoft.Json.Linq;
 using UnityEngine;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.Select;
 using DRFV.Setting;
 using UnityEngine;
@@ -65,7 +66,7 @@ namespace DRFV.Result
 #if UNITY_EDITOR
             this.noteJudgeRangeId = noteJudgeRangeId;
 #endif
-            noteJudgeRange = Util.GetNoteJudgeRange(noteJudgeRangeId);
+            noteJudgeRange = GameUtil.GetNoteJudgeRange(noteJudgeRangeId);
             linesParent = transform.GetChild(0);
             Sprite bGmsSprite = BGmsSprites[noteJudgeRangeId];
             gameObject.GetComponent<SpriteRenderer>().sprite = bGmsSprite;

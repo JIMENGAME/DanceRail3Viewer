@@ -7,9 +7,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using DRFV.Enums;
-using DRFV.JsonData;
 using DRFV.Game;
 using DRFV.inokana;
+using DRFV.JsonData;
 using DRFV.Result;
 using DRFV.Select;
 using DRFV.Setting;
@@ -18,18 +18,18 @@ using Newtonsoft.Json.Linq;
 using Unimage;
 using UnityEngine;
 
-namespace DRFV.Global
+namespace DRFV.Global.Utilities
 {
     public static class Util
     {
         public static readonly Dictionary<string, EndType> endTypeFromShort = new();
-        private static NoteJudgeRange[] noteJudgeRanges;
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
         public static string localizationId = "zh-cn";
         private static readonly DateTime timeStampStart = new(1970, 1, 1);
         public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif" };
         public static Sprite SpritePlaceholder { get; private set; }
         public static readonly Color SpritePlaceholderBGColor = new(1f, 130f / 255f, 1f);
+        private static bool inited = false;
 #if false
         private static readonly AnimationCurve OneThirdWeightedCurve =
             new(new Keyframe(0, 0, 0, 0, 1 / 3f, 1 / 3f), new Keyframe(1, 1, 0, 0, 1 / 3f, 1 / 3f));
@@ -46,20 +46,15 @@ namespace DRFV.Global
         /// 
         public static void Init()
         {
+            if (inited) return;
+            inited = true;
             var endTypeShortJObject = JObject.Parse(Resources.Load<TextAsset>("end_type_short").text);
             foreach (KeyValuePair<string, JToken> valuePair in endTypeShortJObject)
             {
                 endTypeFromShort.Add(valuePair.Key, valuePair.Value.ToObject<EndType>());
             }
-
-            JArray noteJudgeRangesJArray = JArray.Parse(Resources.Load<TextAsset>("note_judge_range").text);
-            noteJudgeRanges = new NoteJudgeRange[noteJudgeRangesJArray.Count];
-            for (var i = 0; i < noteJudgeRangesJArray.Count; i++)
-            {
-                var token = noteJudgeRangesJArray[i];
-                noteJudgeRanges[i] = token.ToObject<NoteJudgeRange>();
-            }
-
+            
+            GameUtil.Init();
             SpritePlaceholder = Resources.Load<Sprite>("placeholder");
         }
 
@@ -201,12 +196,6 @@ namespace DRFV.Global
             };
         }
 
-        public static string FloatToDRBDecimal(float dec)
-        {
-            string qwq = dec.ToString("0.00");
-            return qwq.EndsWith(".00") ? qwq.Substring(0, qwq.Length - 3) : qwq;
-        }
-
         public static string ToBase64(string value)
         {
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
@@ -226,53 +215,6 @@ namespace DRFV.Global
             }
 
             directoryInfo.Create();
-        }
-
-        public static string ParseScore(int score, int? maxDigit = null, bool? usePadding = null)
-        {
-            return ParseScore(score, GlobalSettings.CurrentSettings.ScoreType, maxDigit, usePadding);
-        }
-
-        public static string ParseScore(int score, SCORE_TYPE type, int? maxDigit = null, bool? usePadding = null)
-        {
-            return ParseScore(score, maxDigit ?? type switch
-            {
-                SCORE_TYPE.ORIGINAL => 7,
-                SCORE_TYPE.ARCAEA => 8,
-                SCORE_TYPE.PHIGROS => 7,
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            }, usePadding ?? type switch
-            {
-                SCORE_TYPE.ORIGINAL => false,
-                SCORE_TYPE.ARCAEA => false,
-                SCORE_TYPE.PHIGROS => true,
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            });
-        }
-
-        private static string ParseScore(int score, int maxDigit, bool usePadding)
-        {
-            string input = score + "";
-            if (score < 0) input = input.Substring(1);
-            string output = "";
-            while (usePadding && input.Length < maxDigit)
-            {
-                input = "0" + input;
-            }
-
-            for (int i = input.Length - 1, l = 1; i >= 0; i--)
-            {
-                output = input[i] + output;
-                if (l > 0 && i > 0 && l % 3 == 0)
-                {
-                    output = "," + output;
-                    l = 0;
-                }
-
-                l++;
-            }
-
-            return (score < 0 ? "-" : "") + output;
         }
 
         public static Color HexToColor(string hex)
@@ -312,29 +254,6 @@ namespace DRFV.Global
         public static float SineOutEase(float a)
         {
             return Mathf.Sin(a * Mathf.PI / 2f);
-        }
-
-        public static NoteJudgeRange GetNoteJudgeRange(int id)
-        {
-            if (id == -1) return new NoteJudgeRange { displayName = "HADOU TEST", PJ = 30, P = 60, G = 100 };
-
-            if (id < -1 || id > noteJudgeRanges.Length)
-            {
-                NotificationBarManager.Instance.Show("出了奇怪的错");
-                throw new ArgumentOutOfRangeException("NoteRange");
-            }
-
-            return noteJudgeRanges[id];
-        }
-
-        public static int GetNoteJudgeRangeLimit()
-        {
-            return 3;
-        }
-
-        public static int GetNoteJudgeRangeCount()
-        {
-            return noteJudgeRanges.Length;
         }
 
         public static Grade ScoreToRank(int score)

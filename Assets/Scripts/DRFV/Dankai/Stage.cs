@@ -1,4 +1,5 @@
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.Select;
 using DRFV.Setting;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace DRFV.Dankai
             };
             iTier.sprite = Resources.Load<Sprite>($"GENERAL/tier_waku0{wakuId}");
             tTitle.text = songDataContainer.songData.songName;
-            tScore.text = Util.ParseScore(Mathf.RoundToInt(dankaiResultData.score), SCORE_TYPE.ORIGINAL);
+            tScore.text = GameUtil.ParseScore(Mathf.RoundToInt(dankaiResultData.score), SCORE_TYPE.ORIGINAL);
             tDetail.text =
                 $"<color=#FF7>{dankaiResultData.pj}</color>/<color=#F97>{dankaiResultData.p}</color>/<color=#7F7>{dankaiResultData.g}</color>/<color=#F77>{dankaiResultData.m}</color>";
             if (tTitle.preferredWidth > 400f)

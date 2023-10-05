@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.IO;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;

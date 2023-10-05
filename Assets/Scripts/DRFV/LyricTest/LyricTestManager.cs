@@ -7,6 +7,7 @@ using System.Text;
 using DRFV.Global;
 using DRFV.inokana;
 using DRFV.Game;
+using DRFV.Global.Utilities;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using DRFV.Global;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using DRFV.JsonData;
 using DRFV.Language;

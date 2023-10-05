@@ -1441,7 +1441,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAprilFool: 0
   hadouTest: 0
-  removedStory: 0
 --- !u!114 &1710685183
 MonoBehaviour:
   m_ObjectHideFlags: 0

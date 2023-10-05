@@ -1,4 +1,5 @@
 using DRFV.Enums;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace DRFV.Select
@@ -24,11 +25,11 @@ namespace DRFV.Select
         }
     }
 
-    public struct NoteJudgeRange
+    public class NoteJudgeRange
     {
-        public string displayName;
-        public float PJ;
-        public float P;
-        public float G;
+        [JsonProperty("displayName")] public string displayName;
+        [JsonProperty("PJ")] public float PJ;
+        [JsonProperty("P")] public float P;
+        [JsonProperty("G")] public float G;
     }
 }

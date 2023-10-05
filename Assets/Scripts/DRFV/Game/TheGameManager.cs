@@ -14,6 +14,7 @@ using DRFV.Game.SceneControl;
 using DRFV.Game.Side;
 using DRFV.Global;
 using DRFV.Global.Managers;
+using DRFV.Global.Utilities;
 using DRFV.inokana;
 using DRFV.Result;
 using DRFV.Select;
@@ -376,7 +377,7 @@ namespace DRFV.Game
                 VideoPlayer.playbackSpeed = bgmManager.Pitch = songSpeed;
                 barType = (BarType)currentSettings.HPBarType;
                 gameSide = (GameSide)currentSettings.GameSide;
-                NoteJudgeRange aaa = Util.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
+                NoteJudgeRange aaa = GameUtil.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
                 bool songspeedDiff = Math.Abs(songSpeed - 1.0f) > 0.05f;
                 enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
                                       songspeedDiff;
@@ -442,7 +443,7 @@ namespace DRFV.Game
                     VideoPlayer.playbackSpeed = bgmManager.Pitch = storyChallengeContainer.songSpeed;
                     enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
                                           Math.Abs(storyChallengeContainer.songSpeed - 1.0f) > 0.1f;
-                    aaa = Util.GetNoteJudgeRange(storyChallengeContainer.NoteJudgeRange);
+                    aaa = GameUtil.GetNoteJudgeRange(storyChallengeContainer.NoteJudgeRange);
                     if (enableJudgeRangeFix)
                     {
                         PJms = aaa.PJ * storyChallengeContainer.songSpeed;
@@ -482,7 +483,7 @@ namespace DRFV.Game
                         originalBGM = ((DownloadHandlerAudioClip)uwr.downloadHandler).audioClip;
                     }
 
-                    NoteJudgeRange aaaa = Util.GetNoteJudgeRange(-1);
+                    NoteJudgeRange aaaa = GameUtil.GetNoteJudgeRange(-1);
                     PJms = aaaa.PJ;
                     PFms = aaaa.P;
                     GDms = aaaa.G;
@@ -914,7 +915,7 @@ namespace DRFV.Game
                     _topBarLabel.text = "SCORE";
                     break;
                 case GameComboDisplay.MSCORE:
-                    string score = Util.ParseScore(Mathf.RoundToInt(MaxScore));
+                    string score = GameUtil.ParseScore(Mathf.RoundToInt(MaxScore));
                     _topBarValue.text = score;
                     _topBarValueRed.text = score;
                     _topBarValueBlue.text = score;
@@ -2649,7 +2650,7 @@ namespace DRFV.Game
             }
 
 
-            if (textScore) textScore.text = Util.ParseScore(Mathf.RoundToInt(Score), _scoreType);
+            if (textScore) textScore.text = GameUtil.ParseScore(Mathf.RoundToInt(Score), _scoreType);
             if (textMaxcombo) textMaxcombo.text = MaxCombo + "";
             if (textPerfect) textPerfect.text = PerfectJ + "";
             if (textPerfect2) textPerfect2.text = Perfect + "";
@@ -2974,7 +2975,7 @@ namespace DRFV.Game
             float scoreK = Score / maxScoreNow;
             if (good + miss == 0)
             {
-                return $"PM +{Util.ParseScore(PerfectJ, 6, true)}";
+                return $"PM +{GameUtil.ParseScore(PerfectJ, 6, true)}";
             }
 
             string rank;
@@ -2990,7 +2991,7 @@ namespace DRFV.Game
                 _ => ("C", 0.86f)
             };
             float deltaScore = Score - basicScoreK * maxScoreNow;
-            return $"{rank}  {(deltaScore < 0 ? "" : "+")}{Util.ParseScore(Mathf.FloorToInt(deltaScore), 6, true)}";
+            return $"{rank}  {(deltaScore < 0 ? "" : "+")}{GameUtil.ParseScore(Mathf.FloorToInt(deltaScore), 6, true)}";
         }
     }
 
