@@ -1,6 +1,10 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using DRFV.Game;
 using DRFV.Game.HPBars;
 using DRFV.Global;
@@ -27,6 +31,19 @@ namespace DRFV.Test
         // Start is called before the first frame update
         private void Start()
         {
+            // string[] readAllLines = File.ReadAllLines(@"G:\DR3FV-Data\Berry Melody for Dance Rail3\新建 文本文档.txt");
+            // using StreamWriter streamWriter = new StreamWriter(@"G:\DR3FV-Data\Berry Melody for Dance Rail3\lyric.txt", false, new UTF8Encoding(false));
+            // Game.DRBFile drbFile = Game.DRBFile.Parse(File.ReadAllText(@"E:\DR3Maker\SONGS\daaadddadtmp.0.txt"));
+            // drbFile.GenerateAttributesOnPlay(10);
+            // List<float> floats = drbFile.notes.Select(note => note.ms).ToList();
+            // floats.Sort();
+            // for (var i = 0; i < floats.Count; i++)
+            // {
+            //     var f = floats[i];
+            //     TimeSpan span = TimeSpan.FromMilliseconds(f);
+            //     streamWriter.WriteLine($"[{span.Minutes + span.Hours * 60:00}:{span.Seconds:00}.{span.Milliseconds:000}]" + (i < readAllLines.Length ? readAllLines[i] : ""));
+            // }
+            // return;
             HpManager.Init(new HPBarDefault());
 
             // _materials[0] = LoadCustomLongNote(ReadCustomNoteSprite(File.ReadAllBytes("E:/Users/Administrator/WebstormProjects/DanceRail3Viewer/Assets/Sprites/Game/notes/longnotes/longnote07.png")));
