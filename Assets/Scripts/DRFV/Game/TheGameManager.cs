@@ -269,8 +269,6 @@ namespace DRFV.Game
 
         public bool enableTestifyAnomaly;
 
-        private bool enableJudgeRangeFix;
-
         private float lastNoteTime;
 
         private SCORE_TYPE _scoreType;
@@ -378,22 +376,10 @@ namespace DRFV.Game
                 barType = (BarType)currentSettings.HPBarType;
                 gameSide = (GameSide)currentSettings.GameSide;
                 NoteJudgeRange aaa = GameUtil.GetNoteJudgeRange(currentSettings.NoteJudgeRange);
-                bool songspeedDiff = Math.Abs(songSpeed - 1.0f) > 0.05f;
-                enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
-                                      songspeedDiff;
-                RealNoteSpeed = songspeedDiff && currentSettings.enableSCFix ? NoteSpeed / songSpeed : NoteSpeed;
-                if (enableJudgeRangeFix)
-                {
-                    PJms = aaa.PJ * songSpeed;
-                    PFms = aaa.P * songSpeed;
-                    GDms = aaa.G * songSpeed;
-                }
-                else
-                {
-                    PJms = aaa.PJ;
-                    PFms = aaa.P;
-                    GDms = aaa.G;
-                }
+                RealNoteSpeed = currentSettings.enableSCFix ? NoteSpeed / songSpeed : NoteSpeed;
+                PJms = aaa.PJ * songSpeed;
+                PFms = aaa.P * songSpeed;
+                GDms = aaa.G * songSpeed;
 
                 if (SongKeyword.Equals("hello") && SongHard == 13)
                 {
@@ -441,21 +427,10 @@ namespace DRFV.Game
                     GameAuto |= isComputerInStory;
                     RealNoteSpeed = NoteSpeed = currentSettings.NoteSpeed;
                     VideoPlayer.playbackSpeed = bgmManager.Pitch = storyChallengeContainer.songSpeed;
-                    enableJudgeRangeFix = currentSettings.enableJudgeRangeFix &&
-                                          Math.Abs(storyChallengeContainer.songSpeed - 1.0f) > 0.1f;
                     aaa = GameUtil.GetNoteJudgeRange(storyChallengeContainer.NoteJudgeRange);
-                    if (enableJudgeRangeFix)
-                    {
-                        PJms = aaa.PJ * storyChallengeContainer.songSpeed;
-                        PFms = aaa.P * storyChallengeContainer.songSpeed;
-                        GDms = aaa.G * storyChallengeContainer.songSpeed;
-                    }
-                    else
-                    {
-                        PJms = aaa.PJ;
-                        PFms = aaa.P;
-                        GDms = aaa.G;
-                    }
+                    PJms = aaa.PJ * storyChallengeContainer.songSpeed;
+                    PFms = aaa.P * storyChallengeContainer.songSpeed;
+                    GDms = aaa.G * storyChallengeContainer.songSpeed;
 
                     barType = BarType.DEFAULT;
                     GameMirror = false;
@@ -1556,6 +1531,8 @@ namespace DRFV.Game
             }
         }
 
+        private int activeNotes = 0;
+
         // Update is called once per frame
         void Update()
         {
@@ -1670,45 +1647,45 @@ namespace DRFV.Game
             {
                 if (!isCreated[i])
                 {
-                    if ((0.01f * ((drbfile.notes[i].IsTail()
-                                      ? drbfile.notes[i].parent_dms
-                                      : drbfile.notes[i].dms) -
-                                  Distance) * drbfile.notes[i].nsc.value * RealNoteSpeed < 150.0f)
-                        || (drbfile.notes[i].ms - progressManager.NowTime < 1000)
-                        || ((drbfile.notes[i].nsc.type == NoteSCType.MULTI ||
-                             drbfile.notes[i].mode == NoteAppearMode.Jump) &&
-                            drbfile.notes[i].ms - progressManager.NowTime < 10000.0f))
+                    bool scLimit =
+                        0.01f * ((drbfile.notes[i].IsTail() ? drbfile.notes[i].parent_dms : drbfile.notes[i].dms) -
+                                 Distance) * drbfile.notes[i].nsc.value * RealNoteSpeed < 150.0f;
+                    bool timeLimit = drbfile.notes[i].ms - progressManager.NowTime < 1000;
+                    bool nscLimit =
+                        drbfile.notes[i].ms - progressManager.NowTime < 10000.0f &&
+                        (drbfile.notes[i].nsc.type == NoteSCType.MULTI ||
+                         drbfile.notes[i].mode == NoteAppearMode.Jump);
+                    if (activeNotes > 100 || !scLimit && !timeLimit && !nscLimit) continue;
+                    if (!nscLimit) activeNotes++;
+                    GameObject note = Instantiate(NotePrefab,
+                        drbfile.notes[i].IsTap() ? notesUp.transform : notesDown.transform);
+                    note.GetComponent<SpriteRenderer>().sprite = SpriteNotes[(int)drbfile.notes[i].kind];
+                    if (drbfile.notes[i].IsTap())
+                        note.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                    else if (drbfile.notes[i].IsFlick())
+                        note.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                    else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                    note.GetComponent<TheNote>().mDrawer = meshDrawer;
+                    note.GetComponent<TheNote>().Ready(this, inputManager, drbfile.notes[i]);
+                    note.GetComponent<TheNote>().StartC();
+
+
+                    isCreated[i] = true;
+                    count++; //Max 5 notes
+
+                    for (int ii = 0; ii < drbfile.notes.Count; ii++)
                     {
-                        GameObject note = Instantiate(NotePrefab,
-                            drbfile.notes[i].IsTap() ? notesUp.transform : notesDown.transform);
-                        note.GetComponent<SpriteRenderer>().sprite = SpriteNotes[(int)drbfile.notes[i].kind];
-                        if (drbfile.notes[i].IsTap())
-                            note.GetComponent<SpriteRenderer>().sortingOrder = 3;
-                        else if (drbfile.notes[i].IsFlick())
-                            note.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                        else note.GetComponent<SpriteRenderer>().sortingOrder = 1;
-                        note.GetComponent<TheNote>().mDrawer = meshDrawer;
-                        note.GetComponent<TheNote>().Ready(this, inputManager, drbfile.notes[i]);
-                        note.GetComponent<TheNote>().StartC();
-
-
-                        isCreated[i] = true;
-                        count++; //Max 5 notes
-
-                        for (int ii = 0; ii < drbfile.notes.Count; ii++)
+                        if (!isCreated[ii])
                         {
-                            if (!isCreated[ii])
-                            {
-                                makenotestartReal = ii;
-                                break;
-                            }
-                        }
-
-                        //Max 5 notes
-                        if (count >= 5)
-                        {
+                            makenotestartReal = ii;
                             break;
                         }
+                    }
+
+                    //Max 5 notes
+                    if (count >= 5)
+                    {
+                        break;
                     }
                 }
             }
@@ -1798,6 +1775,7 @@ namespace DRFV.Game
                     FadeManager.Instance.JumpScene("dankaiResult");
                     return;
                 }
+
                 dankaiDataContainer.hpNow = hpManager.HpNow;
 
                 FadeManager.Instance.JumpScene("game");
@@ -2463,15 +2441,14 @@ namespace DRFV.Game
         public void Judge(float ms, NoteKind kind, bool isFake, Vector3 pos, float width)
         {
             //LISTに登録
-
-
             var go2 = Instantiate(HanteiPrefab, pos, Quaternion.identity);
             GameObject go;
-            float realMS = enableJudgeRangeFix ? ms / bgmManager.Pitch : ms;
+            float realMS = ms / bgmManager.Pitch;
             if (!isFake) msDetailsList.Add(realMS);
             int displayMS = isFake ? 0 : (int)realMS;
             JudgeType judgeType;
 
+            activeNotes--;
             PassedNotes++;
             //PERFECT JUSTICE 判定
             if (Mathf.Abs(ms) <= PJms)

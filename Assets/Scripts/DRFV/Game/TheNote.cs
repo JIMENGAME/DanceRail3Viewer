@@ -426,6 +426,8 @@ namespace DRFV.Game
                         break;
                     case NoteKind.MOVERBOOM_CENTER:
                     case NoteKind.MOVERBOOM_END:
+                        mDrawer.AddQue(_mesh, _material3);
+                        mDrawer.AddQue(_mesh, _material6);
                         // TODO: Mover Bomb的材质
                         break;
                 }
