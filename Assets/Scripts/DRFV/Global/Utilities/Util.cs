@@ -364,9 +364,9 @@ namespace DRFV.Global.Utilities
             GC.Collect();
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data)
+        public static Sprite ByteArrayToSprite(byte[] data, int width, int height)
         {
-            Texture2D texture = LoadTexture2DFromByteArray(data);
+            Texture2D texture = LoadTexture2DFromByteArray(data, width, height);
             if (texture == null)
             {
                 NotificationBarManager.Instance.Show("错误：不支持的图片格式");
@@ -378,12 +378,13 @@ namespace DRFV.Global.Utilities
             return sprite;
         }
 
-        public static Texture2D LoadTexture2DFromByteArray(byte[] data)
+        public static Texture2D LoadTexture2DFromByteArray(byte[] data, int width, int height)
         {
             try
             {
                 using UnimageProcessor unimageProcessor = new UnimageProcessor();
                 unimageProcessor.Load(data);
+                unimageProcessor.Resize(width > 0 ? Mathf.Max(unimageProcessor.Width, width) : unimageProcessor.Width, height > 0 ? Mathf.Max(unimageProcessor.Height, height) : unimageProcessor.Height);
                 return unimageProcessor.GetTexture(noLongerReadable:false);
             }
             catch (UnimageException)

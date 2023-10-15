@@ -137,7 +137,7 @@ public class ResultDebugManager : MonoBehaviour
             keyword = selectedKeyword,
             songName = songsDic[selectedKeyword].name,
             songArtist = songsDic[selectedKeyword].artist,
-            cover = Util.ByteArrayToSprite(File.ReadAllBytes(picturePath))
+            cover = Util.ByteArrayToSprite(File.ReadAllBytes(picturePath), 512, 512)
         };
 
         int miss = noteCount - pj - p - g;

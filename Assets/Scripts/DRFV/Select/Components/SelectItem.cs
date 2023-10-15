@@ -4,7 +4,6 @@ using System.IO;
 using DRFV.Global;
 using DRFV.Global.Utilities;
 using DRFV.Pool;
-using Unimage;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -186,7 +185,7 @@ namespace DRFV.Select.Components
             Sprite coverInPool = PoolManager.Instance.Get(PoolManager.Instance.spritePool, md5);
             if (coverInPool != null) return coverInPool;
 
-            Sprite sprite = Util.ByteArrayToSprite(bytes);
+            Sprite sprite = Util.ByteArrayToSprite(bytes, 256, 256);
             PoolManager.Instance.Push(PoolManager.Instance.spritePool, md5, sprite);
             return sprite;
         }

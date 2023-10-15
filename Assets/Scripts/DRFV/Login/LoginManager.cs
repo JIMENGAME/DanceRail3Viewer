@@ -280,7 +280,7 @@ namespace DRFV.Login
 
         private void GetAvatarCallback(byte[] data)
         {
-            AccountInfo.Instance.avatar = Util.ByteArrayToSprite(data);
+            AccountInfo.Instance.avatar = Util.ByteArrayToSprite(data, 300, 300);
             EndLogin();
         }
 
