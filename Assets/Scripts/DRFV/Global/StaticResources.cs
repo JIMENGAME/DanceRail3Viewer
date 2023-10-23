@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DRFV.CoinShop.Data;
+using DRFV.Global.Managers;
 using DRFV.Global.Utilities;
 using DRFV.inokana;
 using Newtonsoft.Json.Linq;
@@ -22,8 +23,8 @@ namespace DRFV.Global
         protected override void OnAwake()
         {
             DontDestroyOnLoad(gameObject);
-            Util.Init();
             InitPaths();
+            Util.Init();
             if (!Directory.Exists(dataPath))
             {
                 Directory.CreateDirectory(dataPath);

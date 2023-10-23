@@ -43,6 +43,14 @@ namespace DRFV.Init
             FadeManager.Instance.JumpScene(SceneManager.GetActiveScene().name);
             OBSManager.Instance.Init();
             PoolManager.Instance.RefreshSetting();
+            if (Util.Skybox)
+            {
+                FadeManager.Instance.OnSceneChanged += () =>
+                {
+                    RenderSettings.skybox = Util.Skybox;
+                    DynamicGI.UpdateEnvironment();
+                };
+            }
             StartCoroutine(LoadEntry());
         }
 

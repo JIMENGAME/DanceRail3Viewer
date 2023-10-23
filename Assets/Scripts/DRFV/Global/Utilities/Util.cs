@@ -11,8 +11,7 @@ using DRFV.Game;
 using DRFV.inokana;
 using DRFV.JsonData;
 using DRFV.Result;
-using DRFV.Select;
-using DRFV.Setting;
+using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Unimage;
@@ -22,6 +21,7 @@ namespace DRFV.Global.Utilities
 {
     public static class Util
     {
+        public static Material Skybox { get; private set; } = null;
         public static readonly Dictionary<string, EndType> endTypeFromShort = new();
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
         public static string localizationId = "zh-cn";
@@ -53,9 +53,37 @@ namespace DRFV.Global.Utilities
             {
                 endTypeFromShort.Add(valuePair.Key, valuePair.Value.ToObject<EndType>());
             }
-            
+
             GameUtil.Init();
             SpritePlaceholder = Resources.Load<Sprite>("placeholder");
+            if (File.Exists(StaticResources.Instance.dataPath + "resources/SkyBox"))
+            {
+                Dictionary<string, Texture2D> dictionary = new Dictionary<string, Texture2D>();
+                using FileStream fileStream = new FileStream(StaticResources.Instance.dataPath + "resources/SkyBox",
+                    FileMode.Open, FileAccess.Read, FileShare.Read);
+                using ZipInputStream zipInputStream = new ZipInputStream(fileStream);
+                while (zipInputStream.GetNextEntry() is { } theEntry)
+                {
+                    theEntry.IsUnicodeText = true;
+                    byte[] data = new byte[theEntry.Size];
+                    if (theEntry.Size != zipInputStream.Read(data, 0, data.Length)) throw new ArgumentException();
+                    dictionary.Add(theEntry.Name, LoadTexture2DFromByteArray(data));
+                }
+
+                Skybox = new Material(Shader.Find("Skybox/6 Sided"));
+                int frontTex = Shader.PropertyToID("_FrontTex");
+                int backTex = Shader.PropertyToID("_BackTex");
+                int leftTex = Shader.PropertyToID("_LeftTex");
+                int rightTex = Shader.PropertyToID("_RightTex");
+                int upTex = Shader.PropertyToID("_UpTex");
+                int downTex = Shader.PropertyToID("_DownTex");
+                Skybox.SetTexture(frontTex, dictionary["_FrontTex"]);
+                Skybox.SetTexture(backTex, dictionary["_BackTex"]);
+                Skybox.SetTexture(leftTex, dictionary["_LeftTex"]);
+                Skybox.SetTexture(rightTex, dictionary["_RightTex"]);
+                Skybox.SetTexture(upTex, dictionary["_UpTex"]);
+                Skybox.SetTexture(downTex, dictionary["_DownTex"]);
+            }
         }
 
         public static bool[] GenerateNewBoolArray(int length)
@@ -261,7 +289,7 @@ namespace DRFV.Global.Utilities
             return score switch
             {
                 < 0 => Grade.ERR,
-                > 3000000 =>  Grade.ERR,
+                > 3000000 => Grade.ERR,
                 < 2000000 => Grade.F, // F
                 < 2100000 => Grade.D, // D
                 < 2200000 => Grade.C, // C
@@ -378,21 +406,22 @@ namespace DRFV.Global.Utilities
             return sprite;
         }
 
-        public static Texture2D LoadTexture2DFromByteArray(byte[] data, int width, int height)
+        public static Texture2D LoadTexture2DFromByteArray(byte[] data, int width = 0, int height = 0)
         {
             try
             {
                 using UnimageProcessor unimageProcessor = new UnimageProcessor();
                 unimageProcessor.Load(data);
-                unimageProcessor.Resize(width > 0 ? Mathf.Max(unimageProcessor.Width, width) : unimageProcessor.Width, height > 0 ? Mathf.Max(unimageProcessor.Height, height) : unimageProcessor.Height);
-                return unimageProcessor.GetTexture(noLongerReadable:false);
+                unimageProcessor.Resize(width > 0 ? Mathf.Max(unimageProcessor.Width, width) : unimageProcessor.Width,
+                    height > 0 ? Mathf.Max(unimageProcessor.Height, height) : unimageProcessor.Height);
+                return unimageProcessor.GetTexture(noLongerReadable: false);
             }
             catch (UnimageException)
             {
                 return null;
             }
         }
-        
+
         public static float ScoreToRate(float score, int hard, float speed)
         {
             score = Mathf.Clamp(score, 0f, 3000000f);

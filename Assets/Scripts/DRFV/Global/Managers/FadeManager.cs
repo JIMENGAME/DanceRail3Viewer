@@ -18,6 +18,7 @@ namespace DRFV.Global.Managers
         [SerializeField] private Texture img;
         [SerializeField] private int width = 16;
         [SerializeField] private int height = 9;
+        public Action OnSceneChanged = () => {};
         private float[,] Scale;
         private Vector2 blocksize;
         private bool flag;
@@ -130,6 +131,7 @@ namespace DRFV.Global.Managers
             yield return null;
             SceneManager.LoadScene(SceneName);
             yield return null;
+            OnSceneChanged.Invoke();
             timer = 0;
             while (true)
             {

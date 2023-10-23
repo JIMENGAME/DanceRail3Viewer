@@ -63,7 +63,7 @@ namespace DRFV.Test
         {
             try
             {
-                Texture2D texture2D = Util.LoadTexture2DFromByteArray(file, 0, 0);
+                Texture2D texture2D = Util.LoadTexture2DFromByteArray(file);
                 if (texture2D.width != texture2D.height || texture2D.width % 100 != 0)
                 {
                     throw new InvalidDataException();
