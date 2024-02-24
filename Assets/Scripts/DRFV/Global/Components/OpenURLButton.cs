@@ -4,7 +4,7 @@ namespace DRFV.Global.Components
 {
     public class OpenURLButton : MonoBehaviour
     {
-        public string url;
+        [SerializeField] private string url;
 
         public void OpenURL()
         {

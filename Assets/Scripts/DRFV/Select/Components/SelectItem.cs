@@ -80,6 +80,7 @@ namespace DRFV.Select.Components
                     yield return ReadAudio(temp1 + ".wav", AudioType.WAV, false);
                     CutPreview();
                 }
+                Util.FullGC();
             }
 
             IEnumerator ReadAudio(string path, AudioType audioType, bool saveToCache)
@@ -185,7 +186,7 @@ namespace DRFV.Select.Components
             Sprite coverInPool = PoolManager.Instance.Get(PoolManager.Instance.spritePool, md5);
             if (coverInPool != null) return coverInPool;
 
-            Sprite sprite = Util.ByteArrayToSprite(bytes, 256, 256);
+            Sprite sprite = Util.ByteArrayToSprite(bytes, 512, 512);
             PoolManager.Instance.Push(PoolManager.Instance.spritePool, md5, sprite);
             return sprite;
         }

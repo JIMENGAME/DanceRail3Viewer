@@ -43,7 +43,7 @@ namespace DRFV.Global
             }
 
             if (!exist) return null;
-            return Util.ByteArrayToSprite(File.ReadAllBytes(path), 0, 0);
+            return Util.ByteArrayToSprite(File.ReadAllBytes(path));
         }
 
         public static TextAsset LoadText(string path)

@@ -9871,6 +9871,7 @@ MonoBehaviour:
   GDms: 100
   BeforeGameBackground: {fileID: 1076400768}
   songDataContainer: {fileID: 0}
+  dankaiDataContainer: {fileID: 0}
   autoPlayHint: {fileID: 1692807787}
   ProgramInfoTitle: {fileID: 179577214}
   inputJumpTo: {fileID: 768431919}
@@ -9893,6 +9894,7 @@ MonoBehaviour:
   fast: 0
   slow: 0
   DebugMode: 0
+  IsDankai: 0
   ShowNoteId: 0
   progressManager: {fileID: 822921283}
   postProcess: {fileID: 1884687365}
@@ -21162,6 +21164,8 @@ MonoBehaviour:
   bandType: 5
   fallSpeed: 0.08
   sensibility: 8
+  originalScaleYLeft: 1
+  originalScaleYRight: 1
 --- !u!114 &1840816975
 MonoBehaviour:
   m_ObjectHideFlags: 0

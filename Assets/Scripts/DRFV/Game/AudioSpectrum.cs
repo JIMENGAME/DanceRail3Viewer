@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DRFV.Game
 {
     public class AudioSpectrum : MonoBehaviour
     {
-        [SerializeField]
-        Transform[] SpectrumSpriteLeft = new Transform[31];
-        [SerializeField]
-        Transform[] SpectrumSpriteRight= new Transform[31];
+        [SerializeField] Transform[] SpectrumSpriteLeft = new Transform[31];
+        [SerializeField] Transform[] SpectrumSpriteRight = new Transform[31];
 
         #region Band type definition
+
         public enum BandType
         {
             FourBand,
@@ -20,39 +20,66 @@ namespace DRFV.Game
             ThirtyOneBand
         };
 
-        static float[][] middleFrequenciesForBands = {
-            new float[]{ 125.0f, 500, 1000, 2000 },
-            new float[]{ 250.0f, 400, 600, 800 },
-            new float[]{ 63.0f, 125, 500, 1000, 2000, 4000, 6000, 8000 },
-            new float[]{ 31.5f, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 },
-            new float[]{ 25.0f, 31.5f, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000 },
-            new float[]{ 20.0f, 25, 31.5f, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000 },
+        public enum EnableRegion
+        {
+            Left,
+            Right,
+            Both
+        }
+
+        static float[][] middleFrequenciesForBands =
+        {
+            new float[] { 125.0f, 500, 1000, 2000 },
+            new float[] { 250.0f, 400, 600, 800 },
+            new float[] { 63.0f, 125, 500, 1000, 2000, 4000, 6000, 8000 },
+            new float[] { 31.5f, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 },
+            new float[]
+            {
+                25.0f, 31.5f, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000,
+                2500, 3150, 4000, 5000, 6300, 8000
+            },
+            new float[]
+            {
+                20.0f, 25, 31.5f, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600,
+                2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000
+            },
         };
-        static float[] bandwidthForBands = {
+
+        static float[] bandwidthForBands =
+        {
             1.414f, // 2^(1/2)
             1.260f, // 2^(1/3)
             1.414f, // 2^(1/2)
             1.414f, // 2^(1/2)
             1.122f, // 2^(1/6)
-            1.122f  // 2^(1/6)
+            1.122f // 2^(1/6)
         };
+
         #endregion
 
         #region Public variables
+
         public int numberOfSamples = 1024;
         public BandType bandType = BandType.ThirtyOneBand;
         public float fallSpeed = 0.08f;
         public float sensibility = 8.0f;
+        public float originalScaleYLeft = 1.0f;
+        public float originalScaleYRight = 1.0f;
+        public EnableRegion enableRegion = EnableRegion.Both;
+
         #endregion
 
         #region Private variables
+
         float[] rawSpectrum;
         float[] levels;
         float[] peakLevels;
         float[] meanLevels;
+
         #endregion
 
         #region Public property
+
         public float[] Levels
         {
             get { return levels; }
@@ -67,15 +94,18 @@ namespace DRFV.Game
         {
             get { return meanLevels; }
         }
+
         #endregion
 
         #region Private functions
+
         void CheckBuffers()
         {
             if (rawSpectrum == null || rawSpectrum.Length != numberOfSamples)
             {
                 rawSpectrum = new float[numberOfSamples];
             }
+
             var bandCount = middleFrequenciesForBands[(int)bandType].Length;
             if (levels == null || levels.Length != bandCount)
             {
@@ -90,9 +120,11 @@ namespace DRFV.Game
             var i = Mathf.FloorToInt(f / AudioSettings.outputSampleRate * 2.0f * rawSpectrum.Length);
             return Mathf.Clamp(i, 0, rawSpectrum.Length - 1);
         }
+
         #endregion
 
         #region Monobehaviour functions
+
         void Awake()
         {
             CheckBuffers();
@@ -132,14 +164,36 @@ namespace DRFV.Game
                 meanLevels[bi] = bandMax - (bandMax - meanLevels[bi]) * filter;
             }
 
-            for(int i=0;i< SpectrumSpriteLeft.Length;i++)
+            switch (enableRegion)
             {
-                SpectrumSpriteLeft[i].localScale = new Vector3(1.8f, meanLevels[i] * 20.0f, 1.0f);
-                SpectrumSpriteRight[i].localScale = new Vector3(1.8f, meanLevels[i] * 20.0f, 1.0f);
-
+                case EnableRegion.Left:
+                    for (int i = 0; i < SpectrumSpriteLeft.Length; i++)
+                    {
+                        SpectrumSpriteLeft[i].localScale =
+                            new Vector3(1.8f, originalScaleYLeft * meanLevels[i] * 20.0f, 1.0f);
+                    }
+                    break;
+                case EnableRegion.Right:
+                    for (int i = 0; i < SpectrumSpriteRight.Length; i++)
+                    {
+                        SpectrumSpriteRight[i].localScale =
+                            new Vector3(1.8f, originalScaleYRight * meanLevels[i] * 20.0f, 1.0f);
+                    }
+                    break;
+                case EnableRegion.Both:
+                    for (int i = 0; i < SpectrumSpriteLeft.Length; i++)
+                    {
+                        SpectrumSpriteLeft[i].localScale =
+                            new Vector3(1.8f, originalScaleYLeft * meanLevels[i] * 20.0f, 1.0f);
+                        SpectrumSpriteRight[i].localScale =
+                            new Vector3(1.8f, originalScaleYRight * meanLevels[i] * 20.0f, 1.0f);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
         }
+
         #endregion
     }
 }

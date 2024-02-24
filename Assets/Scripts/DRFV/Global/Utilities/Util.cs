@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -392,7 +393,7 @@ namespace DRFV.Global.Utilities
             GC.Collect();
         }
 
-        public static Sprite ByteArrayToSprite(byte[] data, int width, int height)
+        public static Sprite ByteArrayToSprite(byte[] data, int width = 0, int height = 0)
         {
             Texture2D texture = LoadTexture2DFromByteArray(data, width, height);
             if (texture == null)
@@ -410,11 +411,13 @@ namespace DRFV.Global.Utilities
         {
             try
             {
-                using UnimageProcessor unimageProcessor = new UnimageProcessor();
+                UnimageProcessor unimageProcessor = new UnimageProcessor();
                 unimageProcessor.Load(data);
                 unimageProcessor.Resize(width > 0 ? Mathf.Max(unimageProcessor.Width, width) : unimageProcessor.Width,
                     height > 0 ? Mathf.Max(unimageProcessor.Height, height) : unimageProcessor.Height);
-                return unimageProcessor.GetTexture(noLongerReadable: false);
+                Texture2D texture = unimageProcessor.GetTexture(noLongerReadable: false);
+                unimageProcessor.Dispose();
+                return texture;
             }
             catch (UnimageException)
             {
@@ -453,8 +456,37 @@ namespace DRFV.Global.Utilities
             }
         }
 
-        public delegate bool BooleanDelegate();
+        public static byte[] ToCache(this AudioClip audioClip)
+        {
+            float[] data = new float[audioClip.samples * audioClip.channels];
+            if (!audioClip || !audioClip.GetData(data, 0)) return Array.Empty<byte>();
+            List<byte> output = new List<byte>();
+            output.AddRange(BitConverter.GetBytes(audioClip.frequency));
+            output.AddRange(BitConverter.GetBytes((short)audioClip.channels));
+            foreach (byte[] bytes in data.Select(BitConverter.GetBytes))
+            {
+                output.AddRange(bytes);
+            }
 
+            return output.ToArray();
+        }
+
+        public static AudioClip ToAudioClip(this byte[] data)
+        {
+            if (data.Length % 2 != 0 || data.Length / 2 % 2 != 1) return null;
+            int frequency = BitConverter.ToInt32(data.Take(4).ToArray());
+            int channels = BitConverter.ToInt32(data.Skip(4).Take(2).ToArray());
+            byte[] content = data.Skip(6).ToArray();
+            List<float> qwq = new List<float>();
+            for (int i = 0; i < content.Length; i += 4)
+            {
+                qwq.Add(BitConverter.ToSingle(data.Skip(i).Take(4).ToArray()));
+            }
+
+            AudioClip audioClip = AudioClip.Create("", content.Length / channels, channels, frequency, false);
+            audioClip.SetData(qwq.ToArray(), 0);
+            return audioClip;
+        }
 #if false
         public static AnimationCurve GetAnimationCurveFromDumpedFile(string path)
         {

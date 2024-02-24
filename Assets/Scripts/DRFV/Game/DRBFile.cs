@@ -198,7 +198,8 @@ namespace DRFV.Game
                             ss2 = ss2.Replace(";", "");
                             SCS sc = new SCS
                             {
-                                sc = Mathf.Clamp(float.Parse(ss), -1000f, 1000f),
+                                // sc = Mathf.Clamp(float.Parse(ss), -1000f, 1000f),
+                                sc = float.Parse(ss),
                                 sci = float.Parse(ss2)
                             };
                             drbFile.scs.Add(sc);

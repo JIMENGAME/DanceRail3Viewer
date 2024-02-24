@@ -1,11 +1,13 @@
 ﻿#if UNITY_EDITOR
 using System.Text;
+#endif
 using UnityEngine;
 
 namespace DRFV.Global
 {
     public class CodeTranslater : MonoBehaviour
     {
+#if UNITY_EDITOR
         /**
          * 0: Debug Mode
          * 1: HadouTest
@@ -36,6 +38,6 @@ namespace DRFV.Global
             stringBuilder.Append(arr[^1]).Append("}");
             return stringBuilder.ToString();
         }
+#endif
     }
 }
-#endif

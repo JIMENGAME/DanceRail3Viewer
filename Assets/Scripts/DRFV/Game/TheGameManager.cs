@@ -1236,10 +1236,7 @@ namespace DRFV.Game
             _acFlick.GetData(f_flick, 0);
             _acFreeFlick.GetData(f_freeFlick, 0);
 
-            for (var i = 0; i < f_fx.Length; i++)
-            {
-                f_fx[i] = 0.0f;
-            }
+            Array.Fill(f_fx, 0f);
 
             if (_acLong != null) _acLong.GetData(f_long, 0);
 
@@ -1255,29 +1252,6 @@ namespace DRFV.Game
                 list_hold = new(),
                 list_flick = new(),
                 list_freeFlick = new();
-
-            //写入gater音
-            if (GameEffectGaterLevel >= 1)
-            {
-                foreach (var noteData in drbfile.notes)
-                {
-                    if (noteData.IsBitCrash())
-                    {
-                        int end = (int)(bgmSamples *
-                                        (noteData.ms / 1000.0f / originalBGM.length));
-                        int start = (int)(bgmSamples *
-                                          (drbfile.notes[noteData.parent].ms / 1000.0f / originalBGM.length));
-
-                        if (end < bgmSamples)
-                        {
-                            for (int c = (end - start) / 2 + start; c < end; c++)
-                            {
-                                f_song[c] *= (10.0f - GameEffectGaterLevel) / 10.0f;
-                            }
-                        }
-                    }
-                }
-            }
 
             int finalSamplesCount = originalBGM.samples +
                                     (int)MathF.Max(_acHit.samples, Mathf.Max(_acSlide.samples, _acFlick.samples));
@@ -1363,6 +1337,30 @@ namespace DRFV.Game
                             {
                                 if (start + c < f_song.Length)
                                     f_fx[start + c] += se[c] * 0.5f * ((volume + 3) / 10.0f);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //写入gater音
+            if (GameEffectGaterLevel >= 1)
+            {
+                foreach (var noteData in drbfile.notes)
+                {
+                    if (noteData.IsBitCrash())
+                    {
+                        int end = (int)(bgmSamples *
+                                        (noteData.ms / 1000.0f / originalBGM.length));
+                        int start = (int)(bgmSamples *
+                                          (drbfile.notes[noteData.parent].ms / 1000.0f / originalBGM.length));
+
+                        if (end < bgmSamples)
+                        {
+                            for (int c = (end - start) / 2 + start; c < end; c++)
+                            {
+                                f_song[c] *= (10.0f - GameEffectGaterLevel) / 10.0f;
+                                f_fx[c] *= (10.0f - GameEffectGaterLevel) / 10.0f;
                             }
                         }
                     }
@@ -2059,11 +2057,19 @@ namespace DRFV.Game
                 bgmManager.panStereo = result;
             }
 
-            audioMixer.SetFloat("Center", EQCurve.Evaluate(AudioMixerCenter));
+            float center = EQCurve.Evaluate(AudioMixerCenter);
+            float hp = EQCurve.Evaluate(AudioMixerHiPass);
+            float lp = EQCurve.Evaluate(AudioMixerLoPass);
+            
+            audioMixer.SetFloat("Center", center);
             audioMixer.SetFloat("Freq", AudioMixerFreq);
-            audioMixer.SetFloat("HPFreq", EQCurve.Evaluate(AudioMixerHiPass));
-            audioMixer.SetFloat("LPFreq", EQCurve.Evaluate(AudioMixerLoPass));
-
+            audioMixer.SetFloat("HPFreq", hp);
+            audioMixer.SetFloat("LPFreq", lp);
+            audioMixer.SetFloat("Center1", center);
+            audioMixer.SetFloat("Freq1", AudioMixerFreq);
+            audioMixer.SetFloat("HPFreq1", hp);
+            audioMixer.SetFloat("LPFreq1", lp);
+            
             EQList.Clear();
             HPList.Clear();
             LPList.Clear();

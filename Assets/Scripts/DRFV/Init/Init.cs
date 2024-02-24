@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
 using DG.Tweening;
+using DRFV.Global;
 using DRFV.Global.Managers;
 using DRFV.Global.Utilities;
 using DRFV.Language;
@@ -37,6 +40,20 @@ namespace DRFV.Init
 #if UNITY_EDITOR
             RuntimeSettingsManager.Instance.isAprilFool = aprilFoolTest || RuntimeSettingsManager.Instance.isAprilFool;
 #endif
+            AudioConfiguration audioConfiguration = AudioSettings.GetConfiguration();
+            audioConfiguration.dspBufferSize = Application.platform switch
+            {
+                RuntimePlatform.OSXEditor => 1024,
+                RuntimePlatform.OSXPlayer => 1024,
+                RuntimePlatform.WindowsPlayer => 1024,
+                RuntimePlatform.WindowsEditor => 1024,
+                RuntimePlatform.IPhonePlayer => 256,
+                RuntimePlatform.Android => 256,
+                RuntimePlatform.LinuxPlayer => 1024,
+                RuntimePlatform.LinuxEditor => 1024,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            AudioSettings.Reset(audioConfiguration);
             entryMask.color = RuntimeSettingsManager.Instance.isAprilFool ? CameraColor : MaskColor;
             Camera.main.backgroundColor = RuntimeSettingsManager.Instance.isAprilFool ? MaskColor : CameraColor;
             if (RuntimeSettingsManager.Instance.isAprilFool) music.clip = aprilFoolClip;
