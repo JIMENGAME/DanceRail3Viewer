@@ -93,7 +93,7 @@ namespace DRFV.Game
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogException(e);
                 Destroy(this);
             }
         }

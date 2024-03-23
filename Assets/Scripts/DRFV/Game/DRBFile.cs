@@ -259,6 +259,11 @@ namespace DRFV.Game
             drbFile.scs.Sort((a, b) => Mathf.RoundToInt(a.sci * 1000.0f - b.sci * 1000.0f));
             drbFile.notes.Sort((a, b) => a.id - b.id);
 
+            List<NoteData> qwqwq = new List<NoteData>();
+            qwqwq.AddRange(drbFile.notes); 
+            // Debug.Log(qwqwq.OrderByDescending(note => Mathf.Abs(note.pos)).First().GetMd5Data().content);
+            // Debug.Log(qwqwq.OrderByDescending(note => note.width).First().GetMd5Data().content);
+            
             return drbFile;
         }
 
