@@ -135,7 +135,7 @@ namespace DRFV.Game
             int tapAlpha = gameManager.currentSettings.TapAlpha;
             int flickAlpha = gameManager.currentSettings.FlickAlpha;
             int freeFlickAlpha = gameManager.currentSettings.FreeFlickAlpha;
-            
+
 
             isWaitForGD = false;
             isWaitForPF = false;
@@ -192,30 +192,39 @@ namespace DRFV.Game
                 NoteKind.FLICK_UP => 5,
                 NoteKind.FLICK_DOWN => 6,
                 NoteKind.FLICK => 7,
+                NoteKind.ExTAP_2 => 8,
+                NoteKind.ExTAP_3 => 9,
+                NoteKind.ExTAP_4 => 10,
                 _ => 0
             });
 
+            float arrorSize = Single.NaN;
+            float arrorAlpha = Single.NaN;
             if (_noteData.IsTap())
             {
-                arrorRenderer.transform.position += new Vector3(0, tapSize * 0.6f, 0f);
-                arrorRenderer.transform.localScale += new Vector3(tapSize * 2, tapSize * 2, 0);
-                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, tapAlpha / 3f);
+                arrorSize = tapSize;
+                arrorAlpha = tapAlpha;
             }
             else if (_noteData.IsFlick())
             {
-                arrorRenderer.transform.position += new Vector3(0, flickSize * 0.6f, 0);
-                arrorRenderer.transform.localScale += new Vector3(flickSize * 2, flickSize * 2, 0);
-                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, flickAlpha / 3f);
+                arrorSize = flickSize;
+                arrorAlpha = flickAlpha;
             }
             else if (_noteData.kind == NoteKind.FLICK)
             {
-                arrorRenderer.transform.position += new Vector3(0, freeFlickSize * 0.6f, 0);
-                arrorRenderer.transform.localScale += new Vector3(freeFlickSize * 2, freeFlickSize * 2, 0);
-                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, freeFlickAlpha / 3f);
+                arrorSize = freeFlickSize;
+                arrorAlpha = freeFlickAlpha;
+            }
+            
+            if (float.IsNaN(arrorSize))
+            {
+                arrorRenderer.enabled = false;
             }
             else
             {
-                arrorRenderer.enabled = false;
+                arrorRenderer.transform.position += new Vector3(0, arrorSize * 0.6f, 0f);
+                arrorRenderer.transform.localScale += new Vector3(arrorSize * 2, arrorSize * 2, 0);
+                arrorRenderer.color = new Color(1.0f, 1.0f, 1.0f, arrorAlpha / 3f);
             }
 
             effect_center_start = (_noteData.parent_pos + _noteData.parent_width * 0.5f) / 16.0f;
@@ -310,12 +319,12 @@ namespace DRFV.Game
                         gameManager.AddLPass(qwq);
                         break;
                     }
-                    case NoteKind.STEREO_CENTER:
-                    case NoteKind.STEREO_END:
-                    {
-                        gameManager.AddStereo(stereo);
-                        break;
-                    }
+                    // case NoteKind.STEREO_CENTER:
+                    // case NoteKind.STEREO_END:
+                    // {
+                    //     gameManager.AddStereo(stereo);
+                    //     break;
+                    // }
                 }
             }
 
@@ -420,10 +429,10 @@ namespace DRFV.Game
                     case NoteKind.MOVER_END:
                         mDrawer.AddQue(_mesh, _material6);
                         break;
-                    case NoteKind.STEREO_CENTER:
-                    case NoteKind.STEREO_END:
-                        mDrawer.AddQue(_mesh, _material7);
-                        break;
+                    // case NoteKind.STEREO_CENTER:
+                    // case NoteKind.STEREO_END:
+                    //     mDrawer.AddQue(_mesh, _material7);
+                    //     break;
                     case NoteKind.MOVERBOOM_CENTER:
                     case NoteKind.MOVERBOOM_END:
                         mDrawer.AddQue(_mesh, _material3);
@@ -448,7 +457,8 @@ namespace DRFV.Game
                 //TOUCH操作
                 if (!gameManager.isPause)
                 {
-                    switch (_noteData.kind)
+                    NoteKind noteKind = _noteData.kind;
+                    switch (noteKind)
                     {
                         //TAP必要
                         case NoteKind.TAP:
@@ -551,13 +561,33 @@ namespace DRFV.Game
                         case NoteKind.ExTAP:
                             if (inputManager.GetTrigger(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width, PJColor);
                                 judge_flag = true;
                                 DistroyThis();
                             }
-
+                            break;
+                        case NoteKind.ExTAP_2:
+                        case NoteKind.ExTAP_3:
+                        case NoteKind.ExTAP_4:
+                            int requiredFingerCount = noteKind switch
+                            {
+                                NoteKind.ExTAP_2 => 2,
+                                NoteKind.ExTAP_3 => 3,
+                                NoteKind.ExTAP_4 => 4,
+                                _ => throw new ArgumentOutOfRangeException()
+                            };
+                            if (inputManager.GetTrigger(_noteData.pos, _noteData.pos + _noteData.width) && inputManager.GetPressed(_noteData.pos, _noteData.pos + _noteData.width, requiredFingerCount))
+                            {
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
+                                    _noteData.width);
+                                inputManager.SetBeamColor(_noteData.pos, _noteData.pos + _noteData.width, PJColor);
+                                judge_flag = true;
+                                DistroyThis();
+                            }
                             break;
                         //PRESS RELEASE OK
                         case NoteKind.HOLD_END:
@@ -570,17 +600,19 @@ namespace DRFV.Game
                         case NoteKind.LPass_END:
                         case NoteKind.MOVER_CENTER:
                         case NoteKind.MOVER_END:
-                        case NoteKind.STEREO_CENTER:
-                        case NoteKind.STEREO_END:
+                            // case NoteKind.STEREO_CENTER:
+                            // case NoteKind.STEREO_END:
                             if (inputManager.GetRelease(_noteData.pos, _noteData.pos + _noteData.width) && !flag)
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 flag = true;
                             }
                             else if (inputManager.GetPressed(_noteData.pos, _noteData.pos + _noteData.width) && !flag)
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 flag = true;
                             }
@@ -595,10 +627,11 @@ namespace DRFV.Game
                         //PRESS 必要
                         case NoteKind.HOLD_START:
                         case NoteKind.SLIDE_START:
-                        case NoteKind.STEREO_START:
+                            // case NoteKind.STEREO_START:
                             if (inputManager.GetPressed(_noteData.pos, _noteData.pos + _noteData.width) && !flag)
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 flag = true;
                             }
@@ -614,7 +647,8 @@ namespace DRFV.Game
                         case NoteKind.FLICK:
                             if (inputManager.GetFlick(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -624,7 +658,8 @@ namespace DRFV.Game
                         case NoteKind.FLICK_LEFT:
                             if (inputManager.GetFlickLeft(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -634,7 +669,8 @@ namespace DRFV.Game
                         case NoteKind.FLICK_RIGHT:
                             if (inputManager.GetFlickRight(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -644,7 +680,8 @@ namespace DRFV.Game
                         case NoteKind.FLICK_UP:
                             if (inputManager.GetFlickUp(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -654,7 +691,8 @@ namespace DRFV.Game
                         case NoteKind.FLICK_DOWN:
                             if (inputManager.GetFlickDown(_noteData.pos, _noteData.pos + _noteData.width))
                             {
-                                gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                    new Vector3(transform.position.x, 0.0f, 0.0f),
                                     _noteData.width);
                                 judge_flag = true;
                                 DistroyThis();
@@ -682,7 +720,8 @@ namespace DRFV.Game
                                 }
                                 else
                                 {
-                                    gameManager.Judge(0, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                                    gameManager.Judge(0, _noteData.kind, _noteData.isFake,
+                                        new Vector3(transform.position.x, 0.0f, 0.0f),
                                         _noteData.width);
                                     judge_flag = true;
                                     DistroyThis();
@@ -699,7 +738,8 @@ namespace DRFV.Game
             //BOOM NOTE 以外
             if (!judge_flag)
             {
-                gameManager.Judge(2 * gameManager.GDms, _noteData.kind,  _noteData.isFake,new Vector3(transform.position.x, 0.0f, 0.0f),
+                gameManager.Judge(2 * gameManager.GDms, _noteData.kind, _noteData.isFake,
+                    new Vector3(transform.position.x, 0.0f, 0.0f),
                     _noteData.width);
                 if (_noteData.kind == NoteKind.TAP)
                 {
@@ -720,8 +760,10 @@ namespace DRFV.Game
 
 #if true
             float randomms = Random.Range(-gameManager.PJms * 0.9f, gameManager.PJms * 0.9f);
-            if (_noteData.kind == NoteKind.TAP && !_noteData.isFake) gameManager.AccMSList.Add(gameManager.GDms - Mathf.Abs(randomms));
-            gameManager.Judge(_noteData.kind != NoteKind.TAP || _noteData.isFake ? 0 : randomms, _noteData.kind, _noteData.isFake,
+            if (_noteData.kind == NoteKind.TAP && !_noteData.isFake)
+                gameManager.AccMSList.Add(gameManager.GDms - Mathf.Abs(randomms));
+            gameManager.Judge(_noteData.kind != NoteKind.TAP || _noteData.isFake ? 0 : randomms, _noteData.kind,
+                _noteData.isFake,
                 new Vector3(transform.position.x, 0.0f, 0.0f), _noteData.width);
 #else
             if (_noteData.kind == NoteKind.TAP) gameManager.AccMSList.Add(gameManager.GDms);

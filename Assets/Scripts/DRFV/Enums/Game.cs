@@ -57,9 +57,9 @@ namespace DRFV.Enums
         LPass_END = 22,
         MOVER_CENTER = 23,
         MOVER_END = 24,
-        STEREO_START = 25,
-        STEREO_CENTER = 26,
-        STEREO_END = 27,
+        ExTAP_2 = 25,
+        ExTAP_3 = 26,
+        ExTAP_4 = 27,
         MOVERBOOM_CENTER = 28,
         MOVERBOOM_END = 29
     }

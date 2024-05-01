@@ -1289,16 +1289,37 @@ namespace DRFV.Game
                 void ProcessTapEffect(NoteData noteData)
                 {
                     //写入Tap音
-                    if (noteData.kind == NoteKind.TAP || noteData.kind == NoteKind.ExTAP && _acExHit == _acHit ||
+                    if (noteData.kind == NoteKind.TAP || noteData.IsExTapSound() && _acExHit == _acHit ||
                         noteData.IsSlideSound() && _acSlide == _acHit || noteData.IsHold() && _acHold == _acHit)
                     {
-                        WriteSamples(list_hit, f_hit, GameEffectTap);
+                        int soundCount = noteData.kind switch
+                        {
+                            NoteKind.ExTAP_2 => 2,
+                            NoteKind.ExTAP_3 => 3,
+                            NoteKind.ExTAP_4 => 4,
+                            _ => 1
+                        };
+                        for (int i = 0; i < soundCount; i++)
+                        {
+                            WriteSamples(list_hit, f_hit, GameEffectTap);
+                        }
                     }
                     else
                     {
-                        if (noteData.kind == NoteKind.ExTAP)
+                        if (noteData.IsExTapSound())
                         {
-                            WriteSamples(list_exHit, f_exHit, GameEffectTap);
+                            int soundCount = noteData.kind switch
+                            {
+                                NoteKind.ExTAP => 1,
+                                NoteKind.ExTAP_2 => 2,
+                                NoteKind.ExTAP_3 => 3,
+                                NoteKind.ExTAP_4 => 4,
+                                _ => throw new ArgumentOutOfRangeException()
+                            };
+                            for (int i = 0; i < soundCount; i++)
+                            {
+                                WriteSamples(list_exHit, f_exHit, GameEffectTap);
+                            }
                         }
 
                         if (noteData.IsSlideSound())
@@ -1330,14 +1351,12 @@ namespace DRFV.Game
                         int start = (int)(bgmSamples *
                                           (noteData.ms / 1000.0f / originalBGM.length));
 
-                        if (disableOverlappingCheck || !checkOverlapping.Contains(start))
+                        if (!disableOverlappingCheck && checkOverlapping.Contains(start)) return;
+                        checkOverlapping.Add(start);
+                        for (int c = 0; c < se.Length; c++)
                         {
-                            checkOverlapping.Add(start);
-                            for (int c = 0; c < se.Length; c++)
-                            {
-                                if (start + c < f_song.Length)
-                                    f_fx[start + c] += se[c] * 0.5f * ((volume + 3) / 10.0f);
-                            }
+                            if (start + c < f_song.Length)
+                                f_fx[start + c] += se[c] * 0.5f * ((volume + 3) / 10.0f);
                         }
                     }
                 }

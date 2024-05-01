@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DRFV.Global;
 using DRFV.Global.Utilities;
 using UnityEngine;
@@ -193,15 +194,20 @@ namespace DRFV.Game
         } //update end
 
         //タッチしてるかどうか取得
-        public bool GetPressed(float left, float right)
+        public bool GetPressed(float left, float right, int count = 1)
         {
+            if (count < 1) count = 1;
+            if (count > TOUCH_MAX) count = TOUCH_MAX;
+
+            int cnt = 0;
             for (int i = 0; i < TOUCH_MAX; i++)
             {
                 if (touchPoint[i].isTouch)
                 {
                     if (touchPoint[i].posx > left - 1 && touchPoint[i].posx < right + 1)
                     {
-                        return true;
+                        cnt++;
+                        if (cnt == count) return true;
                     }
                 }
             }
@@ -218,7 +224,7 @@ namespace DRFV.Game
                 {
                     if (triggerPoint[i].posx > left - 1 && triggerPoint[i].posx < right + 1)
                     {
-                        if (triggerTime[i] == 0 || (triggerTime[i] == time))
+                        if (triggerTime[i] == 0 || (Math.Abs(triggerTime[i] - time) < 0.01f))
                         {
                             triggerTime[i] = time;
                             return true;

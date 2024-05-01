@@ -42,7 +42,7 @@ namespace DRFV.Game.HPBars
         
         }
 
-        public static int[] NoteWeight = new int[28]
+        public static readonly int[] NoteWeight = new int[30]
         {
             1, // 无
             3, // Tap
@@ -69,9 +69,11 @@ namespace DRFV.Game.HPBars
             2, // LPass (End)
             2, // Mover (Center)
             2, // Mover (End)
-            2, // 未知
-            2, // 未知
-            2 // 未知
+            3, // ExTap 2押版
+            3, // ExTap 3押版
+            3, // ExTap 3押版
+            2,
+            2
         };
 
     }

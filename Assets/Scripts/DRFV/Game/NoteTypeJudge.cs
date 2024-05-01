@@ -21,7 +21,7 @@ namespace DRFV.Game
             if (k == NoteKind.HPass_END) return true;
             if (k == NoteKind.LPass_END) return true;
             if (k == NoteKind.MOVER_END) return true;
-            if (k == NoteKind.STEREO_END) return true;
+            // if (k == NoteKind.STEREO_END) return true;
 
             return false;
         }
@@ -36,16 +36,18 @@ namespace DRFV.Game
             if (k == NoteKind.HPass_CENTER) return true;
             if (k == NoteKind.LPass_CENTER) return true;
             if (k == NoteKind.MOVER_CENTER) return true;
-            if (k == NoteKind.STEREO_CENTER) return true;
+            // if (k == NoteKind.STEREO_CENTER) return true;
 
             return false;
         }
     
-        public static bool IsTapSound(this NoteData noteData)
+        public static bool IsExTapSound(this NoteData noteData)
         {
             NoteKind k = noteData.kind;
-            if (k == NoteKind.TAP) return true;
             if (k == NoteKind.ExTAP) return true;
+            if (k == NoteKind.ExTAP_2) return true;
+            if (k == NoteKind.ExTAP_3) return true;
+            if (k == NoteKind.ExTAP_4) return true;
 
             return false;
         }
@@ -68,8 +70,8 @@ namespace DRFV.Game
             if (k == NoteKind.HPass_END) return true;
             if (k == NoteKind.LPass_END) return true;
             if (k == NoteKind.MOVER_END) return true;
-            if (k == NoteKind.STEREO_START) return true;
-            if (k == NoteKind.STEREO_END) return true;
+            // if (k == NoteKind.STEREO_START) return true;
+            // if (k == NoteKind.STEREO_END) return true;
             return false;
         }
 
@@ -78,6 +80,9 @@ namespace DRFV.Game
             NoteKind k = noteData.kind;
             if (k == NoteKind.TAP) return true;
             if (k == NoteKind.ExTAP) return true;
+            if (k == NoteKind.ExTAP_2) return true;
+            if (k == NoteKind.ExTAP_3) return true;
+            if (k == NoteKind.ExTAP_4) return true;
 
             return false;
         }
