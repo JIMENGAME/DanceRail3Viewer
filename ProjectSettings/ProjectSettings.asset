@@ -170,8 +170,8 @@ PlayerSettings:
     Standalone: com.Greenball233.DR3FanmadeViewer
     iPhone: com.Greenball233.inokana.DR3FV
   buildNumber:
-    Standalone: 1719229442
-    iPhone: 1719229442
+    Standalone: 1719229747
+    iPhone: 1719229747
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 50010605
@@ -246,7 +246,7 @@ PlayerSettings:
   appleEnableAutomaticSigning: 1
   iOSRequireARKit: 0
   iOSAutomaticallyDetectAndAddCapabilities: 1
-  appleEnableProMotion: 0
+  appleEnableProMotion: 1
   shaderPrecisionModel: 0
   clonedFromGUID: c0afd0d1d80e3634a9dac47e8a0426ea
   templatePackageId: com.unity.template.3d@3.1.4
@@ -888,7 +888,7 @@ PlayerSettings:
   allowUnsafeCode: 0
   useDeterministicCompilation: 0
   enableRoslynAnalyzers: 1
-  selectedPlatform: 2
+  selectedPlatform: 3
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
   gcIncremental: 0
