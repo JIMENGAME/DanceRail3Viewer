@@ -17,7 +17,7 @@ namespace Milthm.UnityExtension
         private static readonly string BuildPath = Path.Join(ProjectPath, "Build");
         private static readonly string SecretsPath = Path.Join(ProjectPath, "Secrets");
 
-        private const string GameName = "Notanote";
+        private const string GameName = "DR3FanmadeViewer";
 
         private const AndroidSdkVersions AndroidTargetSdk = AndroidSdkVersions.AndroidApiLevel29;
 
