@@ -15,7 +15,7 @@ using DRFV.Result;
 using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Unimage;
+// using Unimage;
 using UnityEngine;
 
 namespace DRFV.Global.Utilities
@@ -27,7 +27,8 @@ namespace DRFV.Global.Utilities
         public static readonly Regex keywordRegex = new("[^a-z0-9-_]");
         public static string localizationId = "zh-cn";
         private static readonly DateTime timeStampStart = new(1970, 1, 1);
-        public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif" };
+        // public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg", ".webp", ".bmp", ".tga", ".gif" };
+        public static readonly string[] ImageSuffixes = { ".jpg", ".png", ".jpeg" };
         public static Sprite SpritePlaceholder { get; private set; }
         public static readonly Color SpritePlaceholderBGColor = new(1f, 130f / 255f, 1f);
         private static bool inited = false;
@@ -35,16 +36,6 @@ namespace DRFV.Global.Utilities
         private static readonly AnimationCurve OneThirdWeightedCurve =
             new(new Keyframe(0, 0, 0, 0, 1 / 3f, 1 / 3f), new Keyframe(1, 1, 0, 0, 1 / 3f, 1 / 3f));
 #endif
-
-        ///
-        ///         if (File.Exists(filePath + ".jpg")) filePath += ".jpg";
-        ///         else if (File.Exists(filePath + ".png")) filePath += ".png";
-        ///         else if (File.Exists(filePath + ".jpeg")) filePath += ".jpeg";
-        ///         else if (File.Exists(filePath + ".webp")) filePath += ".webp";
-        ///         else if (File.Exists(filePath + ".bmp")) filePath += ".bmp";
-        ///         else if (File.Exists(filePath + ".tga")) filePath += ".tga";
-        ///         else if (File.Exists(filePath + ".gif")) filePath += ".gif";
-        /// 
         public static void Init()
         {
             if (inited) return;
@@ -409,20 +400,52 @@ namespace DRFV.Global.Utilities
 
         public static Texture2D LoadTexture2DFromByteArray(byte[] data, int width = 0, int height = 0)
         {
-            try
+            width = Mathf.Max(0, width);
+            height = Mathf.Max(0, height);
+            Texture2D texture = new Texture2D(0, 0);
+            if (texture.LoadImage(data, false))
             {
-                UnimageProcessor unimageProcessor = new UnimageProcessor();
-                unimageProcessor.Load(data);
-                unimageProcessor.Resize(width > 0 ? Mathf.Max(unimageProcessor.Width, width) : unimageProcessor.Width,
-                    height > 0 ? Mathf.Max(unimageProcessor.Height, height) : unimageProcessor.Height);
-                Texture2D texture = unimageProcessor.GetTexture(noLongerReadable: false);
-                unimageProcessor.Dispose();
+                if (width + height > 0)
+                    texture = ScaleTexture(texture, width == 0 ? texture.width : width,
+                        height == 0 ? texture.height : height);
                 return texture;
             }
-            catch (UnimageException)
+
+            return null;
+            // try
+            // {
+            //     UnimageProcessor unimageProcessor = new UnimageProcessor();
+            //     unimageProcessor.Load(data);
+            //     unimageProcessor.Resize(width > 0 ? Mathf.Max(unimageProcessor.Width, width) : unimageProcessor.Width,
+            //         height > 0 ? Mathf.Max(unimageProcessor.Height, height) : unimageProcessor.Height);
+            //     Texture2D texture = unimageProcessor.GetTexture(noLongerReadable: false);
+            //     unimageProcessor.Dispose();
+            //     return texture;
+            // }
+            // catch (UnimageException)
+            // {
+            //     return null;
+            // }
+        }
+        
+        private static Texture2D ScaleTexture(Texture2D source, float targetWidth, float targetHeight)
+        {
+            Texture2D result = new Texture2D((int)targetWidth, (int)targetHeight, source.format, false);
+
+            float incX = (1.0f / targetWidth);
+            float incY = (1.0f / targetHeight);
+
+            for (int i = 0; i < result.height; ++i)
             {
-                return null;
+                for (int j = 0; j < result.width; ++j)
+                {
+                    Color newColor = source.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
+                    result.SetPixel(j, i, newColor);
+                }
             }
+
+            result.Apply();
+            return result;
         }
 
         public static float ScoreToRate(float score, int hard, float speed)
