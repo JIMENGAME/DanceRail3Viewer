@@ -7,7 +7,7 @@ namespace Milthm.BuildScript.Versioning
         // 这里填入git status --porcelain返回结果
         private static List<string> TolerantDirty = new List<string>
         {
-            " M Assets/Resources/Texts/BuildInfo.json",
+            " M Assets/Resources/GENERAL/BuildInfo.json",
             " M Packages/manifest.json",
             " M Packages/packages-lock.json",
             " M ProjectSettings/ProjectSettings.asset",

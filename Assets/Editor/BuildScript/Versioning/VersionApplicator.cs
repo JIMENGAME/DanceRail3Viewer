@@ -38,7 +38,7 @@ namespace Milthm.BuildScript.Versioning
 
         private static void WriteVersionInfo(CurrentVersionData info, BuildPlayerOptions buildPlayerOptions)
         {
-            File.WriteAllText("Assets/Resources/Texts/BuildInfo.json",
+            File.WriteAllText("Assets/Resources/GENERAL/BuildInfo.json",
                 JsonConvert.SerializeObject(info.Export(buildPlayerOptions))
             );
         }
