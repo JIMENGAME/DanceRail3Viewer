@@ -1,0 +1,19 @@
+{
+    "name": "Milthm.BuildScript",
+    "rootNamespace": "Milthm.BuildScript",
+    "references": [
+        "GUID:3af2b735272ae7d44bc737eaa9924d6a",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

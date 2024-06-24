@@ -1,0 +1,22 @@
+{
+    "name": "Milthm.UnityExtension",
+    "rootNamespace": "Milthm.UnityExtension",
+    "references": [
+        "DRFV",
+        "Milthm.BuildScript",
+        "Unity.TextMeshPro",
+        "Unity.TextMeshPro.Editor",
+        "YamlDotNet"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
