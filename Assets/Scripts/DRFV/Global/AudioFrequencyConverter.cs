@@ -37,7 +37,7 @@ namespace DRFV.Global
 
         private static byte[] ConvertWavFreqToWav(byte[] data, int freq)
         {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+#if (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN) && false
             using MemoryStream readStream = new MemoryStream(data);
             using WaveFileReader waveFileReader = new(readStream);
             WaveFormat waveFormat = waveFileReader.WaveFormat;

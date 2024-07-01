@@ -14,6 +14,7 @@ using Milthm.BuildScript.Versioning;
 using DRFV.Global.Utilities;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEditor.iOS.Xcode;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -143,6 +144,18 @@ namespace Milthm.BuildScript
             // Summary
             BuildSummary summary = buildReport.summary;
             StdOutReporter.ReportSummary(summary);
+            
+            // Edit iOS info.plist
+            if (summary.result == BuildResult.Succeeded && buildPlayerOptions.target is BuildTarget.iOS or BuildTarget.StandaloneOSX)
+            {
+                PlistDocument plist = new PlistDocument();
+                string plistPath = Path.Join(buildPath, "info.plist");
+                plist.ReadFromFile(plistPath);
+                PlistElementDict infoDict = plist.root;
+                infoDict.SetBoolean("UIFileSharingEnabled", true); // 对第三方软件（例：iTunes）开放读写文件权限
+                infoDict.SetBoolean("UISupportsDocumentBrowser", true); // 对iOS系统APP“文件”开放读写文件权限
+                plist.WriteToFile(plistPath);
+            }
             
             // Open build folder
             bool openBuildPath = false;

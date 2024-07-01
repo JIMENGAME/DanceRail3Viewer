@@ -365,8 +365,7 @@ namespace DRFV.Game
                 GameEffectGaterLevel = currentSettings.GameEffectGaterLevel;
                 GameEffectTap = currentSettings.GameEffectTap;
                 playerGameComboDisplay = currentSettings.ComboDisp;
-                if (_scoreType != SCORE_TYPE.ARCAEA &&
-                    playerGameComboDisplay == GameComboDisplay.LAGRANGE)
+                if (_scoreType != SCORE_TYPE.ARCAEA && playerGameComboDisplay == GameComboDisplay.LAGRANGE)
                     playerGameComboDisplay = GameComboDisplay.COMBO;
                 gameSubJudgeDisplay = currentSettings.SmallJudgeDisp;
                 FCAPIndicator = currentSettings.FCAPIndicator;
